@@ -69,6 +69,6 @@ if __name__ == '__main__':
 
         input_file = input_path + filename + '.in'
 
-        subprocess.run(['python', '-m', 'gprMax', input_file, '-n 43'])
+        subprocess.run(['python', '-m', 'gprMax', input_file, '-n 144'])
         merge_files(output_path + filename)
         # plot_bscan(output_path + filename + '_merged.out')
