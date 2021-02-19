@@ -2,43 +2,11 @@
 import numpy as np
 import gprMax.input_cmd_funcs as gprmax
 
-from typing import Number, Sequence
+from typing import Sequence
+from numbers import Number
 
-
-class GeometryGenerator:
-
-    def __init__(self, title: str, geometry_path: str, scan_path: str, domain: Domain, discretization: Discretization,
-                 time_window: TimeWindow, materials: Sequence, **kwargs):
-
-        self.title = title
-        self.geometry_path = geometry_path
-        self.scan_path = scan_path
-        self.domain = domain
-        self.discretization = discretization
-        self.time_window = time_window
-        self.materials = materials
-
-        self.kwargs = kwargs
-
-    def generate(self):
-        with open(self.geometry_path / title + ".in") as f:
-            f.write(
-                f"""
-                {self.title}
-                {self.domain}
-                {self.discretization}
-                {self.time_window}
-                
-                #messages: n
-                #output_dir: ../{self.scan_path}
-                #num_threads: 3
-                """
-            )
-
-            f.write("\n".join(str(material) for material in self.materials))
-
-
-
+from shapes import Shape, Ground
+from radar import Waveform, Transmitter, Receiver
 
 
 class Domain:
@@ -58,6 +26,7 @@ class Domain:
 
     def __str__(self) -> str:
         return f"#domain: {self.size_x} {self.size_y} {self.size_z}"
+
 
 class Discretization:
     """Represents the discretization of a geometry."""
@@ -99,7 +68,43 @@ class TimeWindow:
         return f"#time_window: {self.time_window:f}"
 
 
+class Geometry:
 
+    def __init__(self, title: str, geometry_path: str, scan_path: str, domain: Domain, discretization: Discretization,
+                 time_window: TimeWindow, ground: Ground, shapes: Sequence[Shape], waveform: Waveform,
+                 transmitter: Transmitter, receiver: Receiver):
 
+        self.title = title
+        self.geometry_path = geometry_path
+        self.scan_path = scan_path
+        self.domain = domain
+        self.discretization = discretization
+        self.time_window = time_window
+        self.ground = ground
+        self.shapes = shapes
+        self.waveform = waveform
+        self.transmitter = transmitter
+        self.receiver = receiver
 
+    def generate(self):
+        with open(self.geometry_path / self.title + ".in") as f:
+            f.write(
+                f"""
+                {self.title}
+                {self.domain}
+                {self.discretization}
+                {self.time_window}
+                
+                #messages: n
+                #output_dir: ../{self.scan_path}
+                #num_threads: 3
+                
+                {self.waveform}
+                {self.transmitter}
+                {self.receiver}
+                
+                {self.ground}
+                """
+            )
 
+            f.write("\n".join(str(shape) for shape in self.shapes))
