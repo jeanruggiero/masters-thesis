@@ -1,0 +1,136 @@
+# This module contains code that generates gprMax geometry files given a set of parameters.
+import numpy as np
+import gprMax.input_cmd_funcs as gprmax
+
+from typing import Number, Sequence
+
+
+class GeometryGenerator:
+
+    def __init__(self, title: str, geometry_path: str, scan_path: str, domain: Domain, discretization: Discretization,
+                 time_window: TimeWindow, materials: Sequence, **kwargs):
+
+        self.title = title
+        self.geometry_path = geometry_path
+        self.scan_path = scan_path
+        self.domain = domain
+        self.discretization = discretization
+        self.time_window = time_window
+        self.materials = materials
+
+        self.kwargs = kwargs
+
+    def generate(self):
+        with open(self.geometry_path / title + ".in") as f:
+            f.write(
+                f"""
+                {self.title}
+                {self.domain}
+                {self.discretization}
+                {self.time_window}
+                
+                #messages: n
+                #output_dir: ../{self.scan_path}
+                #num_threads: 3
+                """
+            )
+
+            f.write("\n".join(str(material) for material in self.materials))
+
+
+
+
+
+class Domain:
+    """Specifies the entire domain of the geometry."""
+
+    def __init__(self, size_x: Number, size_y: Number, size_z: Number):
+        """
+        Instantiates a new Domain.
+
+        :param size_x: size of the domain in the x dimension in meters
+        :param size_y: size of the domain in the y dimension in meters
+        :param size_z: size of the domain in the z dimension in meters
+        """
+        self.size_x = size_x
+        self.size_y = size_y
+        self.size_z = size_z
+
+    def __str__(self) -> str:
+        return f"#domain: {self.size_x} {self.size_y} {self.size_z}"
+
+class Discretization:
+    """Represents the discretization of a geometry."""
+
+    def __init__(self, dx: Number, dy: Number, dz: Number):
+        """
+        Instantiates a new Discretization.
+
+        :param dx: spatial step in the x direction in meters
+        :param dy: spatial step in the y direction in meters
+        :param dz: spatial step in the z direction in meters
+        """
+
+        self.dx = dx
+        self.dy = dy
+        self.dz = dz
+
+    @property
+    def dt_max(self) -> float:
+        """The maximum permissible time step for this Discretization."""
+        return 1 / (gprmax.c * np.sqrt(1/self.dx**2 + 1/self.dy**2 + 1/self.dz**2))
+
+    def __str__(self) -> str:
+        return f"#dx_dy_dz: {self.dx} {self.dy} {self.dz}"
+
+
+class TimeWindow:
+    """The total required simulated time."""
+
+    def __init__(self, time_window: Number):
+        """
+        Instantiates a new TimeWindow.
+
+        :param time_window: the total required simulated time in seconds
+        """
+        self.time_window = time_window
+
+    def __str__(self) -> str:
+        return f"#time_window: {self.time_window:f}"
+
+
+class Material:
+    """Represents a material that can be added to a geometry."""
+
+    def __init__(self, relative_permittivity: Number, conductivity: Number, relative_permeability: Number,
+                 magnetic_loss: Number, identifier: str):
+        """
+        Instantiates a new Material.
+
+        :param relative_permittivity: relative permittivity of the material
+        :param conductivity: conductivity of the material in Siemens/meter
+        :param relative_permeability: relative permeability of the material
+        :param magnetic_loss: magnetic loss of the material in Ohms/meter
+        :param identifier: identifier for the material
+        """
+
+        self.relative_permittivity = relative_permittivity
+        self.conductivity = conductivity
+        self.relative_permeability = relative_permeability
+        self.magnetic_loss = magnetic_loss
+        self.identifier = identifier
+
+    def __str__(self):
+        return f"material: {self.relative_permittivity} {self.conductivity} {self.relative_permeability} " \
+               f"{self.magnetic_loss} {self.identifier}"
+
+
+class PerfectElectricConductor(Material):
+    pass
+
+class Air(Material):
+    pass
+
+
+
+
