@@ -1,6 +1,6 @@
 import numpy as np
 from numbers import Number
-from materials import Material
+from .materials import Material
 
 
 class Point:
@@ -34,7 +34,8 @@ class TriangularPrism(Shape):
         self.thickness = thickness
 
     def __str__(self):
-        return f"#triangle: {self.first_apex} {self.second_apex} {self.third_apex} {self.thickness} {super()}"
+        return f"#triangle: {self.first_apex} {self.second_apex} {self.third_apex} {self.thickness} {super().__str__()}"
+
 
 class Triangle(TriangularPrism):
     """Adds a triangle to the geometry."""
@@ -53,12 +54,12 @@ class Box(Shape):
         self.upper_right = upper_right
 
     def __str__(self):
-        return f"#box {self.lower_left} {self.upper_right} {super()}"
+        return f"#box {self.lower_left} {self.upper_right} {super().__str__()}"
 
     @property
     def height(self):
         """Height of the box in the z direction."""
-        return self.upper_right.z - self.lower_left.z
+        return self.upper_right.y - self.lower_left.y
 
 
 class Sphere(Shape):
@@ -73,7 +74,7 @@ class Sphere(Shape):
         self.radius = radius
 
     def __str__(self):
-        return f"#sphere {self.center} {self.radius} {super()}"
+        return f"#sphere {self.center} {self.radius} {super().__str__()}"
 
 
 class Cylinder(Shape):
@@ -90,7 +91,7 @@ class Cylinder(Shape):
         self.radius = radius
 
     def __str__(self):
-        return f"#cylinder: {self.face_center_1} {self.face_center_2} {super()}"
+        return f"#cylinder: {self.face_center_1} {self.face_center_2} {self.radius} {super().__str__()}"
 
 
 class CylindricalSector(Shape):
@@ -190,16 +191,18 @@ class FractalBox(Box):
     def __str__(self):
         # TODO number of materials based on whether material is mixing model
 
-        command = f"#fractal_box: {self.lower_left} {self.upper_right} {self.fractal_dimension} {self.weight_x} " \
-               f"{self.weight_y} {self.weight_z} 0 {self.material.identifier} {self.identifier}"
+        command = f"{self.material}\n"
+
+        command += f"#fractal_box: {self.lower_left} {self.upper_right} {self.fractal_dimension} {self.weight_x} " \
+               f"{self.weight_y} {self.weight_z} 1 {self.material.identifier} {self.identifier}"
 
         if self.surface_roughness:
-            command += f"\n#add_surface_roughness {self.upper_left} {self.upper_right} {self.fractal_dimension} " \
+            command += f"\n#add_surface_roughness: {self.upper_left} {self.upper_right} {self.fractal_dimension} " \
                        f"{self.weight_x} {self.weight_y} {self.surface_roughness} {self.surface_roughness} " \
                        f"{self.identifier}"
 
         if self.surface_water_depth:
-            command += f"#add_surface_water {self.upper_left} {self.upper_right} {self.surface_water_depth} " \
+            command += f"\n#add_surface_water: {self.upper_left} {self.upper_right} {self.surface_water_depth} " \
                        f"{self.identifier}"
 
         return command
@@ -229,7 +232,7 @@ class FractalBox(Box):
 class Ground(FractalBox):
     """Represents the ground."""
 
-    def __init__(self, length: Number, thickness: Number, depth: Number, material: Material,
+    def __init__(self, length: Number, depth: Number, thickness: Number, material: Material,
                  surface_roughness: Number = 0, surface_water_depth: Number = 0):
         """
         Instantiates a new Ground object.
@@ -244,5 +247,5 @@ class Ground(FractalBox):
 
         # TODO: optional identifier to support layers of soil
 
-        super().__init__(Point(0, 0, 0), Point(length, thickness, depth), material, "Ground",
+        super().__init__(Point(0, 0, 0), Point(length, depth, thickness), material, "ground",
                          surface_roughness=surface_roughness, surface_water_depth=surface_water_depth)

@@ -2,3 +2,8 @@ gprMax
 *env*
 images
 .idea
+
+simulations/
+geometry/
+*__pycache__*
+*.pyc

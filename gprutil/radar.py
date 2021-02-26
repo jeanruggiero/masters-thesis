@@ -44,8 +44,8 @@ str2 is an identifier for the waveform used to assign it to a source.
         :raises ValueError: if an invalid waveform type is provided
         """
 
-        if type not in ['gaussian', 'gaussiandot', 'gaussiandotnorm', 'gaussiandotdot', 'gaussiandotdotnorm', 'ricker',
-                        'gaussianprime', 'gaussiandoubleprime', 'sine', 'contsine']:
+        if waveform_type not in ['gaussian', 'gaussiandot', 'gaussiandotnorm', 'gaussiandotdot', 'gaussiandotdotnorm',
+                                 'ricker', 'gaussianprime', 'gaussiandoubleprime', 'sine', 'contsine']:
             raise ValueError("Invalid waveform type.")
 
         self.waveform_type = waveform_type
@@ -54,13 +54,13 @@ str2 is an identifier for the waveform used to assign it to a source.
         self.identifier = identifier
 
     def __str__(self):
-        return f"#waveform: {self.type} {self.amplitude_scaling} {self.center_frequency} {self.identifier}"
+        return f"#waveform: {self.waveform_type} {self.amplitude_scaling} {self.center_frequency:e} {self.identifier}"
 
 
 class RickerWaveform(Waveform):
     """Represents a Ricker waveform."""
 
-    def __init__(self, amplitude_scaling, center_frequency, identifier, waveform_type):
+    def __init__(self, amplitude_scaling, center_frequency, identifier):
         """
         Instantiates a new RickerWaveform.
 
@@ -75,13 +75,13 @@ class RickerWaveform(Waveform):
 class Transmitter:
     """Represents a radar transmitter antenna."""
 
-    def __init__(self, polarization: str, location: Point, identifier: str):
+    def __init__(self, polarization: str, location: Point, waveform: Waveform):
         """
         Instantiates a new Transmitter.
 
         :param polarization: polarization of the transmitter - must be one of 'x', 'y', or 'z'
         :param location: location of the transmitter
-        :param identifier: unique identifier for the transmitter
+        :param waveform: the waveform to be transmitted by this transmitter
         :raises ValueError: if an invalid polariation is provided
         """
 
@@ -90,10 +90,10 @@ class Transmitter:
 
         self.polarization = polarization
         self.location = location
-        self.identifier = identifier
+        self.waveform = waveform
 
     def __str__(self):
-        return f"{self.polarization} {self.location} {self.identifier}"
+        return f"{self.polarization} {self.location} {self.waveform.identifier}"
 
 
 class HertzianDipoleTransmitter(Transmitter):
@@ -103,7 +103,7 @@ class HertzianDipoleTransmitter(Transmitter):
     """
 
     def __str__(self):
-        return f"#hertzian_dipole {super()}"
+        return f"#hertzian_dipole: {super().__str__()}"
 
 
 class Receiver:
@@ -123,4 +123,4 @@ class Receiver:
         self.identifier = identifier
 
     def __str__(self):
-        return f"#rx: {self.location} {self.identifier}"
+        return f"#rx: {self.location}"

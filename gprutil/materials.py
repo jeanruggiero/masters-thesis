@@ -29,16 +29,14 @@ class Material:
 
 class PerfectElectricConductor(Material):
 
-    @property
-    def identifier(self):
-        return "pec"
+    def __init__(self):
+        super().__init__(0, 0, 0, 0, "pec")
 
 
 class Air(Material):
 
-    @property
-    def identifier(self):
-        return "air"
+    def __init__(self):
+        super().__init__(0, 0, 0, 0, "air")
 
 
 class Soil(Material):
