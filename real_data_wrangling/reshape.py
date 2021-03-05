@@ -95,12 +95,69 @@ def dft_resample(y, input_time_range, output_sample_rate, output_time_range):
     return np.real(np.fft.ifft(f) * len(f) / len(y))
 
 
-def resample_x(data, ):
+def polynomial_resample(x, x_range, output_size):
     """
-    Resamples
+    Assume samples are taken at fixed distance intervals
+    :param x: the series to resample
+    :param x_range: the distance range covered by the input points
+    :param output_size: the number of columns in the output
     :return:
     """
-    pass
+
+    # Distance coordinates for each column in the input data
+    d = np.linspace(0, x_range, len(x))
+
+    # Distance coordinates for each column in the output data
+    d_output = np.linspace(0, x_range,  output_size)
+
+    return np.vectorize(lambda d_val: quadratic_interpolate(d, x, d_val))(d_output)
+
+
+def find_between_index(array, element):
+    for i, a in enumerate(array):
+        if a > element:
+            return i - 1
+
+    return len(array)
+
+
+def quadratic_interpolate(x, y, x_val):
+    if x_val in x:
+        # The x-value is in the input series, so return its corresponding y value
+        return y[np.where(x == x_val)[0]]
+
+
+    j = find_between_index(x, x_val)
+    if j < 0:
+        # Right-sided interpolation
+        x_fit = x[:2]
+        y_fit = x[:2]
+    elif j < 1:
+        # Asymmetrical interpolation - one point on left side, two on right
+        x_fit = np.concatenate((x[:1], x[2:4]))
+        y_fit = np.concatenate((y[:1], y[2:4]))
+    elif j > len(x) - 1:
+        # Left-sided interpolation
+        x_fit = x[-2:]
+        y_fit = y[-2]
+    elif j > len(x) - 2:
+        # Asymmetrical interpolation - two points on left side, one on right
+        x_fit = np.concatenate((x[-4:-2], x[-1:]))
+        y_fit = np.concatenate((y[-4:-2], y[-1:]))
+    else:
+        # Normal case
+        x_fit = np.concatenate((x[j - 1:j + 1], x[j + 2:j + 4]))
+        y_fit = np.concatenate((y[j - 1:j + 1], y[j + 2:j + 4]))
+
+    # except:
+    #     print(j)
+    #     print(x[:1], x[2:4])
+    #     print(y[:1], y[2:4])
+
+    # Fit 2nd degree polynomial and perform interpolation
+    p = np.poly1d(np.polyfit(x_fit, y_fit, 2))
+    return p(x_val)
+
 
 def normalize():
     pass
