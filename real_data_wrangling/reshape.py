@@ -6,9 +6,6 @@ def resample_y(data, input_time_range, output_sample_rate, output_time_range):
     """
     Resamples the provided data in the y direction to the specified output time range and sample rate.
 
-    Probably not this - Takes a 2D matrix as input and returns a 3D matrix with third dimension containing 3
-    elements: (0) min, (1), max, (2) mean.
-
     The y-axis represents time. It is assumed that the acquisition rate of the data is constant over the entire time
     range and that the first sample is acquired at time t=0. An approximation to the input data is constructed in the
     form of a sum of sines. The approximated waveform is then sampled at the requested rate.
@@ -113,6 +110,26 @@ def polynomial_resample(x, x_range, output_size):
     return np.vectorize(lambda d_val: quadratic_interpolate(d, x, d_val))(d_output)
 
 
+def linear_resample(x, x_range, output_size):
+    """
+    Resamples the provided input series x to the specified output size using linear interpolation. Assume samples are
+    taken at fixed distance intervals.
+
+    :param x: the series to resample
+    :param x_range: the distance range covered by the input points in meters
+    :param output_size: the number of columns in the output
+    :return: the input series resampled to the specified size
+    """
+
+    # Distance coordinates for each column in the input data
+    d = np.linspace(0, x_range, len(x))
+
+    # Distance coordinates for each column in the output data
+    d_output = np.linspace(0, x_range,  output_size)
+
+    return np.vectorize(lambda d_val: linear_interpolate(d, x, d_val))(d_output)
+
+
 def find_between_index(array, element):
     for i, a in enumerate(array):
         if a > element:
@@ -126,7 +143,6 @@ def quadratic_interpolate(x, y, x_val):
         # The x-value is in the input series, so return its corresponding y value
         return y[np.where(x == x_val)[0]]
 
-
     j = find_between_index(x, x_val)
     if j < 0:
         # Right-sided interpolation
@@ -134,20 +150,20 @@ def quadratic_interpolate(x, y, x_val):
         y_fit = x[:2]
     elif j < 1:
         # Asymmetrical interpolation - one point on left side, two on right
-        x_fit = np.concatenate((x[:1], x[2:4]))
-        y_fit = np.concatenate((y[:1], y[2:4]))
+        x_fit = np.concatenate((x[:1], x[1:3]))
+        y_fit = np.concatenate((y[:1], y[1:3]))
     elif j > len(x) - 1:
         # Left-sided interpolation
         x_fit = x[-2:]
-        y_fit = y[-2]
+        y_fit = y[-2:]
     elif j > len(x) - 2:
         # Asymmetrical interpolation - two points on left side, one on right
-        x_fit = np.concatenate((x[-4:-2], x[-1:]))
-        y_fit = np.concatenate((y[-4:-2], y[-1:]))
+        x_fit = np.concatenate((x[-3:-1], x[-1:]))
+        y_fit = np.concatenate((y[-3:-1], y[-1:]))
     else:
         # Normal case
-        x_fit = np.concatenate((x[j - 1:j + 1], x[j + 2:j + 4]))
-        y_fit = np.concatenate((y[j - 1:j + 1], y[j + 2:j + 4]))
+        x_fit = np.concatenate((x[j - 1:j + 1], x[j + 1:j + 3]))
+        y_fit = np.concatenate((y[j - 1:j + 1], y[j + 1:j + 3]))
 
     # except:
     #     print(j)
@@ -157,6 +173,99 @@ def quadratic_interpolate(x, y, x_val):
     # Fit 2nd degree polynomial and perform interpolation
     p = np.poly1d(np.polyfit(x_fit, y_fit, 2))
     return p(x_val)
+
+
+def linear_interpolate(x, y, x_val):
+    if x_val in x:
+        # The x-value is in the input series, so return its corresponding y value
+        return y[np.where(x == x_val)[0]]
+
+
+    j = find_between_index(x, x_val)
+    if j < 0:
+        # Right-sided interpolation
+        return y[0]
+    elif j > len(x) - 1:
+        # Left-sided interpolation
+        return y[-1]
+    else:
+        # Normal case
+        x_fit = np.concatenate((x[j:j + 1], x[j + 1:j + 2]))
+        y_fit = np.concatenate((y[j:j + 1], y[j + 1:j + 2]))
+
+    # Perform linear interpolation
+    return np.interp(x_val, x_fit, y_fit)
+
+
+def resample_x(data, x_range, output_size):
+    """
+    Resamples each row of the provided input data to the specified output size using linear interpolation.
+    Assume samples are taken at fixed distance intervals.
+
+    :param x: the series to resample
+    :param x_range: the distance range covered by the input points in meters
+    :param output_size: the number of columns in the output
+    :return: the input series resampled to the specified size
+    """
+
+    resampled_data = np.zeros((data.shape[0], output_size))
+
+    # Iterate over rows, resampling each one
+    for i in range(data.shape[0]):
+        resampled_data[i, :] = linear_resample(data[i, :], x_range, output_size)
+
+    return resampled_data
+
+
+def resample_xy(data, input_time_range, output_sample_rate, output_time_range, x_range, output_size):
+    """
+    Resample the provided matrix of data.
+
+    :param data: 2D matrix of data to be resampled
+    :param input_time_range: time range over which data was collected
+    :param output_sample_rate: y-direction output sample rate in samples per second
+    :param x_range: the distance range covered by the input points in meters
+    :param output_size: the number of columns in the output
+    :return: the input matrix resampled according to the parameters provided
+    """
+    return resample_x(resample_y(data, input_time_range, output_sample_rate, output_time_range), x_range, output_size)
+
+
+def slice_scan(data, window_size):
+    """
+    Slices the provided b-scan data into fixed size chunks, each containing window_size columns.
+
+    :param data: the b_scan to slice
+    :param window_size: the number of columns in each slice
+    :return: a sequence of slices of the input data
+    """
+
+    n_steps = data.shape[1] - window_size + 1
+    return [data[:, n:n + window_size] for n in range(n_steps)]
+
+
+def preprocess_scan(data, input_time_range, output_sample_rate, output_time_range, x_range, output_size, window_size):
+    """
+    Pre-processes the b-scan represented by the provided data to prepare it for use as input to a neural network. The
+    provided data is resampled in both the x and y directions according to the parameters provided. Resampling is
+    performed first in the y-direction using a DFT resampling method along with padding or truncation is needed.
+    Next, the data is resampled in the x direction using linear interpolatio so that all scans are transformed to
+    include the same number of samples per meter. The resulting scan is then sliced using a sliding window to
+    generate a large number of shorter scans according to the provided window_size. The shape of each slice in the
+    output data is (output_sample_rate * output_time_range, window_size).
+
+    :param data: 2D matrix of data to be resampled
+    :param input_time_range: time range over which data was collected
+    :param output_sample_rate: y-direction output sample rate in samples per second
+    :param x_range: the distance range covered by the input points in meters
+    :param output_size: the number of columns in the output
+    :param window_size: the number of columns in each slice
+    :return: a sequence of slices of the resampled input data
+    """
+
+    return slice_scan(
+        resample_xy(data, input_time_range, output_sample_rate, output_time_range, x_range, output_size), window_size
+    )
 
 
 def normalize():
