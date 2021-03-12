@@ -61,12 +61,14 @@ def merge_files(basefilename, removefiles=False):
 
 
 if __name__ == '__main__':
+    n_files = 12
     input_path = 'geometry/test/'
     output_path = 'simulations/test/'
-    filename = 'test_cylinder_0'
+    for file in range(n_files):
+        filename = f'test_cylinder_{file}'
 
-    input_file = input_path + filename + '.in'
+        input_file = input_path + filename + '.in'
 
-    subprocess.run(['python', '-m', 'gprMax', input_file, '-n 43'])
-    merge_files(output_path + filename)
-    plot_bscan(output_path + filename + '_merged.out')
+        subprocess.run(['python', '-m', 'gprMax', input_file, '-n 144'])
+        merge_files(output_path + filename)
+        # plot_bscan(output_path + filename + '_merged.out')

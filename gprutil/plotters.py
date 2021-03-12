@@ -21,6 +21,7 @@ import os
 
 import h5py
 import numpy as np
+import math
 import matplotlib.pyplot as plt
 
 from gprMax.exceptions import CmdInputError
@@ -62,7 +63,7 @@ def get_output_data(filename, rxnumber, rxcomponent):
     return outputdata, dt
 
 
-def mpl_plot(filename, outputdata, dt, rxnumber, rxcomponent):
+def mpl_plot(filename, outputdata, dt, rxnumber, rxcomponent, ax: plt.Axes = None):
     """Creates a plot (with matplotlib) of the B-scan.
 
     Args:
@@ -77,6 +78,28 @@ def mpl_plot(filename, outputdata, dt, rxnumber, rxcomponent):
     """
 
     (path, filename) = os.path.split(filename)
+
+    if ax:
+
+        image = ax.imshow(outputdata,
+               extent=[0, outputdata.shape[1], outputdata.shape[0] * dt, 0],
+               interpolation='nearest', aspect='auto', cmap='seismic',
+               vmin=-np.amax(np.abs(outputdata)), vmax=np.amax(np.abs(outputdata)))
+        ax.set_xlabel("Trace Number")
+        ax.set_ylabel("Time (s)")
+
+        ax.grid(which='both', axis='both', linestyle='-.')
+
+        cb = plt.colorbar(image, ax=ax)
+        if 'E' in rxcomponent:
+            cb.set_label('Field strength [V/m]')
+        elif 'H' in rxcomponent:
+            cb.set_label('Field strength [A/m]')
+        elif 'I' in rxcomponent:
+            cb.set_label('Current [A]')
+
+        return
+
 
     fig = plt.figure(num=filename + ' - rx' + str(rxnumber),
                      figsize=(20, 10), facecolor='w', edgecolor='w')
@@ -124,3 +147,34 @@ def plot_bscan(filename: str, rx_component: str = 'Ez'):
         plthandle = mpl_plot(filename, outputdata, dt, rx, rx_component)
 
     plthandle.show()
+
+
+def subplot_bscans(base_filename, num_scans, rx_component: str = 'Ez'):
+    rows = math.ceil(math.sqrt(num_scans))
+    print(rows)
+    cols = math.ceil(num_scans / rows)
+    (fig, axes) = plt.subplots(rows, cols)
+    file_no = 0
+    for row in axes:
+        for ax in row:
+
+            filename = base_filename + f"_{file_no}_merged.out"
+
+            with h5py.File(filename, 'r') as f:
+                nrx = f.attrs['nrx']
+
+            # Check there are any receivers
+            if nrx == 0:
+                raise CmdInputError(f'No receivers found in {filename}')
+
+            for rx in range(1, nrx + 1):
+                outputdata, dt = get_output_data(filename, rx, rx_component)
+                mpl_plot(filename, outputdata, dt, rx, rx_component, ax)
+
+            print(file_no)
+            file_no += 1
+            if file_no > num_scans:
+                fig.show()
+                break
+
+    fig.show()
