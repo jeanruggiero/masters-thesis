@@ -99,7 +99,7 @@ class Geometry:
             )
         else:
             self.transmitter = HertzianDipoleTransmitter(
-                'z', Point(0.04, 0.02 + ground.height, self.domain.size_z / 2), self.waveform
+                'z', Point(0.04, 0.02 + ground.height, 0), self.waveform
             )
 
         if receiver_location:
