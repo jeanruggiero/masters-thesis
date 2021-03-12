@@ -7,3 +7,9 @@ simulations/
 geometry/
 *__pycache__*
 *.pyc
+*.DS_Store
+
+cleande_data/
+gold_data/
+raw_data/
+*.ipynb_checkpoints*
