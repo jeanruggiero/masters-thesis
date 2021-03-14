@@ -2,6 +2,7 @@ gprMax
 *env*
 images
 .idea
+*.csv
 
 simulations/
 geometry/
@@ -9,7 +10,7 @@ geometry/
 *.pyc
 *.DS_Store
 
-cleande_data/
+cleaned_data/
 gold_data/
 raw_data/
 *.ipynb_checkpoints*

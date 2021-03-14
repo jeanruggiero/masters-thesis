@@ -4,7 +4,7 @@ import math
 import os
 import textwrap
 
-import gprMax.input_cmd_funcs as gprmax
+# import gprMax.input_cmd_funcs as gprmax
 
 from typing import Sequence, Type
 from numbers import Number
@@ -48,10 +48,10 @@ class Discretization:
         self.dy = dy
         self.dz = dz
 
-    @property
-    def dt_max(self) -> float:
-        """The maximum permissible time step for this Discretization."""
-        return 1 / (gprmax.c * np.sqrt(1/self.dx**2 + 1/self.dy**2 + 1/self.dz**2))
+    # @property
+    # def dt_max(self) -> float:
+    #     """The maximum permissible time step for this Discretization."""
+    #     return 1 / (gprmax.c * np.sqrt(1/self.dx**2 + 1/self.dy**2 + 1/self.dz**2))
 
     def __str__(self) -> str:
         return f"#dx_dy_dz: {self.dx} {self.dy} {self.dz}"
@@ -126,12 +126,17 @@ class Geometry:
                 
                 {self.waveform}
                 {self.transmitter}
-                {self.receiver}
-                #src_steps: {self.step_size} 0 0
-                #rx_steps: {self.step_size} 0 0
-                
+                {self.receiver}                
                 """
             ))
+
+            if self.step_size:
+                f.write(textwrap.dedent(
+                    f"""\
+                    #src_steps: {self.step_size} 0 0
+                    #rx_steps: {self.step_size} 0 0
+                    """
+                ))
 
             f.write(str(self.ground) + '\n')
 

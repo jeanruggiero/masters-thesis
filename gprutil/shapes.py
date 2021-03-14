@@ -91,7 +91,8 @@ class Cylinder(Shape):
         self.radius = radius
 
     def __str__(self):
-        return f"#cylinder: {self.face_center_1} {self.face_center_2} {self.radius} {super().__str__()}"
+        return f"{self.material}\n#cylinder: {self.face_center_1} {self.face_center_2} {self.radius}" \
+               f" {super().__str__()}"
 
 
 class CylindricalSector(Shape):
