@@ -87,12 +87,18 @@ if __name__ == '__main__':
 
             input_filename = geometry_path + f'/test_cylinder_{id}.in'
 
-            frequency = 2.5e8 if not geometry['frequency'] else geometry['frequency']
             # Generate input file
-            make_scene(
-                id, ascan_number, 0.02, geometry['radius'], geometry['depth'], geometry['rx_tx_height'],
-                geometry['cylinder_material'], geometry['cylinder_fill_material'], geometry_path, scan_path, frequency
-            )
+            try:
+                make_scene(
+                    id, ascan_number, 0.02, geometry['radius'], geometry['depth'], geometry['rx_tx_height'],
+                    geometry['cylinder_material'], geometry['cylinder_fill_material'], geometry_path, scan_path,
+                    geometry['frequency']
+                )
+            except KeyError:
+                make_scene(
+                    id, ascan_number, 0.02, geometry['radius'], geometry['depth'], geometry['rx_tx_height'],
+                    geometry['cylinder_material'], geometry['cylinder_fill_material'], geometry_path, scan_path, 2.5e8
+                )
 
             # Run simulation
             os.system(f'python3 -m gprMax {input_filename}')
