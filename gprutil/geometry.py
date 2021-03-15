@@ -122,7 +122,6 @@ class Geometry:
                 
                 #messages: n
                 #output_dir: ../{self.scan_path}
-                #num_threads: 3
                 
                 {self.waveform}
                 {self.transmitter}
