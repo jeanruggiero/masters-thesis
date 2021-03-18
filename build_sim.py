@@ -15,7 +15,7 @@ import pandas as pd
 
 
 def make_scene(id, ascan_number, step_size, radius, cylinder_depth, rx_tx_height, cylinder_material_type,
-               fill_material_type, geometry_path, scan_path, frequency=2.5e8):
+               fill_material_type, geometry_path, scan_path, frequency=2.5e8, cores=2):
     width = 3  # domain x
     depth = 3.25  # domain y
     thickness = 0.002  # domain z
@@ -46,14 +46,15 @@ def make_scene(id, ascan_number, step_size, radius, cylinder_depth, rx_tx_height
         geometry_path,
         scan_path,
         Domain(width, depth, thickness),
-        Discretization(spatial_resolution, spatial_resolution, spatial_resolution),
-        TimeWindow(1.2e-7),
+        Discretization(spatial_resolution, spatial_resolution * 2, spatial_resolution),
+        TimeWindow(6e-8),
         Ground(width, depth - air_space, thickness, ground_material, surface_roughness=surface_roughness),
         [cylinder, cylinder_fill],
         RickerWaveform(1, frequency, 'ricker'),
         step_size=0,
         receiver_location=Point(spatial_resolution * 10 + step_size * ascan_number, rx_tx_height, 0),
-        transmitter_location=Point(spatial_resolution * 10 + 0.04 + step_size * ascan_number, rx_tx_height, 0)
+        transmitter_location=Point(spatial_resolution * 10 + 0.04 + step_size * ascan_number, rx_tx_height, 0),
+        cores=cores
     )
 
     geo.generate()
@@ -92,12 +93,13 @@ if __name__ == '__main__':
                 make_scene(
                     id, ascan_number, 0.02, geometry['radius'], geometry['depth'], geometry['rx_tx_height'],
                     geometry['cylinder_material'], geometry['cylinder_fill_material'], geometry_path, scan_path,
-                    geometry['frequency']
+                    geometry['frequency'], cores=3
                 )
             except KeyError:
                 make_scene(
                     id, ascan_number, 0.02, geometry['radius'], geometry['depth'], geometry['rx_tx_height'],
-                    geometry['cylinder_material'], geometry['cylinder_fill_material'], geometry_path, scan_path, 2.5e8
+                    geometry['cylinder_material'], geometry['cylinder_fill_material'], geometry_path, scan_path,
+                    2.5e8, cores=3
                 )
 
             # Run simulation

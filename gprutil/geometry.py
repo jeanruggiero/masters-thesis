@@ -77,7 +77,7 @@ class Geometry:
     def __init__(self, title: str, geometry_path: str, scan_path: str, domain: Domain, discretization: Discretization,
                  time_window: TimeWindow, ground: Ground, shapes: Sequence[Shape], waveform: Waveform,
                  transmitter_location: Point = None, receiver_location: Point = None, step_size: Number = 0.002,
-                 geometry_view: bool = False):
+                 geometry_view: bool = False, cores=2):
 
         self.title = title
         self.geometry_path = geometry_path
@@ -89,6 +89,7 @@ class Geometry:
         self.shapes = shapes
         self.waveform = waveform
         self.geometry_view = geometry_view
+        self.cores = cores
 
         # Both relative to lower left corner of free space above ground
         if transmitter_location:
@@ -145,6 +146,9 @@ class Geometry:
                 f.write(f"\n#geometry_view: 0 0 0 {self.domain.size_x} {self.domain.size_y} {self.domain.size_z} " +
                         f"{self.discretization.dx} {self.discretization.dy} {self.discretization.dz} " +
                         f"{self.title}_view n")
+
+            if self.cores:
+                f.write(f'\n#num_threads: {self.cores}')
 
     @property
     def steps(self):

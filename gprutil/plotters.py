@@ -24,8 +24,6 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 
-from gprMax.exceptions import CmdInputError
-
 
 def get_output_data(filename, rxnumber, rxcomponent):
     """Gets B-scan output data from a model.
@@ -47,14 +45,15 @@ def get_output_data(filename, rxnumber, rxcomponent):
 
     # Check there are any receivers
     if nrx == 0:
-        raise CmdInputError('No receivers found in {}'.format(filename))
+        raise ValueError('No receivers found in {}'.format(filename))
 
     path = '/rxs/rx' + str(rxnumber) + '/'
     availableoutputs = list(f[path].keys())
 
     # Check if requested output is in file
     if rxcomponent not in availableoutputs:
-        raise CmdInputError('{} output requested to plot, but the available output for receiver 1 is {}'.format(rxcomponent, ', '.join(availableoutputs)))
+        raise ValueError('{} output requested to plot, but the available output for receiver 1 is {}'.format(
+            rxcomponent, ', '.join(availableoutputs)))
 
     outputdata = f[path + '/' + rxcomponent]
     outputdata = np.array(outputdata)
@@ -140,7 +139,7 @@ def plot_bscan(filename: str, rx_component: str = 'Ez'):
 
     # Check there are any receivers
     if nrx == 0:
-        raise CmdInputError(f'No receivers found in {filename}')
+        raise ValueError(f'No receivers found in {filename}')
 
     for rx in range(1, nrx + 1):
         outputdata, dt = get_output_data(filename, rx, rx_component)
@@ -165,7 +164,7 @@ def subplot_bscans(base_filename, num_scans, rx_component: str = 'Ez'):
 
             # Check there are any receivers
             if nrx == 0:
-                raise CmdInputError(f'No receivers found in {filename}')
+                raise ValueError(f'No receivers found in {filename}')
 
             for rx in range(1, nrx + 1):
                 outputdata, dt = get_output_data(filename, rx, rx_component)
