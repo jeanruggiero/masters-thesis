@@ -75,6 +75,7 @@ def scan_exists(id, ascan_number):
 if __name__ == '__main__':
 
     geometries = pd.read_csv('geometry_spec.csv', index_col=0)
+    n_cores = 3
 
     geometry_path = 'geometry'
     scan_path = 'simulations'
@@ -93,13 +94,13 @@ if __name__ == '__main__':
                 make_scene(
                     id, ascan_number, 0.02, geometry['radius'], geometry['depth'], geometry['rx_tx_height'],
                     geometry['cylinder_material'], geometry['cylinder_fill_material'], geometry_path, scan_path,
-                    geometry['frequency'], cores=3
+                    geometry['frequency'], cores=n_cores
                 )
             except KeyError:
                 make_scene(
                     id, ascan_number, 0.02, geometry['radius'], geometry['depth'], geometry['rx_tx_height'],
                     geometry['cylinder_material'], geometry['cylinder_fill_material'], geometry_path, scan_path,
-                    2.5e8, cores=3
+                    2.5e8, cores=n_cores
                 )
 
             # Run simulation
