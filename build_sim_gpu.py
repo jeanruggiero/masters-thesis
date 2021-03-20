@@ -4,7 +4,12 @@ import os
 import multiprocessing
 
 
-def run_sim(id, ascan, geometry):
+def run_sim(args):
+
+    id = args[0]
+    ascan = args[1]
+    geometry = args[2]
+
     # Check if scan exists first
     if scan_exists(id, ascan_number):
         return
