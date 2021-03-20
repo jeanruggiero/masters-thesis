@@ -50,8 +50,15 @@ def run_sim(args):
 
 if __name__ == '__main__':
 
-    geometries = pd.read_csv('geometry_spec.csv', index_col=0).iloc[1105:, :]
-    args = ((id, asn, geometry) for asn in range(144) for (id, geometry) in geometries.iterrows())
+    geometries = pd.read_csv('geometry_spec.csv', index_col=0).iloc[1108:, :]
 
-    with multiprocessing.Pool(8) as p:
-        p.map(run_sim, args)
+    for (id, geometry) in geometries.iterrows():
+        args = ((id, asn, geometry) for asn in range(144))
+
+        with multiprocessing.Pool(8) as p:
+            p.map(run_sim, args)
+
+    # args = ((id, asn, geometry) for asn in range(144) for (id, geometry) in geometries.iterrows())
+    #
+    # with multiprocessing.Pool(8) as p:
+    #     p.map(run_sim, args)
