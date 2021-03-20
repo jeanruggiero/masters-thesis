@@ -4,6 +4,15 @@ docker run -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY -e AWS_DEFAULT_REGION g
 ```
 
 To configure EC2 instance:
+Select Deep Learning Base AMI (Amazon Linux 2) machine image
+p3.2xlarge instance type
+```shell script
+sudo yum update -y
+sudo rm /usr/local/cuda
+sudo ln -s /usr/local/cuda-11.0 /usr/local/cuda
+```
+
+
 ```shell script
 sudo yum install -y docker git gcc
 

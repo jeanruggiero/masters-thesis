@@ -14,3 +14,4 @@ cleaned_data/
 gold_data/
 raw_data/
 *.ipynb_checkpoints*
+ec2.sh
