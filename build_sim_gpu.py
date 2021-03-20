@@ -56,4 +56,4 @@ if __name__ == '__main__':
         args = ((id, asn, geometry) for asn in range(144))
 
         with multiprocessing.Pool(8) as p:
-            p.map(args, run_sim)
+            p.map(run_sim, args)
