@@ -103,8 +103,9 @@ def process_singlecmds(singlecmds, G):
 
     if G.messages:
         print('Number of CPU (OpenMP) threads: {}'.format(G.nthreads))
-    if G.nthreads > G.hostinfo['physicalcores']:
-        print(Fore.RED + 'WARNING: You have specified more threads ({}) than available physical CPU cores ({}). This may lead to degraded performance.'.format(G.nthreads, hostinfo['physicalcores']) + Style.RESET_ALL)
+    # if G.nthreads > G.hostinfo['physicalcores']:
+        # print(Fore.RED + 'WARNING: You have specified more threads ({}) than available physical CPU cores ({}). This may lead to degraded
+    # performance.'.format(G.nthreads, hostinfo['physicalcores']) + Style.RESET_ALL)
 
     # Print information about any GPU in use
     if G.messages:

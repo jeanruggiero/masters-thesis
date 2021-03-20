@@ -122,9 +122,10 @@ def run_model(args, currentmodelrun, modelend, numbermodelruns, inputfile, usern
 
         G.inputfilename = os.path.split(inputfile.name)[1]
         G.inputdirectory = os.path.dirname(os.path.abspath(inputfile.name))
-        inputfilestr = '\n--- Model {}/{}, input file: {}'.format(currentmodelrun, modelend, inputfile.name)
-        if G.messages:
-            print(Fore.GREEN + '{} {}\n'.format(inputfilestr, '-' * (get_terminal_width() - 1 - len(inputfilestr))) + Style.RESET_ALL)
+        # inputfilestr = '\n--- Model {}/{}, input file: {}'.format(currentmodelrun, modelend, inputfile.name)
+        # if G.messages:
+            # print(Fore.GREEN + '{} {}\n'.format(inputfilestr, '-' * (get_terminal_width() - 1 - len(inputfilestr)))
+        # + Style.RESET_ALL)
 
         # Add the current model run to namespace that can be accessed by
         # user in any Python code blocks in input file
@@ -138,8 +139,8 @@ def run_model(args, currentmodelrun, modelend, numbermodelruns, inputfile, usern
         for key, value in sorted(usernamespace.items()):
             if key != '__builtins__':
                 uservars += '{}: {}, '.format(key, value)
-        if G.messages:
-            print('Constants/variables used/available for Python scripting: {{{}}}\n'.format(uservars[:-2]))
+        # if G.messages:
+            # print('Constants/variables used/available for Python scripting: {{{}}}\n'.format(uservars[:-2]))
 
         # Write a file containing the input commands after Python or include file commands have been processed
         if args.write_processed:
@@ -162,7 +163,7 @@ def run_model(args, currentmodelrun, modelend, numbermodelruns, inputfile, usern
         process_singlecmds(singlecmds, G)
 
         # Process parameters for commands that can occur multiple times in the model
-        if G.messages: print()
+        # if G.messages: print()
         process_multicmds(multicmds, G)
 
         # Estimate and check memory (RAM) usage
@@ -211,7 +212,7 @@ def run_model(args, currentmodelrun, modelend, numbermodelruns, inputfile, usern
 
         # Build the model, i.e. set the material properties (ID) for every edge
         # of every Yee cell
-        if G.messages: print()
+        # if G.messages: print()
         pbar = tqdm(total=2, desc='Building main grid', ncols=get_terminal_width() - 1, file=sys.stdout, disable=not G.progressbars)
         build_electric_components(G.solid, G.rigidE, G.ID, G)
         pbar.update()

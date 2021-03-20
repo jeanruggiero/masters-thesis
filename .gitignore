@@ -17,5 +17,11 @@ ec2.sh
 gprMax/user_models
 gprMax/conda_env.yml
 gprMax/docs
+gprMax/gsoc
+gprMax/README.rst
+gprMax/CREDITS
+gprMax/user_libs
+gprMax/tests
+gprMax/tools
 
 

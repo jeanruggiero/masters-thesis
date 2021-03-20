@@ -44,11 +44,10 @@ with open('gprMax/__init__.py', 'r') as fd:
     packagename = re.search(r'^__name__\s*=\s*[\'"]([^\'"]*)[\'"]',
                             fd.read(), re.MULTILINE).group(1)
 
-packages = [packagename, 'tests', 'tools', 'user_libs']
+packages = [packagename]
 
 # Parse long_description from README.rst file.
-with open('README.rst','r') as fd:
-    long_description = fd.read()
+long_description = ''
 
 # Python version
 if sys.version_info[:2] < (3, 4):

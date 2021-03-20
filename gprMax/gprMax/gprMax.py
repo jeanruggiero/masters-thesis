@@ -133,7 +133,7 @@ def run_main(args):
             if any(isinstance(element, list) for element in args.gpu):
                 args.gpu = [val for sublist in args.gpu for val in sublist]
             gpus, allgpustext = detect_check_gpus(args.gpu)
-            print('GPU(s) detected: {}'.format(' | '.join(allgpustext)))
+            # print('GPU(s) detected: {}'.format(' | '.join(allgpustext)))
 
             # If in MPI mode or benchmarking provide list of GPU objects, otherwise
             # provide single GPU object
@@ -231,7 +231,7 @@ def run_std_sim(args, inputfile, usernamespace, optparams=None):
         run_model(args, currentmodelrun, modelend - 1, numbermodelruns, inputfile, modelusernamespace)
     tsimend = timer()
     simcompletestr = '\n=== Simulation completed in [HH:MM:SS]: {}'.format(datetime.timedelta(seconds=tsimend - tsimstart))
-    print('{} {}\n'.format(simcompletestr, '=' * (get_terminal_width() - 1 - len(simcompletestr))))
+    # print('{} {}\n'.format(simcompletestr, '=' * (get_terminal_width() - 1 - len(simcompletestr))))
 
 
 def run_benchmark_sim(args, inputfile, usernamespace):
