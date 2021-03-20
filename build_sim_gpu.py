@@ -10,6 +10,11 @@ def run_sim(args):
     ascan_number = args[1]
     geometry = args[2]
 
+    geometry_path = 'geometry'
+    scan_path = 'simulations'
+
+    n_cores = 8
+
     # Check if scan exists first
     if scan_exists(id, ascan_number):
         return
@@ -45,20 +50,8 @@ def run_sim(args):
 
 if __name__ == '__main__':
 
-    geometries = pd.read_csv('geometry_spec.csv', index_col=0)
-    n_cores = 8
+    geometries = pd.read_csv('geometry_spec.csv', index_col=0).iloc[1105:, :]
+    args = ((id, asn, geometry) for asn in range(144) for (id, geometry) in geometries.iterrows())
 
-    geometry_path = 'geometry'
-    scan_path = 'simulations'
-
-    for id, geometry in geometries.iterrows():
-        if id < 1102:
-            continue
-        #
-        # for ascan_number in range(144):
-        #     run_sim(id, ascan_number, geometry)
-
-        args = ((id, asn, geometry) for asn in range(144))
-
-        with multiprocessing.Pool(8) as p:
-            p.map(run_sim, args)
+    with multiprocessing.Pool(8) as p:
+        p.map(run_sim, args)
