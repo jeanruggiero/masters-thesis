@@ -14,18 +14,18 @@ def run_sim(args):
     if scan_exists(id, ascan_number):
         return
 
-    input_filename = geometry_path + f'/test_cylinder_{id}_{ascan}.in'
+    input_filename = geometry_path + f'/test_cylinder_{id}_{ascan_number}.in'
 
     # Generate input file
     try:
         make_scene(
-            f'{id}_{ascan}', ascan_number, 0.02, geometry['radius'], geometry['depth'], geometry['rx_tx_height'],
+            f'{id}_{ascan_number}', ascan_number, 0.02, geometry['radius'], geometry['depth'], geometry['rx_tx_height'],
             geometry['cylinder_material'], geometry['cylinder_fill_material'], geometry_path, scan_path,
             geometry['frequency'], cores=n_cores
         )
     except KeyError:
         make_scene(
-            f'{id}_{ascan}', ascan_number, 0.02, geometry['radius'], geometry['depth'], geometry['rx_tx_height'],
+            f'{id}_{ascan_number}', ascan_number, 0.02, geometry['radius'], geometry['depth'], geometry['rx_tx_height'],
             geometry['cylinder_material'], geometry['cylinder_fill_material'], geometry_path, scan_path,
             2.5e8, cores=n_cores
         )
@@ -37,10 +37,10 @@ def run_sim(args):
     os.remove(input_filename)
 
     # Copy output file to s3
-    os.system(f'aws s3 cp simulations/test_cylinder_{id}_{ascan}.out s3://jean-masters-thesis/simulations/{id}/scan'
+    os.system(f'aws s3 cp simulations/test_cylinder_{id}_{ascan_number}.out s3://jean-masters-thesis/simulations/{id}/scan'
               f'{ascan_number}.out --quiet')
 
-    os.remove(f'simulations/test_cylinder_{id}_{ascan}.out')
+    os.remove(f'simulations/test_cylinder_{id}_{ascan_number}.out')
 
 
 if __name__ == '__main__':
