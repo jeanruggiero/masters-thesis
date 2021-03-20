@@ -49,9 +49,11 @@ if __name__ == '__main__':
     for id, geometry in geometries.iterrows():
         if id < 1102:
             continue
+        #
+        # for ascan_number in range(144):
+        #     run_sim(id, ascan_number, geometry)
 
-        for ascan_number in range(144):
-            run_sim(id, ascan_number, geometry)
+        args = ((id, asn, geometry) for asn in range(144))
 
-        # with multiprocessing.Pool(8) as p:
-        #     p.map(lambda asn: run_sim(id, asn, geometry), range(144))
+        with multiprocessing.Pool(8) as p:
+            p.map(args, run_sim)
