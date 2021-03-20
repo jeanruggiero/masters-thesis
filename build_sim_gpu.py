@@ -7,7 +7,7 @@ import multiprocessing
 def run_sim(args):
 
     id = args[0]
-    ascan = args[1]
+    ascan_number = args[1]
     geometry = args[2]
 
     # Check if scan exists first
