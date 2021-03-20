@@ -12,7 +12,7 @@ if __name__ == '__main__':
     scan_path = 'simulations'
 
     for id, geometry in geometries.iterrows():
-        if id < 1100:
+        if id < 1102:
             continue
 
         for ascan_number in range(0, 144):
