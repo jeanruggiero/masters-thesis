@@ -50,7 +50,7 @@ def run_sim(args):
 
 if __name__ == '__main__':
 
-    geometries = pd.read_csv('geometry_spec.csv', index_col=0).iloc[1108:, :]
+    geometries = pd.read_csv('geometry_spec.csv', index_col=0).loc[1108:, :]
 
     for (id, geometry) in geometries.iterrows():
         args = ((id, asn, geometry) for asn in range(144))
