@@ -47,8 +47,7 @@ with open('gprMax/__init__.py', 'r') as fd:
 packages = [packagename, 'tests', 'tools', 'user_libs']
 
 # Parse long_description from README.rst file.
-with open('README.rst','r') as fd:
-    long_description = fd.read()
+long_description = ''
 
 # Python version
 if sys.version_info[:2] < (3, 4):
