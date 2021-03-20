@@ -45,6 +45,6 @@ if __name__ == '__main__':
 
             # Copy output file to s3
             os.system(f'aws s3 cp simulations/test_cylinder_{id}.out s3://jean-masters-thesis/simulations/{id}/scan'
-                      f'{ascan_number}.out')
+                      f'{ascan_number}.out --quiet')
 
             os.remove(f'simulations/test_cylinder_{id}.out')

@@ -206,19 +206,19 @@ def run_model(args, currentmodelrun, modelend, numbermodelruns, inputfile, usern
                         pmlinfo += '{}: {}, '.format(key, value)
                     pmlinfo = pmlinfo[:-2] + ' cells'
                 print('PML: formulation: {}, order: {}, thickness: {}'.format(G.pmlformulation, len(G.cfs), pmlinfo))
-            pbar = tqdm(total=sum(1 for value in G.pmlthickness.values() if value > 0), desc='Building PML boundaries', ncols=get_terminal_width() - 1, file=sys.stdout, disable=not G.progressbars)
-            build_pmls(G, pbar)
-            pbar.close()
+            # pbar = tqdm(total=sum(1 for value in G.pmlthickness.values() if value > 0), desc='Building PML boundaries', ncols=get_terminal_width() - 1, file=sys.stdout, disable=not G.progressbars)
+            build_pmls(G)
+            # pbar.close()
 
         # Build the model, i.e. set the material properties (ID) for every edge
         # of every Yee cell
         # if G.messages: print()
-        pbar = tqdm(total=2, desc='Building main grid', ncols=get_terminal_width() - 1, file=sys.stdout, disable=not G.progressbars)
+        # pbar = tqdm(total=2, desc='Building main grid', ncols=get_terminal_width() - 1, file=sys.stdout, disable=not G.progressbars)
         build_electric_components(G.solid, G.rigidE, G.ID, G)
-        pbar.update()
+        # pbar.update()
         build_magnetic_components(G.solid, G.rigidH, G.ID, G)
-        pbar.update()
-        pbar.close()
+        # pbar.update()
+        # pbar.close()
 
         # Add PEC boundaries to invariant direction in 2D modes
         # N.B. 2D modes are a single cell slice of 3D grid
