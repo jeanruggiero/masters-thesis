@@ -14,13 +14,13 @@ def run_sim(id, ascan, geometry):
     # Generate input file
     try:
         make_scene(
-            id, ascan_number, 0.02, geometry['radius'], geometry['depth'], geometry['rx_tx_height'],
+            f'{id}_{ascan}', ascan_number, 0.02, geometry['radius'], geometry['depth'], geometry['rx_tx_height'],
             geometry['cylinder_material'], geometry['cylinder_fill_material'], geometry_path, scan_path,
             geometry['frequency'], cores=n_cores
         )
     except KeyError:
         make_scene(
-            id, ascan_number, 0.02, geometry['radius'], geometry['depth'], geometry['rx_tx_height'],
+            f'{id}_{ascan}', ascan_number, 0.02, geometry['radius'], geometry['depth'], geometry['rx_tx_height'],
             geometry['cylinder_material'], geometry['cylinder_fill_material'], geometry_path, scan_path,
             2.5e8, cores=n_cores
         )
