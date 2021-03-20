@@ -217,7 +217,7 @@ def run_std_sim(args, inputfile, usernamespace, optparams=None):
         modelend = modelstart + args.n
     numbermodelruns = args.n
 
-    tsimstart = timer()
+    # tsimstart = timer()
     for currentmodelrun in range(modelstart, modelend):
         # If Taguchi optimistaion, add specific value for each parameter to
         # optimise for each experiment to user accessible namespace
@@ -229,8 +229,9 @@ def run_std_sim(args, inputfile, usernamespace, optparams=None):
         else:
             modelusernamespace = usernamespace
         run_model(args, currentmodelrun, modelend - 1, numbermodelruns, inputfile, modelusernamespace)
-    tsimend = timer()
-    simcompletestr = '\n=== Simulation completed in [HH:MM:SS]: {}'.format(datetime.timedelta(seconds=tsimend - tsimstart))
+    # tsimend = timer()
+    # simcompletestr = '\n=== Simulation completed in [HH:MM:SS]: {}'.format(datetime.timedelta(seconds=tsimend -
+    # tsimstart))
     # print('{} {}\n'.format(simcompletestr, '=' * (get_terminal_width() - 1 - len(simcompletestr))))
 
 
