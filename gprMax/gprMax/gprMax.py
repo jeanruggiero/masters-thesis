@@ -124,10 +124,8 @@ def run_main(args):
         hostinfo = get_host_info()
         hyperthreading = ', {} cores with Hyper-Threading'.format(hostinfo['logicalcores']) if hostinfo['hyperthreading'] else ''
         # print('\nHost: {} | {} | {} x {} ({} cores{}) | {} RAM | {}'.format(hostinfo['hostname'],
-        #                                                                     hostinfo['machineID'],
-        #                                                                    hostinfo['sockets'], hostinfo['cpuID'], hostinfo['physicalcores'],
-         #                                                                   hyperthreading, human_size(hostinfo[
-        #                                                                   'ram'], a_kilobyte_is_1024_bytes=True), hostinfo['osversion']))
+        #                                                                     hostinfo['machineID'], hostinfo['sockets'], hostinfo['cpuID'], hostinfo['physicalcores'],
+        #                                                                     hyperthreading, human_size(hostinfo['ram'], a_kilobyte_is_1024_bytes=True), hostinfo['osversion']))
 
         # Get information/setup any Nvidia GPU(s)
         if args.gpu is not None:
@@ -135,7 +133,7 @@ def run_main(args):
             if any(isinstance(element, list) for element in args.gpu):
                 args.gpu = [val for sublist in args.gpu for val in sublist]
             gpus, allgpustext = detect_check_gpus(args.gpu)
-            # print('GPU(s) detected: {}'.format(' | '.join(allgpustext)))
+            print('GPU(s) detected: {}'.format(' | '.join(allgpustext)))
 
             # If in MPI mode or benchmarking provide list of GPU objects, otherwise
             # provide single GPU object

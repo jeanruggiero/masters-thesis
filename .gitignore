@@ -14,3 +14,9 @@ gold_data/
 raw_data/
 *.ipynb_checkpoints*
 ec2.sh
+gprMax/tools
+gprMax/user_models
+gprMax/conda_env.yml
+gprMax/docs
+gprMax/user_libs
+
