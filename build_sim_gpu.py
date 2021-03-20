@@ -50,5 +50,8 @@ if __name__ == '__main__':
         if id < 1102:
             continue
 
-        with multiprocessing.Pool(8) as p:
-            p.map(lambda asn: run_sim(id, asn, geometry), range(144))
+        for ascan_number in range(144):
+            run_sim(id, ascan_number, geometry)
+
+        # with multiprocessing.Pool(8) as p:
+        #     p.map(lambda asn: run_sim(id, asn, geometry), range(144))
