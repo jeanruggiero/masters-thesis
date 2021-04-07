@@ -84,7 +84,13 @@ def dft_resample(y, input_time_range, output_sample_rate, output_time_range):
         # Pad both ends evenly with zeros
         f = np.concatenate((np.zeros(math.ceil(padding / 2)), f, np.zeros(math.floor(padding / 2))))
     else:
-        raise NotImplementedError("Downsampling not implemented.")
+        # Number of samples in the resampled series
+        n_samples = output_time_range * output_sample_rate
+        # Number of samples to remove from the input series
+        remove = len(y) - n_samples
+
+        # Remove from both ends evenly
+        f = f[math.floor(remove / 2):-math.ceil(remove / 2)]
 
     # Inverse shift
     f = np.fft.ifftshift(f)
