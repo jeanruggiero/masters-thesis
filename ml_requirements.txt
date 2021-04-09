@@ -56,8 +56,6 @@ six==1.15.0
 tensorboard==2.4.1
 tensorboard-plugin-wit==1.8.0
 tensorflow==2.4.1
-tensorflow-docs===0.0.016082db0a6299f381978e1a183fa9f3ec65652a0-
-tensorflow-estimator==2.4.0
 termcolor==1.1.0
 tornado==6.1
 traitlets==5.0.5
