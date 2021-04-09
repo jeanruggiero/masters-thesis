@@ -90,7 +90,7 @@ def run_model(model):
     s3_client.upload_file('lstm', 'jean-masters-thesis', 'models/lstm')
 
     # Save history to disk
-    with open("lstm_history.txt") as f:
+    with open("lstm_history.txt", 'w') as f:
         f.write(json.dumps(history))
     s3_client.upload_file('lstm_history.txt', 'jean-masters-thesis', 'models/lstm_history.txt')
 
