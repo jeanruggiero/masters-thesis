@@ -1,8 +1,7 @@
-import tensorflow as tf
-from tensorflow import keras
 import pandas as pd
 import numpy as np
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import json
 import boto3
 
@@ -13,6 +12,8 @@ from preprocessing import preprocess
 from modeling import train_model
 from modeling.metrics import mean_overlap, object_detection_f1_score, object_size_rmse, object_center_rmse
 
+import tensorflow as tf
+from tensorflow import keras
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.regularizers import l2
 from tensorflow.keras.callbacks import EarlyStopping
