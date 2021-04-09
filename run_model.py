@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from labeling import DataSetGenerator, S3DataLoader
 from preprocessing import preprocess
 from modeling import train_model
+from modeling.metrics import mean_overlap, object_detection_f1_score, object_size_rmse, object_center_rmse
 
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.regularizers import l2
@@ -76,11 +77,12 @@ def run_model(model):
     model.compile(
         loss='sparse_categorical_crossentropy',
         optimizer=Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False),
-        metrics=['accuracy']
+        metrics=['accuracy', mean_overlap, object_detection_f1_score, object_size_rmse, object_center_rmse]
     )
 
     # Train model
-    history, model = train_model(model, data_generator, output_time_range, sample_rate, callbacks=callbacks)
+    history, model = train_model(model, data_generator, output_time_range, sample_rate, callbacks=callbacks,
+                                 plots=False)
 
     # Save model to disk & s3
     model.save("lstm")
@@ -93,6 +95,8 @@ def run_model(model):
 
 
 if __name__ == '__main__':
+    print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
+
     model = keras.models.Sequential([
         keras.layers.Masking(mask_value=0, input_shape=[None, 1200]),
         keras.layers.BatchNormalization(),
