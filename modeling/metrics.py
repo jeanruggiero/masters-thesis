@@ -52,32 +52,12 @@ def object_size_rmse(y_true, y_pred):
     return tf.math.sqrt(tf.reduce_mean(tf.cast(squared_error, tf.float64)))
 
 
-def get_first_occurrence_indices(sequence, eos_idx):
-    '''
-    args:
-        sequence: [batch, length]
-        eos_idx: scalar
-    '''
-    batch_size, maxlen = sequence.get_shape().as_list()
-    eos_idx = tf.convert_to_tensor(eos_idx)
-    tensor = tf.concat(
-        [sequence, tf.tile(eos_idx[None, None], [batch_size, 1])], axis=-1)
-    index_all_occurrences = tf.where(tf.equal(tensor, eos_idx))
-    index_all_occurrences = tf.cast(index_all_occurrences, tf.int32)
-    index_first_occurrences = tf.segment_min(index_all_occurrences[:, 1],
-                                             index_all_occurrences[:, 0])
-    index_first_occurrences.set_shape([batch_size])
-    index_first_occurrences = tf.minimum(index_first_occurrences + 1, maxlen)
-
-    return index_first_occurrences
-
-
 def object_center(y):
     # Compute width of objects
-    width = tf.cast(tf.math.count_nonzero(y, 1), tf.float64)
+    width = tf.cast(tf.math.count_nonzero(y, 1), tf.float32)
 
     # Compute start index of objects
-    start = tf.cast(get_first_occurrence_indices(tf.cast(y, tf.bool), True), tf.float64)
+    start = tf.cast(tf.math.argmin(tf.where(tf.cast(y, tf.bool))), tf.float32)
 
     # Compute center location of true and predicted objects
     return tf.math.add(start, tf.math.multiply(0.5, width))
@@ -88,7 +68,7 @@ def object_center_rmse(y_true, y_pred):
     y_pred = tf.math.argmax(y_pred, 2)
 
     # Compute squared error of true & predicted center locations
-    squared_error = tf.math.pow(tf.math.subtract(object_center(y_true), object_center(y_pred)), 2)
+    squared_error = tf.math.pow(tf.math.subtract(object_center(y_true), object_center(y_pred)), 2.0)
 
     return tf.math.sqrt(tf.reduce_mean(squared_error))
 

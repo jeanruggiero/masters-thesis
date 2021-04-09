@@ -8,32 +8,23 @@ from preprocessing import preprocess
 
 
 def plot_history(history):
-    print(history.history.keys())
-    # fig, axes = plt.subplots(1, 5)
-    #
-    # metrics = ['loss', 'mean_overlap']
-    #
-    # for ax, metric in zip(axes, metrics):
-    #     try:
-    #         ax.plot(history.history[metric])
-    #         ax.plot(history.history['val_' + metric])
-    #         ax.title(metric)
-    #         ax.set_ylabel(metric)
-    #         ax.set_xlabel('epoch')
-    #     except KeyError:
-    #         continue
-    #
-    # axes[0].legend(['train', 'test'], loc='upper left')
-    # fig.show()
+    fig, axes = plt.subplots(1, 5)
 
-    # summarize history for loss
-    plt.plot(history.history['loss'])
-    plt.plot(history.history['val_loss'])
-    plt.title('model loss')
-    plt.ylabel('loss')
-    plt.xlabel('epoch')
-    plt.legend(['train', 'test'], loc='upper left')
-    plt.show()
+    metrics = ['loss', 'mean_overlap', 'object_detection_f1_score', 'object_size_rmse']
+
+    for ax, metric in zip(axes, metrics):
+        try:
+            ax.plot(history.history[metric])
+            ax.plot(history.history['val_' + metric])
+            ax.title(metric)
+            ax.set_ylabel(metric)
+            ax.set_xlabel('epoch')
+        except KeyError:
+            continue
+
+    axes[0].legend(['train', 'test'], loc='upper left')
+    fig.show()
+
 
 
 def train_model(model, data_generator, output_time_range, sample_rate, callbacks={}, plots=True):
