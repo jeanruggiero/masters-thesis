@@ -25,18 +25,9 @@ class S3ScanLabeler:
         obj_end = self.scan_x(scan_number) + self.scan_radius(scan_number)
 
         # 0: outside object
-        # 1: object start (first ascan taken above object)
-        # 2: inside object
+        # 1: inside object
 
-        labels = []
-
-        for i, location in enumerate(scan_locations):
-            if location < obj_start or location > obj_end:
-                labels.append(0)
-            else:
-                labels.append(1)
-
-        return labels
+        return [0 if location < obj_start or location > obj_end else 1 for location in scan_locations]
 
     def scan_x(self, scan_number):
         return 1.5
