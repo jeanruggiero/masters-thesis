@@ -33,10 +33,8 @@ class S3ScanLabeler:
         for i, location in enumerate(scan_locations):
             if location < obj_start or location > obj_end:
                 labels.append(0)
-            elif i == 0 or labels[i - 1] == 0:
-                labels.append(1)
             else:
-                labels.append(2)
+                labels.append(1)
 
         return labels
 
