@@ -10,13 +10,15 @@ import matplotlib.pyplot as plt
 from labeling import DataSetGenerator, S3DataLoader
 from preprocessing import preprocess
 from modeling import train_model
-from modeling.metrics import mean_overlap, object_detection_f1_score, object_size_rmse, object_center_rmse
+from modeling.metrics import jaccard_index, f1_score, mean_overlap, object_detection_f1_score, object_size_rmse, \
+    object_center_rmse
 
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.regularizers import l2
 from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.metrics import Precision, Recall
 
 
 def scheduler(epoch, lr):
@@ -78,7 +80,8 @@ def run_model(model):
     model.compile(
         loss='sparse_categorical_crossentropy',
         optimizer=Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False),
-        metrics=['accuracy', mean_overlap, object_detection_f1_score, object_size_rmse]
+        metrics=['accuracy', jaccard_index, f1_score, Precision(), Recall(), mean_overlap, object_detection_f1_score,
+                 object_size_rmse]
     )
 
     # Train model
