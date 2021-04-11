@@ -54,7 +54,7 @@ def run_model(model):
     # Load raw data
     loader = S3DataLoader('jean-masters-thesis', 'simulations/merged/')
     if not os.path.isfile('data.pkl'):
-        loader.load('data.pkl')
+        loader.load('data.pkl', resample=True)
 
     # Generate bootstrapped training set
     data_generator = DataSetGenerator('data.pkl', loader.scan_numbers(), 'jean-masters-thesis', geometry_spec, n=100)

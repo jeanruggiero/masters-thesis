@@ -28,11 +28,12 @@ def pad(scans, labels, n_cols):
     return padded_scans, padded_labels
 
 
-def preprocess(batch, output_time_range, sample_rate, n_cols=144):
+def preprocess(batch, output_time_range, sample_rate, n_cols=144, resample=False):
     data, labels = batch
 
-    resampled_data = [resample_scan(d, sample_rate, output_time_range) for d in data]
-    padded_scans, padded_labels = pad(resampled_data, labels, max((scan.shape[1] for scan in resampled_data)))
+    if resample:
+        data = [resample_scan(d, sample_rate, output_time_range) for d in data]
+    padded_scans, padded_labels = pad(data, labels, max((scan.shape[1] for scan in data)))
 
     X = np.array([d.T for d in padded_scans])
     y = np.array(padded_labels)

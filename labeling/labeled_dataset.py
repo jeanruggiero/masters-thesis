@@ -6,6 +6,7 @@ import numpy as np
 import random
 import pickle
 from .labelers import S3ScanLabeler
+from preprocessing import resample_scan
 
 
 class BScanMergeCrawler:
@@ -13,10 +14,11 @@ class BScanMergeCrawler:
     Crawls an S3 bucket looking for simulated scans and merges ascans into bscans.
     """
 
-    def __init__(self, bucket_name, scan_path):
+    def __init__(self, bucket_name, scan_path, resample=False):
         self.s3 = boto3.resource('s3')
         self.bucket = self.s3.Bucket(name=bucket_name)
         self.scan_path = scan_path
+        self.resample = resample
 
     def scans(self):
         """Returns an iterable of scan numbers found in the S3 bucket."""
@@ -36,8 +38,10 @@ class BScanMergeCrawler:
                     group = f['/rxs/rx1/']
                     bscan.append(group['Ez'][()])
 
-        print("Merge complete")
-        return np.array(bscan, dtype=float)
+        output_time_range = 120
+        sample_rate = 10
+
+        return resample_scan(np.array(bscan, dtype=float), sample_rate, output_time_range)
 
     def write_bscan(self, bscan, scan_number):
 
@@ -72,7 +76,9 @@ class S3DataLoader:
             self.bucket.objects.filter(Prefix=self.prefix)
         ]
 
-    def load(self, filename):
+    def load(self, filename, resample=False):
+        output_time_range = 120
+        sample_rate = 10  # samples per ns
 
         x = []
 
@@ -80,7 +86,10 @@ class S3DataLoader:
             with io.BytesIO() as b:
                 self.s3.Object(self.bucket_name, f"{self.prefix}{scan_number}_merged.csv").download_fileobj(b)
                 b.seek(0)
-                x.append(np.loadtxt(b, delimiter=","))
+                if resample:
+                    x.append(resample_scan(np.loadtxt(b, delimiter=","), output_time_range, sample_rate))
+                else:
+                    x.append(np.loadtxt(b, delimiter=","))
 
         with open(filename, 'wb') as f:
             pickle.dump(x, f)

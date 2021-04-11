@@ -1,1 +1,1 @@
-from .preprocessing import preprocess
+from .preprocessing import preprocess, resample_scan
