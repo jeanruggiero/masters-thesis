@@ -66,7 +66,7 @@ class BScanMergeCrawler:
                 continue
 
     def merged_scan_exists(self, scan_number):
-        key = f"{self.scan_path}{scan_number}_merged.csv"
+        key = f"{self.scan_path}merged/{scan_number}_merged.csv"
         for obj in self.bucket.objects.filter(Prefix=key):
             if obj.key == key:
                 return True
