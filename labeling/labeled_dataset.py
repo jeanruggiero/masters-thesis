@@ -14,11 +14,12 @@ class BScanMergeCrawler:
     Crawls an S3 bucket looking for simulated scans and merges ascans into bscans.
     """
 
-    def __init__(self, bucket_name, scan_path, resample=False):
+    def __init__(self, bucket_name, scan_path, resample=False, overwrite=False):
         self.s3 = boto3.resource('s3')
         self.bucket = self.s3.Bucket(name=bucket_name)
         self.scan_path = scan_path
         self.resample = resample
+        self.overwrite = overwrite
 
     def scans(self):
         """Returns an iterable of scan numbers found in the S3 bucket."""
@@ -51,7 +52,9 @@ class BScanMergeCrawler:
             self.bucket.put_object(Key=f"{self.scan_path}merged/{scan_number}_merged.csv", Body=b)
 
     def merge_and_write(self, scan_number):
-        return self.write_bscan(self.merge_scan(scan_number), scan_number)
+        # Only write the scan if we'd like to force overwriting or if the scan doesn't exist
+        if self.overwrite or not self.merged_scan_exists(scan_number):
+            self.write_bscan(self.merge_scan(scan_number), scan_number)
 
     def merge_all(self):
         for scan_number in self.scans():
@@ -61,6 +64,14 @@ class BScanMergeCrawler:
             except ValueError:
                 print(f"Scan {scan_number} resulted in an error...skipping.")
                 continue
+
+    def merged_scan_exists(self, scan_number):
+        key = f"{self.scan_path}{scan_number}_merged.csv"
+        for obj in self.bucket.objects.filter(Prefix=key):
+            if obj.key == key:
+                return True
+
+        return False
 
 
 class S3DataLoader:
