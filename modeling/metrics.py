@@ -15,7 +15,7 @@ def boolean_f1_score(y_true, y_pred):
     )
 
 
-def jaccard_index(y_true, y_pred):
+def mean_jaccard_index(y_true, y_pred):
 
     # Convert probability to boolean
     y_pred = tf.cast(tf.math.round(y_pred), tf.bool)
@@ -23,9 +23,9 @@ def jaccard_index(y_true, y_pred):
 
     m11 = tf.reduce_sum(tf.math.logical_and(y_true, y_pred))
     m01 = tf.reduce_sum(tf.math.logical_and(tf.math.logical_not(y_true), y_pred))
-    m10 = tf.reduce_sum(y_true, tf.math.logical_and(tf.math.logical_not(y_pred)))
+    m10 = tf.reduce_sum(tf.math.logical_and(y_true, tf.math.logical_not(y_pred)))
 
-    return tf.math.divide(m11, m01 + m10 + m11)
+    return tf.reduce_mean(tf.math.divide(m11, m01 + m10 + m11))
 
 
 def f1_score(y_true, y_pred):
