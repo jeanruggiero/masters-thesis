@@ -18,7 +18,7 @@ from tensorflow import keras
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.regularizers import l2
 from tensorflow.keras.callbacks import EarlyStopping
-from tensorflow.metrics import Precision, Recall
+from tensorflow.keras.metrics import Precision, Recall
 
 
 def scheduler(epoch, lr):
