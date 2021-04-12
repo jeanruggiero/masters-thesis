@@ -26,7 +26,6 @@ def plot_history(history):
     fig.show()
 
 
-
 def train_model(model, data_generator, output_time_range, sample_rate, callbacks={}, plots=True, resample=False):
     # Callbacks argument should be a dict of callback_fn: list of batches or None pairs. If list of batches is None
     # the callback will be applied to all batches
@@ -52,4 +51,4 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
         if plots:
             plot_history(history)
 
-    return histories, model
+    return histories, model, X_val, y_val
