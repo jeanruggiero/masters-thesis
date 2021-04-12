@@ -36,7 +36,7 @@ def scheduler_after_first_batch(epoch, lr):
     return 0.000001
 
 
-def run_model(model):
+def run_model(model, name):
 
     # Load geometry files
     s3_client = boto3.client('s3')
@@ -85,17 +85,20 @@ def run_model(model):
     )
 
     # Train model
-    history, model = train_model(model, data_generator, output_time_range, sample_rate, callbacks=callbacks,
-                                 plots=False)
+    history, model, X_val, y_val = train_model(model, data_generator, output_time_range, sample_rate,
+                                              callbacks=callbacks, plots=False)
+
+    np.save_txt(f"{name}_X_val.csv", X_val, delimiter=",")
+    np.save_txt(f"{name}_y_val.csv", y_val, delimiter=",")
 
     # Save model to disk & s3
-    model.save("lstm")
-    s3_client.upload_file('lstm', 'jean-masters-thesis', 'models/lstm')
+    model.save(name)
+    s3_client.upload_file(name, 'jean-masters-thesis', f'models/{name}')
 
     # Save history to disk
-    with open("lstm_history.txt", 'w') as f:
+    with open(f"{name}_history.txt", 'w') as f:
         f.write(json.dumps(history))
-    s3_client.upload_file('lstm_history.txt', 'jean-masters-thesis', 'models/lstm_history.txt')
+    s3_client.upload_file(f'{name}_history.txt', 'jean-masters-thesis', f'models/{name}_history.txt')
 
 
 if __name__ == '__main__':
@@ -122,4 +125,4 @@ if __name__ == '__main__':
         keras.layers.Dense(3, activation='softmax')
     ])
 
-    run_model(model)
+    run_model(model, 'lstm1')
