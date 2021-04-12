@@ -87,13 +87,15 @@ class S3DataLoader:
             self.bucket.objects.filter(Prefix=self.prefix)
         ]
 
-    def load(self, filename, resample=False):
+    def load(self, scan_numbers=None, filename=None, resample=False):
         output_time_range = 120
         sample_rate = 10  # samples per ns
 
+        scan_numbers = scan_numbers if scan_numbers else self.scan_numbers()
+
         x = []
 
-        for scan_number in self.scan_numbers():
+        for scan_number in scan_numbers:
             with io.BytesIO() as b:
                 self.s3.Object(self.bucket_name, f"{self.prefix}{scan_number}_merged.csv").download_fileobj(b)
                 b.seek(0)
@@ -102,30 +104,29 @@ class S3DataLoader:
                 else:
                     x.append(np.loadtxt(b, delimiter=","))
 
-        with open(filename, 'wb') as f:
-            pickle.dump(x, f)
+        if filename:
+            with open(filename, 'wb') as f:
+                pickle.dump(x, f)
+
+        return x
 
 
 class DataSetGenerator:
 
-    def __init__(self, pickle_filename, scan_numbers, bucket_name, geometry_spec, scan_min_col=50, scan_max_col=None,
-                 n=1000):
-        # Iterate through all available scans, using a sliding window to create multiple inputs from each scan - with
-        # labels
-        with open(pickle_filename, 'rb') as f:
-            self.data = pickle.load(f)
+    def __init__(self, data_loader, geometry_spec, scan_min_col=50, scan_max_col=None,
+                 n=1000, random_seed=None):
 
-        # print(type(self.data))
-        # print(self.data[0])
-        # print(type(self.data[0]))
+        self.scan_numbers = data_loader.scan_numbers()
 
-        self.scan_numbers = scan_numbers
-
-        self.labeler = S3ScanLabeler(bucket_name, '', geometry_spec)
+        self.data_loader = data_loader
+        self.labeler = S3ScanLabeler(data_loader.bucket_name, '', geometry_spec)
 
         self.scan_min_col = scan_min_col
         self.scan_max_col = scan_max_col
         self.n = n
+
+        if random_seed:
+            random.seed(random_seed)
 
     def bootstrap_scan(self, scan, label):
         # Generate a number of input matrices from the base scan
@@ -154,11 +155,12 @@ class DataSetGenerator:
         x = []
         y = []
 
-        for i, (scan_number, d) in enumerate(zip(self.scan_numbers, self.data)):
-            if not indices or i in indices:
-                data, labels = self.bootstrap_scan(d.T, self.labeler.label_scan_inside_outside(scan_number))
-                x.extend(data)
-                y.extend(labels)
+        scan_numbers = [sn for i, sn in enumerate(self.scan_numbers) if i in indices]
+
+        for scan_number, d in zip(scan_numbers, self.data_loader.load(scan_numbers)):
+            data, labels = self.bootstrap_scan(d.T, self.labeler.label_scan_inside_outside(scan_number))
+            x.extend(data)
+            y.extend(labels)
 
         return x, y
 
