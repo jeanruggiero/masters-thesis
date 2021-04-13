@@ -42,7 +42,10 @@ class BScanMergeCrawler:
         output_time_range = 120
         sample_rate = 10
 
-        return resample_scan(np.array(bscan, dtype=float), sample_rate, output_time_range)
+        if self.resample:
+            return resample_scan(np.array(bscan, dtype=float), sample_rate, output_time_range)
+        else:
+            return np.array(bscan, dtype=float)
 
     def write_bscan(self, bscan, scan_number):
 
