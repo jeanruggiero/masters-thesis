@@ -112,19 +112,19 @@ if __name__ == '__main__':
         keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
         keras.layers.BatchNormalization(),
         keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+        # keras.layers.BatchNormalization(),
+        # keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+        # keras.layers.BatchNormalization(),
+        # keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+        # keras.layers.BatchNormalization(),
+        # keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+        # keras.layers.BatchNormalization(),
+        # keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
         keras.layers.BatchNormalization(),
         keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
         keras.layers.BatchNormalization(),
         keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
-        keras.layers.Dense(3, activation='softmax')
+        keras.layers.Dense(2, activation='softmax')
     ])
 
     run_model(model, 'lstm1')

@@ -102,10 +102,14 @@ class S3DataLoader:
             with io.BytesIO() as b:
                 self.s3.Object(self.bucket_name, f"{self.prefix}{scan_number}_merged.csv").download_fileobj(b)
                 b.seek(0)
+                scan = np.loadtxt(b, delimiter=",")
+                if scan.shape[1] != 10057:
+                    print(f"Skipping scan {scan_number} - wrong size.")
+                    continue
                 if resample:
-                    x.append(resample_scan(np.loadtxt(b, delimiter=","), output_time_range, sample_rate))
+                    x.append(resample_scan(scan, output_time_range, sample_rate))
                 else:
-                    x.append(np.loadtxt(b, delimiter=","))
+                    x.append(scan)
 
         if filename:
             with open(filename, 'wb') as f:
