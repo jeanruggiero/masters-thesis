@@ -55,11 +55,9 @@ def run_model(model, name):
 
     # Load raw data
     loader = S3DataLoader('jean-masters-thesis', 'simulations/merged/')
-    if not os.path.isfile('data.pkl'):
-        loader.load('data.pkl', resample=True)
 
     # Generate bootstrapped training set
-    data_generator = DataSetGenerator('data.pkl', loader.scan_numbers(), 'jean-masters-thesis', geometry_spec, n=100)
+    data_generator = DataSetGenerator(loader, geometry_spec, n=100, random_seed=42)
 
     # Reshaping parameters
     output_time_range = 120
@@ -72,8 +70,8 @@ def run_model(model, name):
 
     callbacks = {
         es: None,
-        lr_scheduler: [0],
-        lr_scheduler_after_first_batch: list(range(1, 11))
+        # lr_scheduler: [0],
+        # lr_scheduler_after_first_batch: list(range(1, 11))
     }
 
     # Compile model
