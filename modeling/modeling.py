@@ -25,11 +25,12 @@ def plot_history(history):
     axes[0].legend(['train', 'test'], loc='upper left')
 
 
-def train_model(model, data_generator, output_time_range, sample_rate, callbacks={}, plots=True, resample=False):
+def train_model(model, data_generator, output_time_range, sample_rate, callbacks={}, plots=True, resample=False,
+                batches=10):
     # Callbacks argument should be a dict of callback_fn: list of batches or None pairs. If list of batches is None
     # the callback will be applied to all batches
 
-    batches = data_generator.generate_batches(10)
+    batches = data_generator.generate_batches(batches)
 
     # Use the first batch for validation.
     X_val, y_val = preprocess(next(batches), output_time_range, sample_rate, resample=resample)

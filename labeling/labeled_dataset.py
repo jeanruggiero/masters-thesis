@@ -5,6 +5,8 @@ import h5py
 import numpy as np
 import random
 import pickle
+import multiprocessing
+import itertools
 from .labelers import S3ScanLabeler
 from preprocessing import resample_scan
 
@@ -90,37 +92,41 @@ class S3DataLoader:
             self.bucket.objects.filter(Prefix=self.prefix)
         ]
 
+    @staticmethod
+    def load_scan(bucket_name, key, output_time_range=None, sample_rate=None, resample=False):
+
+        s3 = boto3.resource('s3')
+
+        with io.BytesIO() as b:
+            s3.Object(bucket_name, key).download_fileobj(b)
+            b.seek(0)
+            scan = np.loadtxt(b, delimiter=",")
+            if scan.shape[1] != 10057:
+                print(f"Skipping {key} - wrong size.")
+            elif resample:
+                return resample_scan(scan, output_time_range, sample_rate)
+            else:
+                return scan
+
     def load(self, scan_numbers=None, filename=None, resample=False):
         output_time_range = 120
         sample_rate = 10  # samples per ns
 
         scan_numbers = scan_numbers if scan_numbers else self.scan_numbers()
+        keys = [f"{self.prefix}{scan_number}_merged.csv" for scan_number in scan_numbers]
 
-        x = []
-
-        for scan_number in scan_numbers:
-            with io.BytesIO() as b:
-                self.s3.Object(self.bucket_name, f"{self.prefix}{scan_number}_merged.csv").download_fileobj(b)
-                b.seek(0)
-                scan = np.loadtxt(b, delimiter=",")
-                if scan.shape[1] != 10057:
-                    print(f"Skipping scan {scan_number} - wrong size.")
-                    continue
-                if resample:
-                    x.append(resample_scan(scan, output_time_range, sample_rate))
-                else:
-                    x.append(scan)
-
-        if filename:
-            with open(filename, 'wb') as f:
-                pickle.dump(x, f)
+        with multiprocessing.Pool(8) as p:
+            x = p.starmap(self.load_scan, itertools.product([self.bucket_name], keys))
 
         return x
+        # if filename:
+        #     with open(filename, 'wb') as f:
+        #         pickle.dump(x, f)
 
 
 class DataSetGenerator:
 
-    def __init__(self, data_loader, geometry_spec, scan_min_col=50, scan_max_col=None,
+    def __init__(self, data_loader, geometry_spec, scan_min_col=100, scan_max_col=None,
                  n=1000, random_seed=None):
 
         self.scan_numbers = data_loader.scan_numbers()
@@ -135,39 +141,46 @@ class DataSetGenerator:
         if random_seed:
             random.seed(random_seed)
 
-    def bootstrap_scan(self, scan, label):
-        # Generate a number of input matrices from the base scan
+    @staticmethod
+    def bootstrap(scan, label, max_col, min_col, n):
 
-        scan_max_col = self.scan_max_col if self.scan_max_col and self.scan_max_col <= scan.shape[1] else scan.shape[1]
-        scan_min_col = min(self.scan_min_col, scan.shape[1])
+        if scan is None:
+            return None
+
+        # Generate a number of input matrices from the base scan
+        max_col = max_col if max_col and max_col <= scan.shape[1] else scan.shape[1]
+        min_col = min(min_col, scan.shape[1])
+
+        lengths = np.random.randint(min_col, high=max_col + 1, size=n)
+        starts = [random.randint(0, scan.shape[1] - length) for length in lengths]
 
         # Generate n scans from each b-scan
-        scans = []
-        labels = []
-        for i in range(self.n):
-            # Randomly pick a scan length between scan_min_col and scan_max_col
-            scan_length = random.randint(scan_min_col, scan_max_col)
+        return DataSetGenerator.bootstrap_scan(scan.T, starts, lengths), \
+               DataSetGenerator.bootstrap_label(label, starts, lengths)
 
-            # Randomly pick a scan starting point from the range of possible values
-            scan_start = random.randint(0, scan.shape[1] - scan_length)
+    @staticmethod
+    def bootstrap_label(label, starts, lengths):
+        return [label[start:start + length] for start, length in zip(starts, lengths)]
 
-            # Select the columns from the input scan
-            scans.append(scan[:, scan_start:scan_start + scan_length])
-            labels.append(label[scan_start:scan_start + scan_length])
-
-        return scans, labels
+    @staticmethod
+    def bootstrap_scan(scan, starts, lengths):
+        return [scan[:, start:start + length] for start, length in zip(starts, lengths)]
 
     def generate(self, indices=None):
 
-        x = []
-        y = []
-
         scan_numbers = [sn for i, sn in enumerate(self.scan_numbers) if i in indices]
 
-        for scan_number, d in zip(scan_numbers, self.data_loader.load(scan_numbers)):
-            data, labels = self.bootstrap_scan(d.T, self.labeler.label_scan_inside_outside(scan_number))
-            x.extend(data)
-            y.extend(labels)
+        scans = self.data_loader.load(scan_numbers=scan_numbers)
+        labels = (self.labeler.label_scan_inside_outside(scan_number) for scan_number in scan_numbers)
+
+        with multiprocessing.Pool(8) as p:
+            scan_labels = p.starmap(self.bootstrap, zip(
+                scans, labels, itertools.repeat(self.scan_max_col), itertools.repeat(self.scan_min_col),
+                itertools.repeat(self.n)
+            ))
+
+        x = list(itertools.chain.from_iterable((scan_label[0] for scan_label in scan_labels if scan_label)))
+        y = list(itertools.chain.from_iterable((scan_label[1] for scan_label in scan_labels if scan_label)))
 
         return x, y
 
