@@ -4,6 +4,7 @@ import numpy as np
 
 
 def boolean_f1_score(y_true, y_pred):
+
     true_positives = tf.reduce_sum(tf.cast(tf.logical_and(y_true, y_pred), tf.float32))
     false_positives = tf.reduce_sum(tf.cast(tf.logical_and(tf.math.logical_not(y_true), y_pred), tf.float32))
     false_negatives = tf.reduce_sum(tf.cast(tf.logical_and(y_true, tf.math.logical_not(y_pred)), tf.float32))
@@ -17,20 +18,25 @@ def boolean_f1_score(y_true, y_pred):
 
 def mean_jaccard_index(y_true, y_pred):
 
+    y_pred = tf.math.argmax(y_pred, 2)
+
     # Convert probability to boolean
-    y_pred = tf.cast(tf.math.round(y_pred), tf.bool)
+    y_pred = tf.cast(y_pred, tf.bool)
     y_true = tf.cast(y_true, tf.bool)
 
-    m11 = tf.reduce_sum(tf.math.logical_and(y_true, y_pred))
-    m01 = tf.reduce_sum(tf.math.logical_and(tf.math.logical_not(y_true), y_pred))
-    m10 = tf.reduce_sum(tf.math.logical_and(y_true, tf.math.logical_not(y_pred)))
+    m11 = tf.reduce_sum(tf.cast(tf.math.logical_and(y_true, y_pred), tf.int8))
+    m01 = tf.reduce_sum(tf.cast(tf.math.logical_and(tf.math.logical_not(y_true), y_pred), tf.int8))
+    m10 = tf.reduce_sum(tf.cast(tf.math.logical_and(y_true, tf.math.logical_not(y_pred)), tf.int8))
 
     return tf.reduce_mean(tf.math.divide(m11, m01 + m10 + m11))
 
 
 def f1_score(y_true, y_pred):
+
+    y_pred = tf.math.argmax(y_pred, 2)
+
     # Convert probability to 1 or 0
-    y_pred = tf.cast(tf.math.round(y_pred), tf.bool)
+    y_pred = tf.cast(y_pred, tf.bool)
     y_true = tf.cast(y_true, tf.bool)
 
     return boolean_f1_score(y_true, y_pred)
@@ -39,7 +45,7 @@ def f1_score(y_true, y_pred):
 def mean_overlap(y_true, y_pred):
 
     # Convert probability to 1 or 0
-    y_pred = tf.math.round(y_pred)
+    y_pred = tf.math.argmax(y_pred, 2)
 
     # Compute true width of object and overlap of true & predicted objects
     width = tf.math.count_nonzero(y_true, 1)
@@ -55,7 +61,7 @@ def mean_overlap(y_true, y_pred):
 def object_detection_f1_score(y_true, y_pred):
 
     # Convert probability to 1 or 0
-    y_pred = tf.math.round(y_pred)
+    y_pred = tf.math.argmax(y_pred, 2)
 
     # Convert y_true and y_pred into boolean true/false for each sample: object detected or not
     y_true = tf.cast(tf.math.count_nonzero(y_true, 1), tf.bool)
@@ -66,7 +72,7 @@ def object_detection_f1_score(y_true, y_pred):
 
 def object_size_rmse(y_true, y_pred):
     # Convert probability to 1 or 0
-    y_pred = tf.math.round(y_pred)
+    y_pred = tf.math.argmax(y_pred, 2)
 
     # Compute width of true and predicted objects
     width_true = tf.math.count_nonzero(y_true, 1)
