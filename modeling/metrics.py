@@ -16,19 +16,44 @@ def boolean_f1_score(y_true, y_pred):
     )
 
 
+def mean_jaccard_index_post_epoch(y_true, y_pred):
+    # If needed, convert from predict probabilities to class labels
+    y_pred = y_pred if len(y_pred.shape) == 2 else np.argmax(y_pred, 2)
+
+    m11 = np.sum(y_true & y_pred, axis=1)
+    m01 = np.sum(np.logical_not(y_true) & y_pred, axis=1)
+    m10 = np.sum(y_true & np.logical_not(y_pred), axis=1)
+
+    with np.errstate(divide='ignore'):
+        j = m11 / (m01 + m10 + m11)
+
+    return np.nanmean(j)
+
+
 def mean_jaccard_index(y_true, y_pred):
 
+    tf.print(tf.shape(y_true))
+    tf.print(tf.shape(y_pred))
+
     y_pred = tf.math.argmax(y_pred, 2)
+
+    tf.print(tf.shape(y_pred))
 
     # Convert probability to boolean
     y_pred = tf.cast(y_pred, tf.bool)
     y_true = tf.cast(y_true, tf.bool)
 
-    m11 = tf.reduce_sum(tf.cast(tf.math.logical_and(y_true, y_pred), tf.int8))
-    m01 = tf.reduce_sum(tf.cast(tf.math.logical_and(tf.math.logical_not(y_true), y_pred), tf.int8))
-    m10 = tf.reduce_sum(tf.cast(tf.math.logical_and(y_true, tf.math.logical_not(y_pred)), tf.int8))
+    m11 = tf.reduce_sum(tf.cast(tf.math.logical_and(y_true, y_pred), tf.int8), 1)
+    m01 = tf.reduce_sum(tf.cast(tf.math.logical_and(tf.math.logical_not(y_true), y_pred), tf.int8), 1)
+    m10 = tf.reduce_sum(tf.cast(tf.math.logical_and(y_true, tf.math.logical_not(y_pred)), tf.int8), 1)
 
-    return tf.reduce_mean(tf.math.divide(m11, m01 + m10 + m11))
+    tf.print(tf.shape(m11))
+    tf.print(tf.shape(m01))
+    tf.print(tf.shape(m10))
+
+    j = tf.math.divide(m11, tf.math.add(tf.math.add(m01, m10), m11))
+    tf.print(tf.shape(j))
+    return tf.math.reduce_mean(tf.boolean_mask(j, tf.math.is_finite(j)))
 
 
 def f1_score(y_true, y_pred):

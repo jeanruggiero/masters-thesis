@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from modeling.metrics import mean_jaccard_index_post_epoch
 
 
 class ObjectDetector:
@@ -8,17 +9,21 @@ class ObjectDetector:
         self.model = model
 
     def label_scan(self, scan, y_true=None, start_true=None, end_true=None):
-        if start_true and end_true:
+
+        if not y_true and start_true and end_true:
             y_true = [1 if start_true <= i <= end_true else 0 for i in range(scan.shape[0])]
+        elif y_true:
+            start_true = np.min(np.where(y_true))
+            end_true = np.max(np.where(y_true))
 
         if y_true:
             print(y_true)
 
-        y_pred = np.round(self.model.predict(scan))
+        y_pred = np.argmax(self.model.predict(scan), axis=1)
         print(y_pred)
 
-        start_pred = np.argmin(np.where(y_pred))
-        end_pred = np.argmax(np.where(y_pred))
+        start_pred = np.min(np.where(y_pred))
+        end_pred = np.max(np.where(y_pred))
 
         fig, ax = plt.subplots()
         ax.imshow(scan.T, cmap='gray')
@@ -32,13 +37,6 @@ class ObjectDetector:
             ax.axvline(x=start_true, color="g")
             ax.axvline(x=end_true, color="g")
 
-            # Compute Jaccard similarity
-            m11 = np.sum(np.logical_and(y_true, y_pred))
-            m01 = np.sum(np.logical_and(np.logical_not(y_true), y_pred))
-            m10 = np.sum(np.logical_and(y_true, np.logical_not(y_pred)))
-
-            jaccard_index = m11 / (m01 + m10 + m11)
-
-            ax.set_title(f"J = {jaccard_index}")
+            ax.set_title(f"J = {mean_jaccard_index_post_epoch(y_true, y_pred)}")
 
 

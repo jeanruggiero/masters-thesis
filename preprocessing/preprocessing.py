@@ -1,6 +1,7 @@
 import numpy as np
 import random
 import math
+import logging
 
 from real_data_wrangling.reshape import resample_y
 
@@ -33,6 +34,9 @@ def preprocess(batch, output_time_range, sample_rate, n_cols=144, resample=False
 
     if resample:
         data = [resample_scan(d, sample_rate, output_time_range) for d in data]
+
+    logging.debug(f"Padding scans to size: {max((scan.shape[1] for scan in data))}")
+
     padded_scans, padded_labels = pad(data, labels, max((scan.shape[1] for scan in data)))
 
     X = np.array([d.T for d in padded_scans])

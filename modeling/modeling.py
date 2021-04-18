@@ -1,10 +1,12 @@
 import tensorflow as tf
 from tensorflow import keras
 import matplotlib.pyplot as plt
+import logging
 
 from tensorflow.keras.optimizers import Adam
 
 from preprocessing import preprocess
+from modeling.metrics import mean_jaccard_index_post_epoch
 
 
 def plot_history(history):
@@ -26,29 +28,40 @@ def plot_history(history):
 
 
 def train_model(model, data_generator, output_time_range, sample_rate, callbacks={}, plots=True, resample=False,
-                batches=10):
+                batches=10, epochs=30):
     # Callbacks argument should be a dict of callback_fn: list of batches or None pairs. If list of batches is None
     # the callback will be applied to all batches
 
     batches = data_generator.generate_batches(batches)
 
     # Use the first batch for validation.
+    logging.info("Loading validation set.")
     X_val, y_val = preprocess(next(batches), output_time_range, sample_rate, resample=resample)
-    print(X_val.shape)
-    print(y_val.shape)
+    logging.info(f'X_val.shape = {X_val.shape}')
+    logging.info(f'y_val.shape = {y_val.shape}')
 
     histories = []
     for i, batch in enumerate(batches):
-        print(f"Training model on batch {i}")
+        logging.info(f"Loading batch {i}")
+
         X_train, y_train = preprocess(batch, output_time_range, sample_rate)
+
+        logging.info(f"X_train.shape = {X_train.shape}")
+        logging.info(f"y_train.shape = {y_train.shape}")
 
         # Select callbacks to apply to this batch
         batch_callbacks = [key for key, batches in callbacks.items() if not batches or i in batches]
 
-        history = model.fit(X_train, y_train, epochs=30, validation_data=(X_val, y_val), callbacks=batch_callbacks)
+        logging.info(f"Training model on batch {i}")
+        history = model.fit(X_train, y_train, epochs=epochs, validation_data=(X_val, y_val), callbacks=batch_callbacks)
         histories.append(history)
+
+        y_pred = model.predict(X_val)
+        print("Mean Jaccard Index = ", mean_jaccard_index_post_epoch(y_val, y_pred))
 
         if plots:
             plot_history(history)
+
+        break
 
     return histories, model, X_val, y_val

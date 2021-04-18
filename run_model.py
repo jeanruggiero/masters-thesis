@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 import json
 import boto3
 
@@ -19,6 +20,9 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.regularizers import l2
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.metrics import Precision, Recall
+
+import logging
+logging.basicConfig(filename='training.log', encoding='utf-8', level=logging.DEBUG)
 
 
 def scheduler(epoch, lr):
@@ -86,6 +90,7 @@ def run_model(model, name):
     history, model, X_val, y_val = train_model(model, data_generator, output_time_range, sample_rate,
                                                callbacks=callbacks, plots=False)
 
+    s3_client.upload_file("training.log", 'jean-masters-thesis', f'models/{name}_training.log')
     np.save_txt(f"{name}_X_val.csv", X_val, delimiter=",")
     np.save_txt(f"{name}_y_val.csv", y_val, delimiter=",")
     s3_client.upload_file(name, 'jean-masters-thesis', f'models/{name}_X_val.csv')
@@ -102,7 +107,7 @@ def run_model(model, name):
 
 
 if __name__ == '__main__':
-    print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
+    logging.info("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
 
     model = keras.models.Sequential([
         keras.layers.Masking(mask_value=0, input_shape=[None, 1200]),
