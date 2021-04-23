@@ -102,7 +102,8 @@ def run_model(model, name):
 
     # Save model to disk & s3
     model.save_weights(name)
-    s3_client.upload_file(name, 'jean-masters-thesis', f'models/{name}.model')
+    s3_client.upload_file(f"{name}.data-00000-of-00001", 'jean-masters-thesis', f'models/{name}.data-00000-of-00001')
+    s3_client.upload_file(f"{name}.index", 'jean-masters-thesis', f'models/{name}.index')
 
     # Save history to disk
     with open(f"{name}_history.txt", 'w') as f:

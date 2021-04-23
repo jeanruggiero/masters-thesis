@@ -38,7 +38,15 @@ def f1_score_post_epoch(y_true, y_pred):
     y_pred = tf.cast(y_pred, tf.bool)
     y_true = tf.cast(y_true, tf.bool)
 
-    return boolean_f1_score(y_true, y_pred)
+    true_positives = np.sum(y_true & y_pred)
+    false_positives = tf.reduce_sum(tf.cast(tf.logical_and(tf.math.logical_not(y_true), y_pred), tf.float32))
+    false_negatives = tf.reduce_sum(tf.cast(tf.logical_and(y_true, tf.math.logical_not(y_pred)), tf.float32))
+
+    return tf.math.divide(
+        true_positives, tf.math.add(true_positives, tf.math.multiply(
+            0.5, tf.math.add(false_positives, false_negatives)
+        ))
+    )
 
 
 def mean_jaccard_index(y_true, y_pred):
