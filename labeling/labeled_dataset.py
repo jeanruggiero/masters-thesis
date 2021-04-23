@@ -64,11 +64,11 @@ class BScanMergeCrawler:
 
     def merge_all(self):
         for scan_number in self.scans():
-            print(f"Merging scan {scan_number}")
+            logging.info(f"Merging scan {scan_number}")
             try:
                 self.merge_and_write(scan_number)
             except ValueError:
-                print(f"Scan {scan_number} resulted in an error...skipping.")
+                logging.warning(f"Scan {scan_number} resulted in an error...skipping.")
                 continue
 
     def merged_scan_exists(self, scan_number):
@@ -103,7 +103,7 @@ class S3DataLoader:
             b.seek(0)
             scan = np.loadtxt(b, delimiter=",")
             if scan.shape[1] != 10057:
-                print(f"Skipping {key} - wrong size.")
+                logging.warning(f"Skipping {key} - wrong size.")
             elif resample:
                 return resample_scan(scan, output_time_range, sample_rate)
             else:
