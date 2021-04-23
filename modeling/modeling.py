@@ -64,6 +64,4 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
         if plots:
             plot_history(history)
 
-        break
-
     return histories, model, X_val, y_val
