@@ -22,3 +22,41 @@ f1-score = 0.21
 Precision = 0.62
 Recall = 0.10
 
+
+
+lstm2:
+    model = keras.models.Sequential([
+        keras.layers.Masking(mask_value=0, input_shape=[None, 10057]),
+        keras.layers.BatchNormalization(),
+        keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+        keras.layers.BatchNormalization(),
+        keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+        keras.layers.BatchNormalization(),
+        keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+        keras.layers.BatchNormalization(),
+        keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+        keras.layers.BatchNormalization(),
+        keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+        keras.layers.BatchNormalization(),
+        keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+        keras.layers.BatchNormalization(),
+        keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+        keras.layers.BatchNormalization(),
+        keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+        keras.layers.Dense(2, activation='softmax')
+    ])
+
+batches = 10
+n = 10
+epochs = 30
+patience = 10
+
+loss: 0.2739 - accuracy: 0.8888 - val_loss: 0.2970 - val_accuracy: 0.8813
+
+INFO:root:Mean Jaccard Index = 0.00
+INFO:root:TP = 0
+INFO:root:FP = 0
+INFO:root:FN = 3560
+INFO:root:f1-score = 0.00
+INFO:root:Precision = nan
+INFO:root:Recall = 0.00

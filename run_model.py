@@ -125,22 +125,22 @@ if __name__ == '__main__':
     model = keras.models.Sequential([
         keras.layers.Masking(mask_value=0, input_shape=[None, 10057]),
         keras.layers.BatchNormalization(),
-        keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+        keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.2),
         keras.layers.BatchNormalization(),
-        keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+        keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.2),
         keras.layers.BatchNormalization(),
-        keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+        keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.2),
         keras.layers.BatchNormalization(),
-        keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+        keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.2),
         keras.layers.BatchNormalization(),
-        keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+        keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.5),
         keras.layers.BatchNormalization(),
-        keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+        keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.5),
         keras.layers.BatchNormalization(),
-        keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+        keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.5),
         keras.layers.BatchNormalization(),
-        keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+        keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.5),
         keras.layers.Dense(2, activation='softmax')
     ])
 
-    run_model(model, 'lstm2')
+    run_model(model, 'lstm3')
