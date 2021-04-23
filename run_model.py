@@ -107,9 +107,9 @@ def run_model(model, name):
     s3_client.upload_file(f"{name}.index", 'jean-masters-thesis', f'models/{name}.index')
 
     # Save history to disk
-    with open(f"{name}_history.txt", 'wb') as f:
-        pickle.dump(history, f)
-    s3_client.upload_file(f'{name}_history.txt', 'jean-masters-thesis', f'models/{name}_history.txt')
+    # with open(f"{name}_history.txt", 'wb') as f:
+    #     pickle.dump(history, f)
+    # s3_client.upload_file(f'{name}_history.txt', 'jean-masters-thesis', f'models/{name}_history.txt')
 
 
 if __name__ == '__main__':
