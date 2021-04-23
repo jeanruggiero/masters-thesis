@@ -30,6 +30,17 @@ def mean_jaccard_index_post_epoch(y_true, y_pred):
     return np.nanmean(j)
 
 
+def f1_score_post_epoch(y_true, y_pred):
+    # If needed, convert from predict probabilities to class labels
+    y_pred = y_pred if len(y_pred.shape) == 2 else np.argmax(y_pred, 2)
+
+    # Convert probability to 1 or 0
+    y_pred = tf.cast(y_pred, tf.bool)
+    y_true = tf.cast(y_true, tf.bool)
+
+    return boolean_f1_score(y_true, y_pred)
+
+
 def mean_jaccard_index(y_true, y_pred):
 
     tf.print(tf.shape(y_true))
