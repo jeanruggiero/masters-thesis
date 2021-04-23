@@ -107,7 +107,7 @@ def run_model(model, name):
 
 
 if __name__ == '__main__':
-    logging.info("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
+    logging.info(f"Num GPUs Available: {len(tf.config.list_physical_devices('GPU'))}")
 
     model = keras.models.Sequential([
         keras.layers.Masking(mask_value=0, input_shape=[None, 1200]),
