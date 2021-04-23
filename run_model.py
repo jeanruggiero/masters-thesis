@@ -87,8 +87,7 @@ def run_model(model, name):
     model.compile(
         loss='sparse_categorical_crossentropy',
         optimizer=Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False),
-        metrics=['accuracy', mean_jaccard_index, f1_score, Precision(), Recall(), mean_overlap,
-                 object_detection_f1_score, object_size_rmse]
+        metrics=['accuracy', f1_score]
     )
 
     # Train model
