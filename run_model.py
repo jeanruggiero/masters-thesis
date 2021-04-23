@@ -112,7 +112,7 @@ def run_model(model, name):
 
     # Save history to disk
     with open(f"{name}_history.txt", 'w') as f:
-        f.write(json.dumps(history.history))
+        f.write(json.dumps([h.history for h in history]))
     s3_client.upload_file(f'{name}_history.txt', 'jean-masters-thesis', f'models/{name}_history.txt')
 
 
