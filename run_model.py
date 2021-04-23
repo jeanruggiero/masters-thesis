@@ -67,7 +67,7 @@ def run_model(model, name):
     loader = S3DataLoader('jean-masters-thesis', 'simulations/merged/')
 
     # Generate bootstrapped training set
-    data_generator = DataSetGenerator(loader, geometry_spec, 10, n=50, scan_max_col=100, random_seed=42)
+    data_generator = DataSetGenerator(loader, geometry_spec, 20, n=10, scan_max_col=100, random_seed=42)
 
     # Reshaping parameters
     output_time_range = 120
@@ -93,7 +93,7 @@ def run_model(model, name):
 
     # Train model
     history, model, X_val, y_val = train_model(model, data_generator, output_time_range, sample_rate,
-                                               callbacks=callbacks, epochs=30, plots=False)
+                                               callbacks=callbacks, epochs=5, plots=False)
 
     s3_client.upload_file("training.log", 'jean-masters-thesis', f'models/{name}_training.log')
     # np.savetxt(f"{name}_X_val.csv", X_val, delimiter=",")
