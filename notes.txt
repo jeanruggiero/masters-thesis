@@ -204,3 +204,14 @@ INFO:root:FN = 3390
 INFO:root:f1-score = 0.07
 INFO:root:Precision = 0.12
 INFO:root:Recall = 0.05
+
+
+lstm7:
+alpha = 0.05
+
+    model = keras.models.Sequential([
+        keras.layers.Masking(mask_value=0, input_shape=[None, 10057]),
+        keras.layers.BatchNormalization(),
+        keras.layers.SimpleRNN(100, return_sequences=True, kernel_regularizer=l2(alpha), dropout=0.2),
+        keras.layers.Dense(2, activation='softmax')
+    ])

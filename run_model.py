@@ -131,4 +131,4 @@ if __name__ == '__main__':
         keras.layers.Dense(2, activation='softmax')
     ])
 
-    run_model(model, 'lstm6')
+    run_model(model, 'rnn2')
