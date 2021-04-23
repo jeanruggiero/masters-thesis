@@ -1,6 +1,7 @@
 from tensorflow.keras.metrics import Metric
 import tensorflow as tf
 import numpy as np
+import logging
 
 
 def boolean_f1_score(y_true, y_pred):
@@ -37,6 +38,10 @@ def f1_score_post_epoch(y_true, y_pred):
     true_positives = np.sum(y_true & y_pred)
     false_positives = np.sum(np.logical_not(y_true) & y_pred)
     false_negatives = np.sum(y_true & np.logical_not(y_pred))
+
+    logging.info(f"TP = {true_positives}")
+    logging.info(f"FP = {false_positives}")
+    logging.info(f"FN = {false_negatives}")
 
     return true_positives / (0.5 * (false_positives + false_negatives))
 
