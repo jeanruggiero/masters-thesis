@@ -95,8 +95,8 @@ def run_model(model, name):
                                                callbacks=callbacks, epochs=5, plots=False)
 
     s3_client.upload_file("training.log", 'jean-masters-thesis', f'models/{name}_training.log')
-    np.save_txt(f"{name}_X_val.csv", X_val, delimiter=",")
-    np.save_txt(f"{name}_y_val.csv", y_val, delimiter=",")
+    np.savetxt(f"{name}_X_val.csv", X_val, delimiter=",")
+    np.savetxt(f"{name}_y_val.csv", y_val, delimiter=",")
     s3_client.upload_file(name, 'jean-masters-thesis', f'models/{name}_X_val.csv')
     s3_client.upload_file(name, 'jean-masters-thesis', f'models/{name}_y_val.csv')
 
