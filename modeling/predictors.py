@@ -6,8 +6,10 @@ import logging
 
 class ObjectDetector:
 
-    def __init__(self, model):
+    def __init__(self, model=None, y_true=None, y_pred=None):
         self.model = model
+        self.y_true = y_true
+        self.y_pred = y_pred
 
     def label_scan(self, scan, y_true=None, start_true=None, end_true=None):
 
