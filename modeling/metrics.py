@@ -36,7 +36,7 @@ def f1_score_post_epoch(y_true, y_pred):
 
     true_positives = np.sum(y_true & y_pred)
     false_positives = np.sum(np.logical_not(y_true) & y_pred)
-    false_negatives = tf.reduce_sum(tf.cast(tf.logical_and(y_true, tf.math.logical_not(y_pred)), tf.float32))
+    false_negatives = np.sum(y_true & np.logical_not(y_pred))
 
     return tf.math.divide(
         true_positives, tf.math.add(true_positives, tf.math.multiply(
