@@ -127,7 +127,7 @@ if __name__ == '__main__':
     model = keras.models.Sequential([
         keras.layers.Masking(mask_value=0, input_shape=[None, 10057]),
         keras.layers.BatchNormalization(),
-        keras.layers.RNN(100, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.2),
+        keras.layers.RNN(100),
         keras.layers.Dense(2, activation='softmax')
     ])
 
