@@ -122,7 +122,7 @@ def run_model(model, name):
 if __name__ == '__main__':
     logging.info(f"Num GPUs Available: {len(tf.config.list_physical_devices('GPU'))}")
 
-    alpha = 0.1
+    alpha = 0.15
 
     model = keras.models.Sequential([
         keras.layers.Masking(mask_value=0, input_shape=[None, 10057]),
@@ -131,4 +131,4 @@ if __name__ == '__main__':
         keras.layers.Dense(2, activation='softmax')
     ])
 
-    run_model(model, 'rnn3')
+    run_model(model, 'rnn4')

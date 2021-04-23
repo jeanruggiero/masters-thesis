@@ -227,3 +227,29 @@ INFO:root:FN = 3270
 INFO:root:f1-score = 0.15
 INFO:root:Precision = 0.31
 INFO:root:Recall = 0.08
+
+Notes: increasing regularization has helped slightly. Increase regularization a little more.
+
+rnn3:
+alpha = 0.1
+
+model = keras.models.Sequential([
+    keras.layers.Masking(mask_value=0, input_shape=[None, 10057]),
+    keras.layers.BatchNormalization(),
+    keras.layers.SimpleRNN(100, return_sequences=True, kernel_regularizer=l2(alpha), dropout=0.2),
+    keras.layers.Dense(2, activation='softmax')
+])
+
+Notes: could try more epochs with this particular model. Try increasing regularization more.
+
+
+
+rnn4:
+alpha = 0.15
+
+model = keras.models.Sequential([
+    keras.layers.Masking(mask_value=0, input_shape=[None, 10057]),
+    keras.layers.BatchNormalization(),
+    keras.layers.SimpleRNN(100, return_sequences=True, kernel_regularizer=l2(alpha), dropout=0.2),
+    keras.layers.Dense(2, activation='softmax')
+])
