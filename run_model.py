@@ -29,6 +29,7 @@ root_logger = logging.getLogger()
 root_logger.addHandler(logging.FileHandler("training.log"))
 root_logger.addHandler(logging.StreamHandler())
 
+
 def scheduler(epoch, lr):
     print(f"Learning rate in previous epoch: {lr}")
     if epoch <= 3:
@@ -65,7 +66,7 @@ def run_model(model, name):
     loader = S3DataLoader('jean-masters-thesis', 'simulations/merged/')
 
     # Generate bootstrapped training set
-    data_generator = DataSetGenerator(loader, geometry_spec, 20, n=50, scan_max_col=100, random_seed=42)
+    data_generator = DataSetGenerator(loader, geometry_spec, 20, n=10, scan_max_col=100, random_seed=42)
 
     # Reshaping parameters
     output_time_range = 120
@@ -101,7 +102,7 @@ def run_model(model, name):
     s3_client.upload_file(name, 'jean-masters-thesis', f'models/{name}_y_val.csv')
 
     # Save model to disk & s3
-    model.save(name)
+    model.save_weights(name)
     s3_client.upload_file(name, 'jean-masters-thesis', f'models/{name}.model')
 
     # Save history to disk
@@ -114,7 +115,7 @@ if __name__ == '__main__':
     logging.info(f"Num GPUs Available: {len(tf.config.list_physical_devices('GPU'))}")
 
     model = keras.models.Sequential([
-        keras.layers.Masking(mask_value=0, input_shape=[None, 1200]),
+        keras.layers.Masking(mask_value=0, input_shape=[None, 10057]),
         keras.layers.BatchNormalization(),
         keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
         keras.layers.BatchNormalization(),
