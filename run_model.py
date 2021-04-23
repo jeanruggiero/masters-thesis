@@ -130,14 +130,8 @@ if __name__ == '__main__':
         keras.layers.Dense(100, kernel_regularizer=l2(alpha)),
         keras.layers.Dropout(0.2),
         keras.layers.BatchNormalization(),
-        keras.layers.Dense(200, kernel_regularizer=l2(alpha)),
-        keras.layers.Dropout(0.2),
-        keras.layers.BatchNormalization(),
-        keras.layers.Dense(250, kernel_regularizer=l2(alpha)),
-        keras.layers.Dropout(0.2),
-        keras.layers.BatchNormalization(),
         keras.layers.SimpleRNN(100, return_sequences=True, kernel_regularizer=l2(alpha), dropout=0.2),
         keras.layers.Dense(2, activation='softmax')
     ])
 
-    run_model(model, 'rnn4')
+    run_model(model, 'rnn5')

@@ -250,6 +250,34 @@ INFO:root:f1-score = 0.04
 INFO:root:Precision = 0.22
 INFO:root:Recall = 0.02
 
-Notes: could try more epochs with this particular model. Try adding dense layers before recurrent layer.
+Notes: could try more epochs with this particular model. Try adding dense layers before recurrent layer. Successive calls to fit will incrementally
+ train the model: https://github.com/keras-team/keras/issues/4446
 
 rnn4:
+alpha = 0.05
+
+model = keras.models.Sequential([
+    keras.layers.Masking(mask_value=0, input_shape=[None, 10057]),
+    keras.layers.BatchNormalization(),
+    keras.layers.Dense(100, kernel_regularizer=l2(alpha)),
+    keras.layers.Dropout(0.2),
+    keras.layers.BatchNormalization(),
+    keras.layers.Dense(200, kernel_regularizer=l2(alpha)),
+    keras.layers.Dropout(0.2),
+    keras.layers.BatchNormalization(),
+    keras.layers.Dense(250, kernel_regularizer=l2(alpha)),
+    keras.layers.Dropout(0.2),
+    keras.layers.BatchNormalization(),
+    keras.layers.SimpleRNN(100, return_sequences=True, kernel_regularizer=l2(alpha), dropout=0.2),
+    keras.layers.Dense(2, activation='softmax')
+])
+
+loss: 0.3113 - accuracy: 0.9160 - val_loss: 0.4943 - val_accuracy: 0.8813
+
+INFO:root:Mean Jaccard Index = 0.00
+INFO:root:TP = 0
+INFO:root:FP = 0
+INFO:root:FN = 3560
+INFO:root:f1-score = 0.00
+INFO:root:Precision = nan
+INFO:root:Recall = 0.00
