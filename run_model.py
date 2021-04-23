@@ -97,9 +97,13 @@ def run_model(model, name):
 
     s3_client.upload_file("training.log", 'jean-masters-thesis', f'models/{name}_training.log')
     # np.savetxt(f"{name}_X_val.csv", X_val, delimiter=",")
-    # np.savetxt(f"{name}_y_val.csv", y_val, delimiter=",")
+    np.savetxt(f"{name}_y_val.csv", y_val, delimiter=",")
     # s3_client.upload_file(name, 'jean-masters-thesis', f'models/{name}_X_val.csv')
-    # s3_client.upload_file(name, 'jean-masters-thesis', f'models/{name}_y_val.csv')
+    s3_client.upload_file(f"{name}_y_val.csv", 'jean-masters-thesis', f'models/{name}_y_val.csv')
+
+    y_pred = model.predict(X_val)
+    np.savetxt(f"{name}_y_pred.csv", y_pred, delimiter=",")
+    s3_client.upload_file(f"{name}_y_pred.csv", 'jean-masters-thesis', f'models/{name}_y_val.csv')
 
     # Save model to disk & s3
     model.save_weights(name)
