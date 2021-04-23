@@ -22,7 +22,7 @@ from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.metrics import Precision, Recall
 
 import logging
-logging.basicConfig(filename='training.log', encoding='utf-8', level=logging.DEBUG)
+logging.basicConfig(filename='training.log', level=logging.DEBUG)
 
 
 def scheduler(epoch, lr):
