@@ -40,7 +40,7 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
     logging.info(f'y_val.shape = {y_val.shape}')
 
     histories = []
-    for i in range(1, data_generator.num_batches + 1):
+    for i in range(1, data_generator.num_batches):
         logging.info(f"Loading batch {i}")
 
         X_train, y_train = preprocess(data_generator.generate_batch(i), output_time_range, sample_rate)
