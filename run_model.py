@@ -130,7 +130,7 @@ if __name__ == '__main__':
         keras.layers.TimeDistributed(
             keras.layers.Conv1D(100, 10, strides=10, kernel_regularizer=l2(alpha), activation='relu')
         ),
-        keras.layers.Flatten(),
+        keras.layers.TimeDistributed(keras.layers.Flatten()),
         keras.layers.BatchNormalization(),
         # keras.layers.MaxPool1D(pool_size=10, strides=5),
         # keras.layers.BatchNormalization(),
