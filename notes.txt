@@ -23,6 +23,10 @@ Precision = 0.62
 Recall = 0.10
 
 
+Notes: baseline model used to troubleshoot infrastructure code. Logging facility added, required info copied to s3 after model run, fault-tolerant
+data-loading, parallelized loading & preprocessing, etc. Baseline model is overfitting. Model is probably not powerful enough - try adding
+additional layers.
+
 
 lstm2:
     model = keras.models.Sequential([
@@ -60,3 +64,53 @@ INFO:root:FN = 3560
 INFO:root:f1-score = 0.00
 INFO:root:Precision = nan
 INFO:root:Recall = 0.00
+
+Notes: lstm2 guesses negative class for every sample. Training and validation accuracy are approximately equal, so it's not a matter of overfitting
+. Hypothesis is that the model is overly regularized. Try reducing regularization in next model.
+
+
+ltsm3:
+model = keras.models.Sequential([
+        keras.layers.Masking(mask_value=0, input_shape=[None, 10057]),
+        keras.layers.BatchNormalization(),
+        keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.2),
+        keras.layers.BatchNormalization(),
+        keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.2),
+        keras.layers.BatchNormalization(),
+        keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.2),
+        keras.layers.BatchNormalization(),
+        keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.2),
+        keras.layers.BatchNormalization(),
+        keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.5),
+        keras.layers.BatchNormalization(),
+        keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.5),
+        keras.layers.BatchNormalization(),
+        keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.5),
+        keras.layers.BatchNormalization(),
+        keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.5),
+        keras.layers.Dense(2, activation='softmax')
+])
+
+Metrics after batch 8:
+INFO:root:Mean Jaccard Index = 0.11
+INFO:root:TP = 580
+INFO:root:FP = 970
+INFO:root:FN = 2980
+INFO:root:f1-score = 0.29
+INFO:root:Precision = 0.37
+INFO:root:Recall = 0.16
+
+
+Metrics after batch 9 (final batch):
+INFO:root:Mean Jaccard Index = 0.01
+INFO:root:TP = 43
+INFO:root:FP = 49
+INFO:root:FN = 3517
+INFO:root:f1-score = 0.02
+INFO:root:Precision = 0.47
+INFO:root:Recall = 0.01
+
+
+Notes: model overfits severely on first two batches (predicts all zeros). After batch 4, model is no longer predicting all zeros. This model is
+overfitting again, so try increaing regularization slightly. What causes the model to get worse with additional data?
+

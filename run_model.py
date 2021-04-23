@@ -122,25 +122,27 @@ def run_model(model, name):
 if __name__ == '__main__':
     logging.info(f"Num GPUs Available: {len(tf.config.list_physical_devices('GPU'))}")
 
+    l2_reg = 0.05
+
     model = keras.models.Sequential([
         keras.layers.Masking(mask_value=0, input_shape=[None, 10057]),
         keras.layers.BatchNormalization(),
-        keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.2),
+        keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.2),
         keras.layers.BatchNormalization(),
-        keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.2),
+        keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.2),
         keras.layers.BatchNormalization(),
-        keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.2),
+        keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.2),
         keras.layers.BatchNormalization(),
-        keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.2),
+        keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.2),
         keras.layers.BatchNormalization(),
-        keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.5),
+        keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.5),
         keras.layers.BatchNormalization(),
-        keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.5),
+        keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.5),
         keras.layers.BatchNormalization(),
-        keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.5),
+        keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.5),
         keras.layers.BatchNormalization(),
-        keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.5),
+        keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.5),
         keras.layers.Dense(2, activation='softmax')
     ])
 
-    run_model(model, 'lstm3')
+    run_model(model, 'lstm4')
