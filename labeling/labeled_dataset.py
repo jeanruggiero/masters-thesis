@@ -127,10 +127,11 @@ class S3DataLoader:
 
 class DataSetGenerator:
 
-    def __init__(self, data_loader, geometry_spec, scan_min_col=100, scan_max_col=None,
+    def __init__(self, data_loader, geometry_spec, num_batches, scan_min_col=100, scan_max_col=None,
                  n=1000, random_seed=None):
 
         self.scan_numbers = data_loader.scan_numbers()
+        self.num_batches = num_batches
 
         self.data_loader = data_loader
         self.labeler = S3ScanLabeler(data_loader.bucket_name, '', geometry_spec)
@@ -141,6 +142,8 @@ class DataSetGenerator:
 
         if random_seed:
             random.seed(random_seed)
+
+        self.batched_indices = self.partition(list(range(len(self.scan_numbers))), num_batches)
 
     @staticmethod
     def bootstrap(scan, label, max_col, min_col, n):
@@ -183,8 +186,15 @@ class DataSetGenerator:
         scan_numbers = [sn for i, sn in enumerate(self.scan_numbers) if i in indices]
         logging.debug(f"Batch includes {len(scan_numbers)} scans: {scan_numbers}")
 
-        scans = list(self.data_loader.load(scan_numbers=scan_numbers))
-        logging.info("Finished loading scans")
+        for i in range(5):
+            try:
+                scans = list(self.data_loader.load(scan_numbers=scan_numbers))
+                logging.info("Finished loading scans")
+                break
+            except Exception as e:
+                logging.warning("Error loading scans...retrying...")
+                logging.warning(f"{e}")
+                continue
 
         labels = [self.labeler.label_scan_inside_outside(scan_number) for scan_number in scan_numbers]
         logging.info("Finished labeling")
@@ -226,10 +236,12 @@ class DataSetGenerator:
 
         return x, y
 
-    def generate_batches(self, n):
-        batched_indices = self.partition(list(range(len(self.scan_numbers))), n)
+    def generate_batch(self, batch_number):
+        return self.generate(indices=self.batched_indices[batch_number])
+
+    def generate_batches(self):
         # print("batched indices = ", batched_indices)
-        return (self.generate(indices=indices) for indices in batched_indices)
+        return (self.generate(indices=indices) for indices in self.batched_indices)
 
     @staticmethod
     def partition(list_in, n):
