@@ -128,10 +128,11 @@ class S3DataLoader:
 class DataSetGenerator:
 
     def __init__(self, data_loader, geometry_spec, num_batches, scan_min_col=100, scan_max_col=None,
-                 n=1000, random_seed=None):
+                 n=1000, random_seed=None, num_threads=8):
 
         self.scan_numbers = data_loader.scan_numbers()
         self.num_batches = num_batches
+        self.num_threads = num_threads
 
         self.data_loader = data_loader
         self.labeler = S3ScanLabeler(data_loader.bucket_name, '', geometry_spec)
@@ -203,7 +204,7 @@ class DataSetGenerator:
         # logging.info(f"scan1.label = {labels[0]}")
         # logging.info(f"scan1.shape = {scans[0].shape if scans[0] is not None else None}")
 
-        with multiprocessing.Pool(8) as p:
+        with multiprocessing.Pool(self.num_threads) as p:
             scan_labels = p.starmap(self.bootstrap, zip(
                 scans, labels, itertools.repeat(self.scan_max_col), itertools.repeat(self.scan_min_col),
                 itertools.repeat(self.n)

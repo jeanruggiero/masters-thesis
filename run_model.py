@@ -22,7 +22,7 @@ from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.metrics import Precision, Recall
 
 import logging
-logging.basicConfig(filename='training.log', level=logging.DEBUG)
+logging.basicConfig(filename='training.log', level=logging.INFO)
 
 
 def scheduler(epoch, lr):
@@ -61,7 +61,7 @@ def run_model(model, name):
     loader = S3DataLoader('jean-masters-thesis', 'simulations/merged/')
 
     # Generate bootstrapped training set
-    data_generator = DataSetGenerator(loader, geometry_spec, 20, n=50, scan_max_col=100, random_seed=42)
+    data_generator = DataSetGenerator(loader, geometry_spec, 20, n=50, scan_max_col=100, num_threads=2, random_seed=42)
 
     # Reshaping parameters
     output_time_range = 120
