@@ -5,6 +5,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import json
 import boto3
+import pickle
 
 import matplotlib.pyplot as plt
 
@@ -107,7 +108,7 @@ def run_model(model, name):
 
     # Save history to disk
     with open(f"{name}_history.txt", 'w') as f:
-        f.write(json.dumps(history))
+        pickle.dump(history, f)
     s3_client.upload_file(f'{name}_history.txt', 'jean-masters-thesis', f'models/{name}_history.txt')
 
 
