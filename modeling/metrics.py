@@ -38,11 +38,28 @@ def f1_score_post_epoch(y_true, y_pred):
     false_positives = np.sum(np.logical_not(y_true) & y_pred)
     false_negatives = np.sum(y_true & np.logical_not(y_pred))
 
-    return tf.math.divide(
-        true_positives, tf.math.add(true_positives, tf.math.multiply(
-            0.5, tf.math.add(false_positives, false_negatives)
-        ))
-    )
+    return true_positives / (0.5 * (false_positives + false_negatives))
+
+
+def precision_post_epoch(y_true, y_pred):
+    # If needed, convert from predict probabilities to class labels
+    y_pred = y_pred if len(y_pred.shape) == 2 else np.argmax(y_pred, 2)
+
+    true_positives = np.sum(y_true & y_pred)
+    false_positives = np.sum(np.logical_not(y_true) & y_pred)
+
+    return true_positives / (true_positives + false_positives)
+
+
+def recall_post_epoch(y_true, y_pred):
+    # If needed, convert from predict probabilities to class labels
+    y_pred = y_pred if len(y_pred.shape) == 2 else np.argmax(y_pred, 2)
+
+    true_positives = np.sum(y_true & y_pred)
+    false_negatives = np.sum(y_true & np.logical_not(y_pred))
+
+    return true_positives / (true_positives + false_negatives)
+
 
 
 def mean_jaccard_index(y_true, y_pred):

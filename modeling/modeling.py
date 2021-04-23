@@ -6,7 +6,8 @@ import logging
 from tensorflow.keras.optimizers import Adam
 
 from preprocessing import preprocess
-from modeling.metrics import mean_jaccard_index_post_epoch
+from modeling.metrics import mean_jaccard_index_post_epoch, f1_score_post_epoch, precision_post_epoch, \
+    recall_post_epoch
 
 
 def plot_history(history):
@@ -56,6 +57,9 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
 
         y_pred = model.predict(X_val)
         logging.info(f"Mean Jaccard Index = {mean_jaccard_index_post_epoch(y_val, y_pred)}")
+        logging.info(f"f1-score = {f1_score_post_epoch(y_val, y_pred)}")
+        logging.info(f"Precision = {precision_post_epoch(y_val, y_pred)}")
+        logging.info(f"Recall = {recall_post_epoch(y_val, y_pred)}")
 
         if plots:
             plot_history(history)
