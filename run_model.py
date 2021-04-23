@@ -22,8 +22,12 @@ from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.metrics import Precision, Recall
 
 import logging
-logging.basicConfig(filename='training.log', level=logging.INFO)
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+root_logger = logging.getLogger()
+root_logger.addHandler(logging.FileHandler("training.log"))
+root_logger.addHandler(logging.StreamHandler())
 
 def scheduler(epoch, lr):
     print(f"Learning rate in previous epoch: {lr}")
