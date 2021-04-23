@@ -88,7 +88,7 @@ def run_model(model, name):
 
     # Train model
     history, model, X_val, y_val = train_model(model, data_generator, output_time_range, sample_rate,
-                                               callbacks=callbacks, plots=False)
+                                               callbacks=callbacks, epochs=5, plots=False)
 
     s3_client.upload_file("training.log", 'jean-masters-thesis', f'models/{name}_training.log')
     np.save_txt(f"{name}_X_val.csv", X_val, delimiter=",")
