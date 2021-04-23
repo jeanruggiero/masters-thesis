@@ -95,12 +95,12 @@ def run_model(model, name):
     history, model, X_val, y_val = train_model(model, data_generator, output_time_range, sample_rate,
                                                callbacks=callbacks, epochs=30, plots=False)
 
+    # Save y_val to s3
     s3_client.upload_file("training.log", 'jean-masters-thesis', f'models/{name}_training.log')
-    # np.savetxt(f"{name}_X_val.csv", X_val, delimiter=",")
     np.savetxt(f"{name}_y_val.csv", y_val, delimiter=",")
-    # s3_client.upload_file(name, 'jean-masters-thesis', f'models/{name}_X_val.csv')
     s3_client.upload_file(f"{name}_y_val.csv", 'jean-masters-thesis', f'models/{name}_y_val.csv')
 
+    # Save y_pred to s3
     y_pred = np.argmax(model.predict(X_val), axis=2)
     np.savetxt(f"{name}_y_pred.csv", y_pred, delimiter=",")
     s3_client.upload_file(f"{name}_y_pred.csv", 'jean-masters-thesis', f'models/{name}_y_val.csv')
