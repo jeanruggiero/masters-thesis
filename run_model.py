@@ -122,12 +122,12 @@ def run_model(model, name):
 if __name__ == '__main__':
     logging.info(f"Num GPUs Available: {len(tf.config.list_physical_devices('GPU'))}")
 
-    l2_reg = 0.03
+    alpha = 0.05
 
     model = keras.models.Sequential([
         keras.layers.Masking(mask_value=0, input_shape=[None, 10057]),
         keras.layers.BatchNormalization(),
-        keras.layers.SimpleRNN(100, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.2),
+        keras.layers.SimpleRNN(100, return_sequences=True, kernel_regularizer=l2(alpha), dropout=0.2),
         keras.layers.Dense(2, activation='softmax')
     ])
 

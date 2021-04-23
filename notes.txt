@@ -184,3 +184,23 @@ INFO:root:f1-score = 0.05
 INFO:root:Precision = 0.62
 INFO:root:Recall = 0.02
 
+
+lstm6:
+l2_reg = 0.03
+
+    model = keras.models.Sequential([
+        keras.layers.Masking(mask_value=0, input_shape=[None, 10057]),
+        keras.layers.BatchNormalization(),
+        keras.layers.SimpleRNN(100, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.2),
+        keras.layers.Dense(2, activation='softmax')
+    ])
+
+loss: 0.2349 - accuracy: 0.9556 - val_loss: 0.7976 - val_accuracy: 0.8446
+
+INFO:root:Mean Jaccard Index = 0.02
+INFO:root:TP = 170
+INFO:root:FP = 1271
+INFO:root:FN = 3390
+INFO:root:f1-score = 0.07
+INFO:root:Precision = 0.12
+INFO:root:Recall = 0.05
