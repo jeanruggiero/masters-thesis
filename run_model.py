@@ -101,7 +101,7 @@ def run_model(model, name):
     # s3_client.upload_file(name, 'jean-masters-thesis', f'models/{name}_X_val.csv')
     s3_client.upload_file(f"{name}_y_val.csv", 'jean-masters-thesis', f'models/{name}_y_val.csv')
 
-    y_pred = model.predict(X_val)
+    y_pred = np.argmax(model.predict(X_val), axis=2)
     np.savetxt(f"{name}_y_pred.csv", y_pred, delimiter=",")
     s3_client.upload_file(f"{name}_y_pred.csv", 'jean-masters-thesis', f'models/{name}_y_val.csv')
 
@@ -111,9 +111,9 @@ def run_model(model, name):
     s3_client.upload_file(f"{name}.index", 'jean-masters-thesis', f'models/{name}.index')
 
     # Save history to disk
-    # with open(f"{name}_history.txt", 'wb') as f:
-    #     pickle.dump(history, f)
-    # s3_client.upload_file(f'{name}_history.txt', 'jean-masters-thesis', f'models/{name}_history.txt')
+    with open(f"{name}_history.txt", 'w') as f:
+        f.write(json.dumps(history.history))
+    s3_client.upload_file(f'{name}_history.txt', 'jean-masters-thesis', f'models/{name}_history.txt')
 
 
 if __name__ == '__main__':
