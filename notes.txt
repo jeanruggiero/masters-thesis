@@ -1,15 +1,15 @@
 lstm1:
 model = keras.models.Sequential([
-        keras.layers.Masking(mask_value=0, input_shape=[None, 10057]),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
-        keras.layers.Dense(2, activation='softmax')
+    keras.layers.Masking(mask_value=0, input_shape=[None, 10057]),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+    keras.layers.Dense(2, activation='softmax')
 ])
 
 batches = 10
@@ -29,26 +29,26 @@ additional layers.
 
 
 lstm2:
-    model = keras.models.Sequential([
-        keras.layers.Masking(mask_value=0, input_shape=[None, 10057]),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
-        keras.layers.Dense(2, activation='softmax')
-    ])
+model = keras.models.Sequential([
+    keras.layers.Masking(mask_value=0, input_shape=[None, 10057]),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(0.2), dropout=0.5),
+    keras.layers.Dense(2, activation='softmax')
+])
 
 batches = 10
 n = 10
@@ -73,24 +73,24 @@ Notes: lstm2 guesses negative class for every sample. Training and validation ac
 
 ltsm3:
 model = keras.models.Sequential([
-        keras.layers.Masking(mask_value=0, input_shape=[None, 10057]),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.2),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.2),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.2),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.2),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.5),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.5),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.5),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.5),
-        keras.layers.Dense(2, activation='softmax')
+    keras.layers.Masking(mask_value=0, input_shape=[None, 10057]),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.2),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.2),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.2),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.2),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.5),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.5),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.5),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(0.01), dropout=0.5),
+    keras.layers.Dense(2, activation='softmax')
 ])
 
 Metrics after batch 8:
@@ -117,28 +117,28 @@ Notes: model overfits severely on first two batches (predicts all zeros). After 
 overfitting again, so try increaing regularization slightly. What causes the model to get worse with additional data?
 
 lstm4:
-    l2_reg = 0.05
+l2_reg = 0.05
 
-    model = keras.models.Sequential([
-        keras.layers.Masking(mask_value=0, input_shape=[None, 10057]),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.2),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.2),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.2),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.2),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.5),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.5),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.5),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.5),
-        keras.layers.Dense(2, activation='softmax')
-    ])
+model = keras.models.Sequential([
+    keras.layers.Masking(mask_value=0, input_shape=[None, 10057]),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.2),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.2),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.2),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.2),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.5),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.5),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.5),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.5),
+    keras.layers.Dense(2, activation='softmax')
+])
 
 loss: 0.2747 - accuracy: 0.8888 - val_loss: 0.2866 - val_accuracy: 0.8813
 
@@ -155,26 +155,26 @@ lstm5:
 
 l2_reg = 0.03
 
-    model = keras.models.Sequential([
-        keras.layers.Masking(mask_value=0, input_shape=[None, 10057]),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.2),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.2),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.2),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.2),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.5),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.5),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.5),
-        keras.layers.BatchNormalization(),
-        keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.5),
-        keras.layers.Dense(2, activation='softmax')
-    ])
+model = keras.models.Sequential([
+    keras.layers.Masking(mask_value=0, input_shape=[None, 10057]),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.2),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.2),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.2),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.2),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(500, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.5),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(300, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.5),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(200, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.5),
+    keras.layers.BatchNormalization(),
+    keras.layers.LSTM(100, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.5),
+    keras.layers.Dense(2, activation='softmax')
+])
 
 INFO:root:Mean Jaccard Index = 0.02
 INFO:root:TP = 85
@@ -188,12 +188,12 @@ INFO:root:Recall = 0.02
 lstm6:
 l2_reg = 0.03
 
-    model = keras.models.Sequential([
-        keras.layers.Masking(mask_value=0, input_shape=[None, 10057]),
-        keras.layers.BatchNormalization(),
-        keras.layers.SimpleRNN(100, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.2),
-        keras.layers.Dense(2, activation='softmax')
-    ])
+model = keras.models.Sequential([
+    keras.layers.Masking(mask_value=0, input_shape=[None, 10057]),
+    keras.layers.BatchNormalization(),
+    keras.layers.SimpleRNN(100, return_sequences=True, kernel_regularizer=l2(l2_reg), dropout=0.2),
+    keras.layers.Dense(2, activation='softmax')
+])
 
 loss: 0.2349 - accuracy: 0.9556 - val_loss: 0.7976 - val_accuracy: 0.8446
 
@@ -205,13 +205,25 @@ INFO:root:f1-score = 0.07
 INFO:root:Precision = 0.12
 INFO:root:Recall = 0.05
 
+Notes: works much better than multi-layer LSTM, but overfitting. Try increasing regularization. Also try single-layer LSTM.
 
-lstm7:
+
+rnn2:
 alpha = 0.05
 
-    model = keras.models.Sequential([
-        keras.layers.Masking(mask_value=0, input_shape=[None, 10057]),
-        keras.layers.BatchNormalization(),
-        keras.layers.SimpleRNN(100, return_sequences=True, kernel_regularizer=l2(alpha), dropout=0.2),
-        keras.layers.Dense(2, activation='softmax')
-    ])
+model = keras.models.Sequential([
+    keras.layers.Masking(mask_value=0, input_shape=[None, 10057]),
+    keras.layers.BatchNormalization(),
+    keras.layers.SimpleRNN(100, return_sequences=True, kernel_regularizer=l2(alpha), dropout=0.2),
+    keras.layers.Dense(2, activation='softmax')
+])
+
+loss: 0.2321 - accuracy: 0.9413 - val_loss: 0.6499 - val_accuracy: 0.8697
+
+INFO:root:Mean Jaccard Index = 0.06
+INFO:root:TP = 290
+INFO:root:FP = 639
+INFO:root:FN = 3270
+INFO:root:f1-score = 0.15
+INFO:root:Precision = 0.31
+INFO:root:Recall = 0.08
