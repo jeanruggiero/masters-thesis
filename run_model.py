@@ -128,7 +128,7 @@ if __name__ == '__main__':
         keras.layers.Masking(mask_value=0, input_shape=[None, 10057]),
         keras.layers.BatchNormalization(),
         keras.layers.TimeDistributed(
-            keras.layers.Conv1D(filters=100, kernel_size=50, strides=10, input_shape=[None, 10057],
+            keras.layers.Conv1D(filters=100, kernel_size=50, strides=10, input_shape=[1, 10057],
                             kernel_regularizer=l2(alpha), activation='relu', padding='valid')
         ),
         keras.layers.TimeDistributed(keras.layers.Flatten()),
