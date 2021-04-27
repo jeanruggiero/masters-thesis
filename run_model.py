@@ -160,7 +160,7 @@ if __name__ == '__main__':
         ),
         keras.layers.TimeDistributed(keras.layers.MaxPool1D(pool_size=5, strides=2)),
         keras.layers.TimeDistributed(keras.layers.Flatten()),
-        keras.layers.TimeDistributed(keras.layers.Dense(100, kernel_regularizer=l2(alpha))),
+        keras.layers.TimeDistributed(keras.layers.Dense(100, kernel_regularizer=l2(alpha), activation='relu')),
         keras.layers.SimpleRNN(100, return_sequences=True, kernel_regularizer=l2(alpha), dropout=0.2),
         keras.layers.Dense(2, activation='softmax')
     ])
