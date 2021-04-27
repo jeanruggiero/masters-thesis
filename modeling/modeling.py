@@ -2,6 +2,7 @@ import tensorflow as tf
 from tensorflow import keras
 import matplotlib.pyplot as plt
 import logging
+import numpy as np
 
 from tensorflow.keras.optimizers import Adam
 
