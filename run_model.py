@@ -155,7 +155,7 @@ if __name__ == '__main__':
         keras.layers.Input(shape=[None, 10057, 1]),
         keras.layers.BatchNormalization(),
         keras.layers.TimeDistributed(
-            keras.layers.Conv1D(filters=50, kernel_size=5, strides=10,
+            keras.layers.Conv1D(filters=50, kernel_size=10, strides=2,
                                 kernel_regularizer=l2(alpha), activation='relu')
         ),
         keras.layers.TimeDistributed(keras.layers.MaxPool1D(pool_size=5, strides=2)),
