@@ -127,11 +127,10 @@ if __name__ == '__main__':
     model = keras.models.Sequential([
         keras.layers.Masking(mask_value=0, input_shape=[None, 10057]),
         keras.layers.BatchNormalization(),
-        keras.layers.TimeDistributed(
-            keras.layers.Conv1D(filters=100, kernel_size=50, strides=10,
-                            kernel_regularizer=l2(alpha), activation='relu', padding='valid')
-        ),
-        keras.layers.TimeDistributed(keras.layers.Flatten()),
+        keras.layers.Conv1D(filters=100, kernel_size=50, strides=10,
+                            kernel_regularizer=l2(alpha), activation='relu', padding='valid',
+                            data_format="channels_first"),
+        keras.layers.Flatten(),
         # keras.layers.MaxPool1D(pool_size=10, strides=5),
         # keras.layers.BatchNormalization(),
         keras.layers.TimeDistributed(keras.layers.Dense(100, kernel_regularizer=l2(alpha))),
