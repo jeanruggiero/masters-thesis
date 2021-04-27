@@ -125,7 +125,7 @@ if __name__ == '__main__':
     alpha = 0.05
 
     model = keras.models.Sequential([
-        keras.layers.Input(input_shape=[None, 10057]),
+        keras.layers.Masking(mask_value=0, input_shape=[None, 10057]),
         keras.layers.BatchNormalization(),
         keras.layers.Conv1D(filters=100, kernel_size=50, strides=10, input_shape=[None, 1],
                             kernel_regularizer=l2(alpha), activation='relu', padding='valid'),
