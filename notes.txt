@@ -385,3 +385,22 @@ model = keras.models.Sequential([
     keras.layers.SimpleRNN(100, return_sequences=True, kernel_regularizer=l2(alpha), dropout=0.2),
     keras.layers.Dense(2, activation='softmax')
 ])
+
+Metrics after first batch:
+INFO:root:Mean Jaccard Index = 0.05
+INFO:root:TP = 643
+INFO:root:FP = 3295
+INFO:root:FN = 2917
+INFO:root:f1-score = 0.21
+INFO:root:Precision = 0.16
+INFO:root:Recall = 0.18
+
+loss: 0.3924 - accuracy: 0.9288 - val_loss: 0.5722 - val_accuracy: 0.8753
+
+INFO:root:Mean Jaccard Index = 0.02
+INFO:root:TP = 30
+INFO:root:FP = 210
+INFO:root:FN = 3530
+INFO:root:f1-score = 0.02
+INFO:root:Precision = 0.12
+INFO:root:Recall = 0.01
