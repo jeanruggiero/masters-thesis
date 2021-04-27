@@ -28,6 +28,9 @@ def plot_history(history):
     axes[0].legend(['train', 'test'], loc='upper left')
 
 
+def expand_dim(array):
+    return array[...,np.newaxis]
+
 def train_model(model, data_generator, output_time_range, sample_rate, callbacks={}, plots=True, resample=False,
                 epochs=30):
     # Callbacks argument should be a dict of callback_fn: list of batches or None pairs. If list of batches is None
@@ -36,6 +39,8 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
     # Use the first batch for validation.
     logging.info("Loading validation set.")
     X_val, y_val = preprocess(data_generator.generate_batch(0), output_time_range, sample_rate, resample=resample)
+    X_val = expand_dim(X_val)
+
     logging.info(f'X_val.shape = {X_val.shape}')
     logging.info(f'y_val.shape = {y_val.shape}')
 
@@ -44,6 +49,8 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
         logging.info(f"Loading batch {i}")
 
         X_train, y_train = preprocess(data_generator.generate_batch(i), output_time_range, sample_rate)
+
+        X_train = expand_dim(X_train)
 
         logging.info(f"X_train.shape = {X_train.shape}")
         logging.info(f"y_train.shape = {y_train.shape}")
