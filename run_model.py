@@ -129,6 +129,7 @@ if __name__ == '__main__':
         keras.layers.BatchNormalization(),
         keras.layers.Conv1D(filters=100, kernel_size=50, strides=10, input_shape=[None, 1],
                             kernel_regularizer=l2(alpha), activation='relu', padding='valid'),
+        keras.layers.Flatten(),
         keras.layers.BatchNormalization(),
         # keras.layers.MaxPool1D(pool_size=10, strides=5),
         # keras.layers.BatchNormalization(),
