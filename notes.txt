@@ -365,3 +365,23 @@ INFO:root:f1-score = 0.00
 INFO:root:Precision = nan
 INFO:root:Recall = 0.00
 
+Notes: add batch normalization layers, add activation function to dense layer
+
+convrnn3:
+alpha = 0.05
+
+model = keras.models.Sequential([
+    keras.layers.Input(shape=[None, 10057, 1]),
+    keras.layers.BatchNormalization(),
+    keras.layers.TimeDistributed(
+        keras.layers.Conv1D(filters=50, kernel_size=10, strides=2,
+                            kernel_regularizer=l2(alpha), activation='relu')
+    ),
+    keras.layers.BatchNormalization(),
+    keras.layers.TimeDistributed(keras.layers.MaxPool1D(pool_size=5, strides=2)),
+    keras.layers.TimeDistributed(keras.layers.Flatten()),
+    keras.layers.BatchNormalization(),
+    keras.layers.TimeDistributed(keras.layers.Dense(100, kernel_regularizer=l2(alpha), activation='relu')),
+    keras.layers.SimpleRNN(100, return_sequences=True, kernel_regularizer=l2(alpha), dropout=0.2),
+    keras.layers.Dense(2, activation='softmax')
+])
