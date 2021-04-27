@@ -124,23 +124,19 @@ if __name__ == '__main__':
 
     alpha = 0.05
 
+    window_size = 5
+
     model = keras.models.Sequential([
-        keras.layers.Input(shape=[None, 10057, 1]),
+        keras.layers.Input(shape=[None, 10057, window_size, 1]),
         keras.layers.BatchNormalization(),
         keras.layers.TimeDistributed(
-            keras.layers.Conv1D(filters=50, kernel_size=12, strides=4,
-                                kernel_regularizer=l2(0.2), activation='relu')
+            keras.layers.Conv2D(filters=20, kernel_size=(12, 3), strides=(4, 1),
+                                kernel_regularizer=l2(0.2), activation='relu', padding='same')
         ),
-        keras.layers.TimeDistributed(keras.layers.MaxPool1D(pool_size=5, strides=2)),
+        keras.layers.TimeDistributed(keras.layers.MaxPool2D(pool_size=(5, 2), strides=(2, 1))),
         keras.layers.BatchNormalization(),
-        keras.layers.Dropout(0.5),
-        keras.layers.TimeDistributed(
-            keras.layers.Conv1D(filters=20, kernel_size=12, strides=4,
-                                kernel_regularizer=l2(0.2), activation='relu')
-        ),
-        keras.layers.TimeDistributed(keras.layers.MaxPool1D(pool_size=5, strides=2)),
         keras.layers.TimeDistributed(keras.layers.Flatten()),
-        keras.layers.BatchNormalization(),
+        keras.layers.Dropout(0.5),
         keras.layers.TimeDistributed(keras.layers.Dense(100, kernel_regularizer=l2(alpha), activation='relu')),
         keras.layers.SimpleRNN(100, return_sequences=True, kernel_regularizer=l2(alpha), dropout=0.2),
         keras.layers.Dense(2, activation='softmax')

@@ -475,3 +475,39 @@ INFO:root:Precision = nan
 INFO:root:Recall = 0.00
 
 Notes: model is overfitting, try adding regularization
+
+
+convrnn6:
+alpha = 0.05
+
+model = keras.models.Sequential([
+    keras.layers.Input(shape=[None, 10057, 1]),
+    keras.layers.BatchNormalization(),
+    keras.layers.TimeDistributed(
+        keras.layers.Conv1D(filters=50, kernel_size=12, strides=4,
+                            kernel_regularizer=l2(0.2), activation='relu')
+    ),
+    keras.layers.TimeDistributed(keras.layers.MaxPool1D(pool_size=5, strides=2)),
+    keras.layers.BatchNormalization(),
+    keras.layers.Dropout(0.5),
+    keras.layers.TimeDistributed(
+        keras.layers.Conv1D(filters=20, kernel_size=12, strides=4,
+                            kernel_regularizer=l2(0.2), activation='relu')
+    ),
+    keras.layers.TimeDistributed(keras.layers.MaxPool1D(pool_size=5, strides=2)),
+    keras.layers.TimeDistributed(keras.layers.Flatten()),
+    keras.layers.BatchNormalization(),
+    keras.layers.TimeDistributed(keras.layers.Dense(100, kernel_regularizer=l2(alpha), activation='relu')),
+    keras.layers.SimpleRNN(100, return_sequences=True, kernel_regularizer=l2(alpha), dropout=0.2),
+    keras.layers.Dense(2, activation='softmax')
+])
+
+loss: 0.3955 - accuracy: 0.8975 - val_loss: 0.6179 - val_accuracy: 0.8813
+
+INFO:root:Mean Jaccard Index = 0.00
+INFO:root:TP = 0
+INFO:root:FP = 0
+INFO:root:FN = 3560
+INFO:root:f1-score = 0.00
+INFO:root:Precision = nan
+INFO:root:Recall = 0.00

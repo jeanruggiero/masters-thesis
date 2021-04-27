@@ -32,15 +32,27 @@ def plot_history(history):
 def expand_dim(array):
     return array[...,np.newaxis]
 
+
+def apply_window(X, y, n):
+    X_w = expand_dim([[X[j, i:i+1, :] for i in range(X.shape[1])] for j in range(X.shape[0])])
+    y_w = y[:, 0:-n]
+
+    return X_w, y_w
+
+
 def train_model(model, data_generator, output_time_range, sample_rate, callbacks={}, plots=True, resample=False,
-                epochs=30):
+                epochs=30, sliding_window_size=None):
     # Callbacks argument should be a dict of callback_fn: list of batches or None pairs. If list of batches is None
     # the callback will be applied to all batches
 
     # Use the first batch for validation.
     logging.info("Loading validation set.")
     X_val, y_val = preprocess(data_generator.generate_batch(0), output_time_range, sample_rate, resample=resample)
-    X_val = expand_dim(X_val)
+
+    if sliding_window_size is not None:
+        X_val, y_val = apply_window(X_val, y_val, sliding_window_size)
+    else:
+        X_val = expand_dim(X_val)
 
     logging.info(f'X_val.shape = {X_val.shape}')
     logging.info(f'y_val.shape = {y_val.shape}')
@@ -51,7 +63,10 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
 
         X_train, y_train = preprocess(data_generator.generate_batch(i), output_time_range, sample_rate)
 
-        X_train = expand_dim(X_train)
+        if sliding_window_size is not None:
+            X_train, y_train = apply_window(X_train, y_train, sliding_window_size)
+        else:
+            X_train = expand_dim(X_train)
 
         logging.info(f"X_train.shape = {X_train.shape}")
         logging.info(f"y_train.shape = {y_train.shape}")
