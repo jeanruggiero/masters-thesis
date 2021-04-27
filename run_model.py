@@ -155,10 +155,10 @@ if __name__ == '__main__':
         keras.layers.Input(shape=[None, 10057, 1]),
         keras.layers.BatchNormalization(),
         keras.layers.TimeDistributed(
-            keras.layers.Conv1D(filters=20, kernel_size=5, strides=1,
+            keras.layers.Conv1D(filters=50, kernel_size=5, strides=10,
                                 kernel_regularizer=l2(alpha), activation='relu')
         ),
-        keras.layers.TimeDistributed(keras.layers.MaxPool1D(pool_size=5, strides=1)),
+        keras.layers.TimeDistributed(keras.layers.MaxPool1D(pool_size=5, strides=2)),
         keras.layers.TimeDistributed(keras.layers.Flatten()),
         keras.layers.TimeDistributed(keras.layers.Dense(100, kernel_regularizer=l2(alpha))),
         keras.layers.SimpleRNN(100, return_sequences=True, kernel_regularizer=l2(alpha), dropout=0.2),
