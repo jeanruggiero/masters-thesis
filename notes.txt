@@ -335,3 +335,6 @@ INFO:root:FN = 3560
 INFO:root:f1-score = 0.00
 INFO:root:Precision = nan
 INFO:root:Recall = 0.00
+
+notes: model not learning anything. Try reducing size of convolutional filters, reducing stride, and adding additional convolutional and pooling
+layers.
