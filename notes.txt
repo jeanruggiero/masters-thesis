@@ -338,3 +338,20 @@ INFO:root:Recall = 0.00
 
 notes: model not learning anything. Try reducing size of convolutional filters, reducing stride, and adding additional convolutional and pooling
 layers.
+
+convrnn2:
+alpha = 0.05
+
+model = keras.models.Sequential([
+    keras.layers.Input(shape=[None, 10057, 1]),
+    keras.layers.BatchNormalization(),
+    keras.layers.TimeDistributed(
+        keras.layers.Conv1D(filters=100, kernel_size=5, strides=1,
+                            kernel_regularizer=l2(alpha), activation='relu')
+    ),
+    keras.layers.TimeDistributed(keras.layers.MaxPool1D(pool_size=5, strides=1)),
+    keras.layers.TimeDistributed(keras.layers.Flatten()),
+    keras.layers.TimeDistributed(keras.layers.Dense(100, kernel_regularizer=l2(alpha))),
+    keras.layers.SimpleRNN(100, return_sequences=True, kernel_regularizer=l2(alpha), dropout=0.2),
+    keras.layers.Dense(2, activation='softmax')
+])
