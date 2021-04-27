@@ -49,7 +49,7 @@ def scheduler_after_first_batch(epoch, lr):
     return 0.000001
 
 
-def run_model(model, name):
+def run_model(model, name, sliding_window_size=None):
 
     # Load geometry files
     s3_client = boto3.client('s3')
@@ -96,7 +96,8 @@ def run_model(model, name):
 
     # Train model
     history, model, X_val, y_val = train_model(model, data_generator, output_time_range, sample_rate,
-                                               callbacks=callbacks, epochs=30, plots=False)
+                                               callbacks=callbacks, epochs=30, plots=False,
+                                               sliding_window_size=sliding_window_size)
 
     # Save y_val to s3
     s3_client.upload_file("training.log", 'jean-masters-thesis', f'models/{name}_training.log')
@@ -144,4 +145,4 @@ if __name__ == '__main__':
 
     # print(model.summary())
 
-    run_model(model, 'convrnn6')
+    run_model(model, 'convrnn6', sliding_window_size=window_size)

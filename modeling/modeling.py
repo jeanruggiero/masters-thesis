@@ -34,7 +34,7 @@ def expand_dim(array):
 
 
 def apply_window(X, y, n):
-    X_w = expand_dim([[X[j, i:i+1, :] for i in range(X.shape[1])] for j in range(X.shape[0])])
+    X_w = expand_dim(np.array([[X[j, i:i+1, :] for i in range(X.shape[1])] for j in range(X.shape[0])]))
     y_w = y[:, 0:-n]
 
     return X_w, y_w
