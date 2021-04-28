@@ -131,7 +131,7 @@ if __name__ == '__main__':
         keras.layers.Input(shape=[None, 10057, window_size, 1]),
         keras.layers.BatchNormalization(),
         keras.layers.TimeDistributed(
-            keras.layers.Conv2D(filters=20, kernel_size=(12, 3), strides=(4, 1),
+            keras.layers.Conv2D(filters=20, kernel_size=(12, 3), strides=(6, 1),
                                 kernel_regularizer=l2(0.2), activation='relu', padding='same')
         ),
         keras.layers.TimeDistributed(keras.layers.MaxPool2D(pool_size=(5, 2), strides=(2, 1))),
