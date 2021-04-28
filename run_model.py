@@ -145,4 +145,4 @@ if __name__ == '__main__':
 
     # print(model.summary())
 
-    run_model(model, 'convrnn6', sliding_window_size=window_size)
+    run_model(model, 'conv2d1', sliding_window_size=window_size)
