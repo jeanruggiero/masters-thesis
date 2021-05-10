@@ -125,7 +125,7 @@ if __name__ == '__main__':
 
     alpha = 0.05
 
-    window_size = 5
+    window_size = 20
 
     model = keras.models.Sequential([
         keras.layers.Input(shape=[None, 10057, window_size, 1]),
