@@ -131,10 +131,15 @@ if __name__ == '__main__':
         keras.layers.Input(shape=[None, 480, window_size, 1]),
         keras.layers.BatchNormalization(),
         keras.layers.TimeDistributed(
-            keras.layers.Conv2D(filters=10, kernel_size=(50, 3), strides=(20, 1),
+            keras.layers.Conv2D(filters=10, kernel_size=(5, 3), strides=(2, 1),
                                 kernel_regularizer=l2(0.2), activation='relu', padding='same')
         ),
         keras.layers.TimeDistributed(keras.layers.MaxPool2D(pool_size=(5, 2), strides=(2, 1))),
+        keras.layers.TimeDistributed(
+            keras.layers.Conv2D(filters=10, kernel_size=(3, 3), strides=(2, 1),
+                                kernel_regularizer=l2(0.2), activation='relu', padding='same')
+        ),
+        keras.layers.TimeDistributed(keras.layers.MaxPool2D(pool_size=(2, 2), strides=(2, 1))),
         keras.layers.BatchNormalization(),
         keras.layers.TimeDistributed(keras.layers.Flatten()),
         keras.layers.Dropout(0.5),
@@ -143,27 +148,6 @@ if __name__ == '__main__':
         keras.layers.Dense(2, activation='softmax')
     ])
 
-    # model = keras.models.Sequential([
-    #     keras.layers.Input(shape=[None, 10057, window_size, 1]),
-    #     keras.layers.BatchNormalization(),
-    #     keras.layers.TimeDistributed(
-    #         keras.layers.Conv2D(filters=10, kernel_size=(10, 3), strides=(5, 1),
-    #                             kernel_regularizer=l2(0.2), activation='relu', padding='same')
-    #     ),
-    #     keras.layers.TimeDistributed(keras.layers.MaxPool2D(pool_size=(5, 2), strides=(2, 1))),
-    #     keras.layers.TimeDistributed(
-    #         keras.layers.Conv2D(filters=10, kernel_size=(5, 3), strides=(2, 1),
-    #                             kernel_regularizer=l2(0.2), activation='relu', padding='same')
-    #     ),
-    #     keras.layers.TimeDistributed(keras.layers.MaxPool2D(pool_size=(2, 2), strides=(2, 1))),
-    #     keras.layers.BatchNormalization(),
-    #     keras.layers.TimeDistributed(keras.layers.Flatten()),
-    #     keras.layers.Dropout(0.5),
-    #     keras.layers.TimeDistributed(keras.layers.Dense(100, kernel_regularizer=l2(alpha), activation='relu')),
-    #     keras.layers.SimpleRNN(100, return_sequences=True, kernel_regularizer=l2(alpha), dropout=0.2),
-    #     keras.layers.Dense(2, activation='softmax')
-    # ])
-
     # print(model.summary())
 
-    run_model(model, 'conv2d1', sliding_window_size=window_size)
+    run_model(model, 'conv2d2', sliding_window_size=window_size)
