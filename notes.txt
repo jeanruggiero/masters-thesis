@@ -544,4 +544,4 @@ INFO:root:f1-score = 0.00
 INFO:root:Precision = nan
 INFO:root:Recall = 0.00
 
-Notes: try increasing window size
+Notes: try increasing window size. Tried above model with window size 20, keeps getting killed.
