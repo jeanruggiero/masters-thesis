@@ -64,7 +64,7 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
     for i in range(1, data_generator.num_batches):
         logging.info(f"Loading batch {i}")
 
-        X_train, y_train = preprocess(data_generator.generate_batch(i), output_time_range, sample_rate)
+        X_train, y_train = preprocess(data_generator.generate_batch(i), output_time_range, sample_rate, resample=resample)
 
         if sliding_window_size is not None:
             X_train, y_train = apply_window(X_train, y_train, sliding_window_size)
