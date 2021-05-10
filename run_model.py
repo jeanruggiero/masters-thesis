@@ -128,7 +128,7 @@ if __name__ == '__main__':
     window_size = 20
 
     model = keras.models.Sequential([
-        keras.layers.Input(shape=[None, 10057, window_size, 1]),
+        keras.layers.Input(shape=[None, 480, window_size, 1]),
         keras.layers.BatchNormalization(),
         keras.layers.TimeDistributed(
             keras.layers.Conv2D(filters=10, kernel_size=(50, 3), strides=(20, 1),
