@@ -74,7 +74,7 @@ def run_model(model, name, sliding_window_size=None):
 
     # Reshaping parameters
     output_time_range = 120
-    sample_rate = 10  # samples per ns
+    sample_rate = 4  # samples per ns
 
     # Training callbacks
     lr_scheduler = tf.keras.callbacks.LearningRateScheduler(scheduler)
@@ -97,7 +97,7 @@ def run_model(model, name, sliding_window_size=None):
     # Train model
     history, model, X_val, y_val = train_model(model, data_generator, output_time_range, sample_rate,
                                                callbacks=callbacks, epochs=30, plots=False,
-                                               sliding_window_size=sliding_window_size)
+                                               sliding_window_size=sliding_window_size, resample=True)
 
     # Save y_val to s3
     s3_client.upload_file("training.log", 'jean-masters-thesis', f'models/{name}_training.log')
@@ -130,7 +130,6 @@ if __name__ == '__main__':
     model = keras.models.Sequential([
         keras.layers.Input(shape=[None, 10057, window_size, 1]),
         keras.layers.BatchNormalization(),
-        keras.layers.TimeDistributed(keras.layers.MaxPool2D(pool_size=(50, 1), strides=(50, 1))),
         keras.layers.TimeDistributed(
             keras.layers.Conv2D(filters=10, kernel_size=(50, 3), strides=(20, 1),
                                 kernel_regularizer=l2(0.2), activation='relu', padding='same')
