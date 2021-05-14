@@ -580,3 +580,39 @@ INFO:root:Precision = nan
 INFO:root:Recall = 0.00
 
 
+conv2d2:
+
+alpha = 0.05
+window_size = 20
+
+model = keras.models.Sequential([
+    keras.layers.Input(shape=[None, 480, window_size, 1]),
+    keras.layers.BatchNormalization(),
+    keras.layers.TimeDistributed(
+        keras.layers.Conv2D(filters=10, kernel_size=(5, 3), strides=(2, 1),
+                            kernel_regularizer=l2(0.2), activation='relu', padding='same')
+    ),
+    keras.layers.TimeDistributed(keras.layers.MaxPool2D(pool_size=(5, 2), strides=(2, 1))),
+    keras.layers.TimeDistributed(
+        keras.layers.Conv2D(filters=10, kernel_size=(3, 3), strides=(2, 1),
+                            kernel_regularizer=l2(0.2), activation='relu', padding='same')
+    ),
+    keras.layers.TimeDistributed(keras.layers.MaxPool2D(pool_size=(2, 2), strides=(2, 1))),
+    keras.layers.BatchNormalization(),
+    keras.layers.TimeDistributed(keras.layers.Flatten()),
+    keras.layers.Dropout(0.5),
+    keras.layers.TimeDistributed(keras.layers.Dense(100, kernel_regularizer=l2(alpha), activation='relu')),
+    keras.layers.SimpleRNN(100, return_sequences=True, kernel_regularizer=l2(alpha), dropout=0.2),
+    keras.layers.Dense(2, activation='softmax')
+])
+
+INFO:root:Mean Jaccard Index = 0.00
+INFO:root:TP = 0
+INFO:root:FP = 0
+INFO:root:FN = 3552
+INFO:root:f1-score = 0.00
+INFO:root:Precision = nan
+INFO:root:Recall = 0.00
+
+
+Notes: seems like not enough training data for the model to learn anything.

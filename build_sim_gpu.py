@@ -19,6 +19,8 @@ def run_sim(args):
     if scan_exists(id, ascan_number):
         return
 
+    print(f"Running scan {id}.{ascan_number}.")
+
     input_filename = geometry_path + f'/test_cylinder_{id}_{ascan_number}.in'
 
     # Generate input file

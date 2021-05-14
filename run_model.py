@@ -124,7 +124,6 @@ if __name__ == '__main__':
     logging.info(f"Num GPUs Available: {len(tf.config.list_physical_devices('GPU'))}")
 
     alpha = 0.05
-
     window_size = 20
 
     model = keras.models.Sequential([
