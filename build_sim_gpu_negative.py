@@ -98,13 +98,13 @@ def run_sim_negative(args):
 
 if __name__ == '__main__':
 
-    geometries = pd.read_csv('geometry_spec.csv', index_col=0).loc[1108:, :]
+    geometries = pd.read_csv('geometry_spec.csv', index_col=0)
 
     for (id, geometry) in geometries.iterrows():
         args = ((id, asn, geometry) for asn in range(144))
 
         with multiprocessing.Pool(8) as p:
-            p.map(run_sim, args)
+            p.map(run_sim_negative, args)
 
     # args = ((id, asn, geometry) for asn in range(144) for (id, geometry) in geometries.iterrows())
     #

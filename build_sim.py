@@ -60,6 +60,41 @@ def make_scene(id, ascan_number, step_size, radius, cylinder_depth, rx_tx_height
     geo.generate()
 
 
+def make_scene_negative(id, ascan_number, step_size, sand_proportion, soil_density, sand_particle_density, rx_tx_height,
+                        surface_roughness, surface_water_depth, geometry_path, scan_path, frequency=2.5e8, cores=2):
+
+    width = 3  # domain x
+    depth = 3.25  # domain y
+    thickness = 0.002  # domain z
+    air_space = 0.25  # Amount of air above ground in the domain
+
+    ground_material = Soil(sand_proportion, 1 - sand_proportion, soil_density, sand_particle_density, "balanced_soil",
+                           0.001, 0.25)
+    # ground_material = Material(6, 0, 1, 0, 'half_space')
+
+    spatial_resolution = 0.002
+
+    geo = Geometry(
+        f'test_cylinder_{id}',
+        geometry_path,
+        scan_path,
+        Domain(width, depth, thickness),
+        Discretization(spatial_resolution, spatial_resolution * 2, spatial_resolution),
+        TimeWindow(6e-8),
+        Ground(width, depth - air_space, thickness, ground_material, surface_roughness=surface_roughness,
+               surface_water_depth=surface_water_depth),
+        [],
+        RickerWaveform(1, frequency, 'ricker'),
+        step_size=0,
+        receiver_location=Point(spatial_resolution * 10 + step_size * ascan_number, rx_tx_height, 0),
+        transmitter_location=Point(spatial_resolution * 10 + 0.04 + step_size * ascan_number, rx_tx_height, 0),
+        cores=cores
+    )
+
+    geo.generate()
+
+
+
 def scan_exists(id, ascan_number):
 
     s3 = boto3.resource('s3')

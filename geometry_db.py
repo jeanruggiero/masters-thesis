@@ -53,7 +53,7 @@ def execute_query(connection, query):
 
 
 # Number of simulations to run
-n_sim = 10000
+n_sim = 1000
 
 width = 3 # domain x
 depth = 3.25 # domain y
@@ -62,17 +62,17 @@ thickness = 0.002 # domain z
 air_space = 0.25  # Amount of air above ground in the domain
 
 space = Space([
-    (0.005, 0.25),  # radius
-    # (0.1, 0.9),  # sand proportion
-    # (1.5, 3),  # soil bulk density
-    # (1, 5),  # sand particle bulk density
-    (1.0, float(depth - air_space - 1)),  # cylinder depth
+    # (0.005, 0.25),  # radius
+    (0.1, 0.9),  # sand proportion
+    (1.5, 3),  # soil bulk density
+    (1, 5),  # sand particle bulk density
+    # (1.0, float(depth - air_space - 1)),  # cylinder depth
     (0.01, 0.2),  # rx/tx height above ground
     # (0.005, 0.5),  # step size
-    # (0.0, 0.1),  # surface roughness
-    # (0, 1),  # surface water depth
-    [0, 1],  # categorical cylinder material
-    [0, 1],  # categorical cylinder fill material
+    (0.0, 0.1),  # surface roughness
+    (0, 1),  # surface water depth
+    # [0, 1],  # categorical cylinder material
+    # [0, 1],  # categorical cylinder fill material
     (2e8, 2.7e8, 3.5e8, 4e8, 5e8, 6e8, 8e8, 9e8)
 ])
 
@@ -80,14 +80,16 @@ lhs = Lhs(lhs_type="classic", criterion=None)
 labels = lhs.generate(space.dimensions, n_sim)
 
 records = []
-for (radius, depth, rx_tx_height, cylinder_material, cylinder_fill_material, frequency) in labels:
-    records.append((radius, depth, rx_tx_height, 'pec' if cylinder_material else 'pvc', 'air' if
-    cylinder_fill_material else 'water', frequency))
+for (sand_proportion, soil_density, sand_particle_density, rx_tx_height, surface_roughness, surface_water_depth,
+     frequency) in labels:
+    records.append((sand_proportion, soil_density, sand_particle_density, rx_tx_height, surface_roughness, surface_water_depth,
+     frequency))
 
-df = pd.DataFrame(labels, columns=['radius', 'depth', 'rx_tx_height', 'cylinder_material', 'cylinder_fill_material',
-                                   'frequency'], index=np.arange(1000, 1000 + len(labels)))
+df = pd.DataFrame(labels, columns=['sand_proportion', 'soil_density', 'sand_particle_density', 'rx_tx_height',
+                                   'surface_roughness', 'surface_water_depth', 'frequency'],
+                  index=np.arange(20000, 20000 + len(labels)))
 
-df.to_csv('geometry_spec3.csv')
+df.to_csv('geometry_spec_negative.csv')
 # for i in range(0)
 #
 # df[:500].to_csv('geometry_spec1.csv')
