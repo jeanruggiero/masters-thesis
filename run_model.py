@@ -122,6 +122,7 @@ def run_model(model, name, sliding_window_size=None):
 
 def run_model_bscan(model, name):
 
+    s3_client = boto3.client('s3')
     # Load raw data
     loader = S3DataLoader('jean-masters-thesis', 'simulations/merged/')
 
@@ -153,7 +154,7 @@ def run_model_bscan(model, name):
     # Train model
     history, model, X_val, y_val = train_model(model, data_generator, output_time_range, sample_rate,
                                                callbacks=callbacks, epochs=30, plots=False,
-                                               sliding_window_size=sliding_window_size, resample=True)
+                                               sliding_window_size=None, resample=True)
 
     # Save y_val to s3
     s3_client.upload_file("training.log", 'jean-masters-thesis', f'models/{name}_training.log')
