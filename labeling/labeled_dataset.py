@@ -138,6 +138,7 @@ class DataSetGenerator:
         self.num_threads = num_threads
 
         self.data_loader = data_loader
+
         self.labeler = S3ScanLabeler(data_loader.bucket_name, '', geometry_spec)
 
         self.scan_min_col = scan_min_col
@@ -252,3 +253,126 @@ class DataSetGenerator:
         random.shuffle(list_in)
         return [list_in[i::n] for i in range(n)]
 
+
+class BScanDataSetGenerator:
+
+    def __init__(self, data_loader, num_batches, scan_min_col=100, scan_max_col=None, n=1, random_seed=None,
+                 num_threads=8):
+
+        self.scan_numbers = data_loader.scan_numbers()
+        self.num_batches = num_batches
+        self.num_threads = num_threads
+
+        self.data_loader = data_loader
+
+        self.scan_min_col = scan_min_col
+        self.scan_max_col = scan_max_col
+        self.n = n
+
+        if random_seed:
+            random.seed(random_seed)
+
+        self.batched_indices = self.partition(list(range(len(self.scan_numbers))), num_batches)
+
+    @staticmethod
+    def bootstrap(scan, label, max_col, min_col, n):
+
+        if scan is None:
+            logging.debug("[DataSetGenerator.bootstrap] scan = None")
+            return None
+
+        logging.debug(f"[DataSetGenerator.bootstrap] scan.shape = {scan.shape}")
+        logging.debug(f"[DataSetGenerator.bootstrap] len(label) = {len(label)}")
+
+        # Generate a number of input matrices from the base scan
+        max_col = max_col if max_col and max_col <= scan.shape[0] else scan.shape[0]
+        min_col = min(min_col, scan.shape[0])
+
+        logging.debug(f"[DataSetGenerator.bootstrap] max_col: {max_col}")
+        logging.debug(f"[DataSetGenerator.bootstrap] min_col: {min_col}")
+
+        lengths = np.random.randint(min_col, high=max_col + 1, size=n)
+        starts = [random.randint(0, scan.shape[0] - length) for length in lengths]
+
+        logging.debug(f"lengths = {lengths}")
+        logging.debug(f"starts = {starts}")
+
+        # Generate n scans from each b-scan
+        return DataSetGenerator.bootstrap_scan(scan.T, starts, lengths), \
+               DataSetGenerator.bootstrap_label(label, starts, lengths)
+
+    @staticmethod
+    def bootstrap_label(label, starts, lengths):
+        return [label[start:start + length] for start, length in zip(starts, lengths)]
+
+    @staticmethod
+    def bootstrap_scan(scan, starts, lengths):
+        return [scan[:, start:start + length] for start, length in zip(starts, lengths)]
+
+    def generate(self, indices=None):
+
+        logging.debug(f"Generating batch with indices {indices}")
+        scan_numbers = [sn for i, sn in enumerate(self.scan_numbers) if i in indices]
+        logging.debug(f"Batch includes {len(scan_numbers)} scans: {scan_numbers}")
+
+        for i in range(5):
+            try:
+                scans = list(self.data_loader.load(scan_numbers=scan_numbers))
+                logging.info("Finished loading scans")
+                break
+            except Exception as e:
+                logging.warning("Error loading scans...retrying...")
+                logging.warning(f"{e}")
+                continue
+
+        labels = [1 if scan_number < 20000 else 0 for scan_number in scan_numbers]
+        logging.info("Finished labeling")
+
+        # logging.info(f"scan1.number = {scan_numbers[0]}")
+        # logging.info(f"scan1.label = {labels[0]}")
+        # logging.info(f"scan1.shape = {scans[0].shape if scans[0] is not None else None}")
+
+        with multiprocessing.Pool(self.num_threads) as p:
+            scan_labels = p.starmap(self.bootstrap, zip(
+                scans, labels, itertools.repeat(self.scan_max_col), itertools.repeat(self.scan_min_col),
+                itertools.repeat(self.n)
+            ))
+
+        # scan_labels = []
+        #
+        # for scan, label, max_col, min_col, n in zip(scans, labels, itertools.repeat(self.scan_max_col),
+        #                                             itertools.repeat(self.scan_min_col), itertools.repeat(self.n)):
+        #     scan_labels.append(self.bootstrap(scan, label, max_col, min_col, n))
+
+        x = list(itertools.chain.from_iterable((scan_label[0] for scan_label in scan_labels if scan_label)))
+        y = list(itertools.chain.from_iterable((scan_label[1] for scan_label in scan_labels if scan_label)))
+
+        if self.scan_max_col != max((scan.shape[1] for scan in x)):
+            logging.warning(f"Max shape of x ({max((scan.shape[1] for scan in x))}) not equal to scan_max_col"
+                            f"({self.scan_max_col}).")
+
+        if self.scan_min_col != min((scan.shape[1] for scan in x)):
+            logging.warning(f"Min shape of x ({min((scan.shape[1] for scan in x))}) not equal to scan_min_col"
+                            f"({self.scan_min_col}).")
+
+        if self.scan_max_col != max((len(label) for label in y)):
+            logging.warning(f"Max shape of y ({max((len(label) for label in y))}) not equal to scan_max_col"
+                            f"({self.scan_max_col}).")
+
+        if self.scan_min_col != min((len(label) for label in y)):
+            logging.warning(f"Min shape of y ({min((len(label) for label in y))}) not equal to scan_min_col"
+                            f"({self.scan_min_col}).")
+
+        return x, y
+
+    def generate_batch(self, batch_number):
+        return self.generate(indices=self.batched_indices[batch_number])
+
+    def generate_batches(self):
+        # print("batched indices = ", batched_indices)
+        return (self.generate(indices=indices) for indices in self.batched_indices)
+
+    @staticmethod
+    def partition(list_in, n):
+        random.shuffle(list_in)
+        return [list_in[i::n] for i in range(n)]
