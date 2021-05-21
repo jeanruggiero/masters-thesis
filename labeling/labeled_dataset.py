@@ -70,6 +70,9 @@ class BScanMergeCrawler:
             except ValueError:
                 logging.warning(f"Scan {scan_number} resulted in an error...skipping.")
                 continue
+            except Exception as e:
+                logging.warning(f"Scan {scan_number} resulted in an error...skipping...error: {e}")
+                continue
 
     def merged_scan_exists(self, scan_number):
         key = f"{self.scan_path}merged/{scan_number}_merged.csv"
