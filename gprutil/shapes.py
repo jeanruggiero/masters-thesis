@@ -195,7 +195,7 @@ class FractalBox(Box):
         command = f"{self.material}\n"
 
         command += f"#fractal_box: {self.lower_left} {self.upper_right} {self.fractal_dimension} {self.weight_x} " \
-               f"{self.weight_y} {self.weight_z} 1 {self.material.identifier} {self.identifier}"
+               f"{self.weight_y} {self.weight_z} {self.material.n_materials} {self.material.identifier} {self.identifier}"
 
         if self.surface_roughness:
             command += f"\n#add_surface_roughness: {self.upper_left} {self.upper_right} {self.fractal_dimension} " \

@@ -5,7 +5,7 @@ class Material:
     """Represents a material that can be added to a geometry."""
 
     def __init__(self, relative_permittivity: float, conductivity: float, relative_permeability: float,
-                 magnetic_loss: float, identifier: str):
+                 magnetic_loss: float, identifier: str, n_materials: Number = 1):
         """
         Instantiates a new Material.
 
@@ -21,6 +21,7 @@ class Material:
         self.relative_permeability = relative_permeability
         self.magnetic_loss = magnetic_loss
         self.identifier = identifier
+        self.n_materials = n_materials
 
     def __str__(self):
         return f"#material: {self.relative_permittivity} {self.conductivity} {self.relative_permeability} " \
@@ -58,7 +59,7 @@ class Soil(Material):
     """
 
     def __init__(self, sand: float, clay: float, bulk_density: Number, sand_density: Number, identifier: str,
-                 water_min: float = 0, water_max: float = 0):
+                 water_min: float = 0, water_max: float = 0, n_materials: Number = 10):
         """
         Instantiates a new Soil object.
 
@@ -71,7 +72,7 @@ class Soil(Material):
         :param water_max: maximum volumetric water fraction of the soil
         """
 
-        super().__init__(0, 0, 0, 0, identifier)
+        super().__init__(0, 0, 0, 0, identifier, n_materials=n_materials)
 
         if water_min < 0 or water_min > 1:
             raise ValueError("Minimum water fraction must be in the range [0, 1].")

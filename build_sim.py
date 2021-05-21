@@ -68,9 +68,9 @@ def make_scene_negative(id, ascan_number, step_size, sand_proportion, soil_densi
     thickness = 0.002  # domain z
     air_space = 0.25  # Amount of air above ground in the domain
 
-    ground_material = Soil(sand_proportion, 1 - sand_proportion, soil_density, sand_particle_density, "balanced_soil",
-                           0.001, 0.25)
-    # ground_material = Material(6, 0, 1, 0, 'half_space')
+    # ground_material = Soil(sand_proportion, 1 - sand_proportion, soil_density, sand_particle_density, "balanced_soil",
+    #                        0.001, 0.25)
+    ground_material = Material(6, 0, 1, 0, 'half_space')
 
     spatial_resolution = 0.002
 
