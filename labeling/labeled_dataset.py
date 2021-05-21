@@ -355,13 +355,13 @@ class BScanDataSetGenerator:
             logging.warning(f"Min shape of x ({min((scan.shape[1] for scan in x))}) not equal to scan_min_col"
                             f"({self.scan_min_col}).")
 
-        if self.scan_max_col != max((len(label) for label in y)):
-            logging.warning(f"Max shape of y ({max((len(label) for label in y))}) not equal to scan_max_col"
-                            f"({self.scan_max_col}).")
-
-        if self.scan_min_col != min((len(label) for label in y)):
-            logging.warning(f"Min shape of y ({min((len(label) for label in y))}) not equal to scan_min_col"
-                            f"({self.scan_min_col}).")
+        # if self.scan_max_col != max((len(label) for label in y)):
+        #     logging.warning(f"Max shape of y ({max((len(label) for label in y))}) not equal to scan_max_col"
+        #                     f"({self.scan_max_col}).")
+        #
+        # if self.scan_min_col != min((len(label) for label in y)):
+        #     logging.warning(f"Min shape of y ({min((len(label) for label in y))}) not equal to scan_min_col"
+        #                     f"({self.scan_min_col}).")
 
         return x, y
 
