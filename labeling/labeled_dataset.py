@@ -282,7 +282,7 @@ class BScanDataSetGenerator:
             return None
 
         logging.debug(f"[DataSetGenerator.bootstrap] scan.shape = {scan.shape}")
-        logging.debug(f"[DataSetGenerator.bootstrap] len(label) = {len(label)}")
+        logging.debug(f"[DataSetGenerator.bootstrap] label = {label}")
 
         # Generate a number of input matrices from the base scan
         max_col = max_col if max_col and max_col <= scan.shape[0] else scan.shape[0]
