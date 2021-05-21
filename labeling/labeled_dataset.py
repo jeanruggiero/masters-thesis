@@ -303,7 +303,7 @@ class BScanDataSetGenerator:
 
     @staticmethod
     def bootstrap_label(label, starts, lengths):
-        return [label[start:start + length] for start, length in zip(starts, lengths)]
+        return label
 
     @staticmethod
     def bootstrap_scan(scan, starts, lengths):
