@@ -70,7 +70,7 @@ def run_model(model, name, sliding_window_size=None):
     loader = S3DataLoader('jean-masters-thesis', 'simulations/merged/')
 
     # Generate bootstrapped training set
-    data_generator = DataSetGenerator(loader, geometry_spec, 10, n=10, scan_max_col=100, random_seed=42)
+    data_generator = DataSetGenerator(loader, geometry_spec, 10, n=1, scan_max_col=100, random_seed=42)
 
     # Reshaping parameters
     output_time_range = 120
