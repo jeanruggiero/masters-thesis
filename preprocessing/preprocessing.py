@@ -18,6 +18,8 @@ def pad_scan(scan, n_cols):
 
 
 def pad_label(label, n_cols):
+    if type(label) == int:
+        return label
     if len(label) == n_cols:
         return label
     return label + [0] * (n_cols - len(label))
