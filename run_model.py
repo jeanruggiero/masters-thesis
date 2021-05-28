@@ -104,8 +104,14 @@ def run_model(model, name, sliding_window_size=None):
     np.savetxt(f"{name}_y_val.csv", y_val, delimiter=",")
     s3_client.upload_file(f"{name}_y_val.csv", 'jean-masters-thesis', f'models/{name}_y_val.csv')
 
+    y_pred = model.predict(X_val)
+
     # Save y_pred to s3
-    y_pred = np.argmax(model.predict(X_val), axis=2)
+    if len(y_pred.shape) == 3:
+        y_pred = np.argmax(y_pred, axis=2)
+    elif y_pred.shape[1] == 2:
+        y_pred = np.argmax(y_pred, axis=1)
+
     np.savetxt(f"{name}_y_pred.csv", y_pred, delimiter=",")
     s3_client.upload_file(f"{name}_y_pred.csv", 'jean-masters-thesis', f'models/{name}_y_val.csv')
 
