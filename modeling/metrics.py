@@ -37,7 +37,7 @@ def mean_jaccard_index_post_epoch(y_true, y_pred):
 
 def f1_score_post_epoch(y_true, y_pred):
     # If needed, convert from predict probabilities to class labels
-    if len(y_pred.shape == 3):
+    if len(y_pred.shape) == 3:
         y_pred = np.argmax(y_pred, 2)
     elif y_pred.shape[1] == 2:
         y_pred = np.argmax(y_pred, 1)
@@ -55,7 +55,7 @@ def f1_score_post_epoch(y_true, y_pred):
 
 def precision_post_epoch(y_true, y_pred):
     # If needed, convert from predict probabilities to class labels
-    if len(y_pred.shape == 3):
+    if len(y_pred.shape) == 3:
         y_pred = np.argmax(y_pred, 2)
     elif y_pred.shape[1] == 2:
         y_pred = np.argmax(y_pred, 1)
@@ -68,7 +68,7 @@ def precision_post_epoch(y_true, y_pred):
 
 def recall_post_epoch(y_true, y_pred):
     # If needed, convert from predict probabilities to class labels
-    if len(y_pred.shape == 3):
+    if len(y_pred.shape) == 3:
         y_pred = np.argmax(y_pred, 2)
     elif y_pred.shape[1] == 2:
         y_pred = np.argmax(y_pred, 1)
