@@ -50,7 +50,7 @@ def f1_score_post_epoch(y_true, y_pred):
     logging.info(f"FP = {false_positives}")
     logging.info(f"FN = {false_negatives}")
 
-    return true_positives / (0.5 * (false_positives + false_negatives))
+    return true_positives / (true_positives + 0.5 * (false_positives + false_negatives))
 
 
 def precision_post_epoch(y_true, y_pred):
