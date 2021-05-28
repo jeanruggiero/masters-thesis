@@ -83,9 +83,9 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
 
         y_pred = model.predict(X_val)
         # logging.info(f"Mean Jaccard Index = {mean_jaccard_index_post_epoch(y_val, y_pred):.2f}")
-        # logging.info(f"f1-score = {f1_score_post_epoch(y_val, y_pred):.2f}")
-        # logging.info(f"Precision = {precision_post_epoch(y_val, y_pred):.2f}")
-        # logging.info(f"Recall = {recall_post_epoch(y_val, y_pred):.2f}")
+        logging.info(f"f1-score = {f1_score_post_epoch(y_val, y_pred):.2f}")
+        logging.info(f"Precision = {precision_post_epoch(y_val, y_pred):.2f}")
+        logging.info(f"Recall = {recall_post_epoch(y_val, y_pred):.2f}")
 
         if plots:
             plot_history(history)
