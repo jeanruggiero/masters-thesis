@@ -277,8 +277,6 @@ class BScanDataSetGenerator:
     @staticmethod
     def bootstrap(scan, label, max_col, min_col, n):
 
-        print(label)
-
         if scan is None:
             logging.debug("[DataSetGenerator.bootstrap] scan = None")
             return None
