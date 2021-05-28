@@ -277,6 +277,8 @@ class BScanDataSetGenerator:
     @staticmethod
     def bootstrap(scan, label, max_col, min_col, n):
 
+        print(label)
+
         if scan is None:
             logging.debug("[DataSetGenerator.bootstrap] scan = None")
             return None
@@ -298,13 +300,12 @@ class BScanDataSetGenerator:
         logging.debug(f"starts = {starts}")
 
         # Generate n scans from each b-scan
-        return DataSetGenerator.bootstrap_scan(scan.T, starts, lengths), \
-               DataSetGenerator.bootstrap_label(label, starts, lengths)
+        return BScanDataSetGenerator.bootstrap_scan(scan.T, starts, lengths), \
+               BScanDataSetGenerator.bootstrap_label(label, starts, lengths)
 
     @staticmethod
     def bootstrap_label(label, starts, lengths):
         return [label for start in starts]
-
 
     @staticmethod
     def bootstrap_scan(scan, starts, lengths):
