@@ -51,5 +51,10 @@ model.load_weights('conv1')
 
 X_test, y_test = preprocess_real_data('thesis_real_data_labels.csv', 'real_data_metadata.csv')
 
+print("Preprocessing complete")
+print(f"type(X) = {type(X_test)}")
+print(f"X.shape = {X_test.shape}")
+print(f"y.shape = {y_test.shape}")
+
 y_pred_proba = model.predict(X_test)
 y_pred = np.argmax(y_pred_proba, axis=1)
