@@ -53,4 +53,4 @@ def preprocess_real_data(label_filename, metadata_filename):
         X.extend(bootstrapped_scans)
         y.extend(bootstrapped_labels)
 
-    return X, y
+    return np.array(X), np.array(y)
