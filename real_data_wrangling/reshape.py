@@ -275,6 +275,7 @@ def preprocess_scan(data, input_time_range, output_sample_rate, output_time_rang
     :return: a sequence of slices of the resampled input data
     """
 
+    print(f"[preprocess_scan] data.shape = {data.shape}")
     return slice_scan(
         resample_xy(data, input_time_range, output_sample_rate, output_time_range, x_range, output_size),
         window_size, overlap
