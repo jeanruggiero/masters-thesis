@@ -32,9 +32,10 @@ def preprocess_real_data(label_filename, metadata_filename):
         print(f"Loading scan {id}")
         # Load data from s3
         data = read_scan(id)
+        print(f"data.shape = {data.shape}")
 
         # Select rows
-        data = data[label['start_col']:label['end_col'] + 1]
+        data = data[:, label['start_col']:label['end_col'] + 1]
 
         input_time_range = label['range']
         output_sample_rate = 4
