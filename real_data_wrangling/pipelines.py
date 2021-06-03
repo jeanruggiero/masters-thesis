@@ -4,6 +4,7 @@ from .reshape import preprocess_scan
 import io
 import h5py
 import boto3
+import math
 
 
 def read_scan(id):
@@ -37,7 +38,7 @@ def preprocess_real_data(label_filename, metadata_filename):
         output_sample_rate = 4
         output_time_range = 120
         x_range = data.shape[1] / label['scans_per_meter']
-        output_size = 50 * x_range
+        output_size = math.floor(50 * x_range)
         window_size = 144
         overlap = 50
 
