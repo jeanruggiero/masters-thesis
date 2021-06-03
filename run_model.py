@@ -168,7 +168,8 @@ def run_model_bscan(model, name):
     s3_client.upload_file(f"{name}_y_val.csv", 'jean-masters-thesis', f'models/{name}_y_val.csv')
 
     # Save y_pred to s3
-    y_pred = np.argmax(model.predict(X_val), axis=2)
+    y_pred_proba = model.predict(X_val)
+    y_pred = np.argmax(y_pred_proba, axis=len(y_pred_proba.shape) - 1)
     np.savetxt(f"{name}_y_pred.csv", y_pred, delimiter=",")
     s3_client.upload_file(f"{name}_y_pred.csv", 'jean-masters-thesis', f'models/{name}_y_val.csv')
 

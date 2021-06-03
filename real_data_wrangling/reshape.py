@@ -237,7 +237,7 @@ def resample_xy(data, input_time_range, output_sample_rate, output_time_range, x
     return resample_x(resample_y(data, input_time_range, output_sample_rate, output_time_range), x_range, output_size)
 
 
-def slice_scan(data, window_size):
+def slice_scan(data, window_size, overlap=None):
     """
     Slices the provided b-scan data into fixed size chunks, each containing window_size columns.
 
@@ -246,23 +246,29 @@ def slice_scan(data, window_size):
     :return: a sequence of slices of the input data
     """
 
-    n_steps = data.shape[1] - window_size + 1
-    return [data[:, n:n + window_size] for n in range(n_steps)]
+    overlap = overlap if overlap is not None else data.shape[1] - 1
+    step_size = data.shape[1] - overlap
+
+    # TODO: incorporate variable size window
+    # n_steps = math.floor((data.shape[1] - window_size) / (window_size - overlap)) + 1
+    range_end = math.floor((data.shape[1] - window_size) / (window_size - overlap)) * (window_size - overlap) + 1
+    return [data[:, n:n + window_size] for n in range(0, range_end, step_size)]
 
 
-def preprocess_scan(data, input_time_range, output_sample_rate, output_time_range, x_range, output_size, window_size):
+def preprocess_scan(data, input_time_range, output_sample_rate, output_time_range, x_range, output_size, window_size,
+                    overlap=None):
     """
     Pre-processes the b-scan represented by the provided data to prepare it for use as input to a neural network. The
     provided data is resampled in both the x and y directions according to the parameters provided. Resampling is
     performed first in the y-direction using a DFT resampling method along with padding or truncation is needed.
-    Next, the data is resampled in the x direction using linear interpolatio so that all scans are transformed to
+    Next, the data is resampled in the x direction using linear interpolation so that all scans are transformed to
     include the same number of samples per meter. The resulting scan is then sliced using a sliding window to
     generate a large number of shorter scans according to the provided window_size. The shape of each slice in the
     output data is (output_sample_rate * output_time_range, window_size).
 
     :param data: 2D matrix of data to be resampled
     :param input_time_range: time range over which data was collected
-    :param output_sample_rate: y-direction output sample rate in samples per second
+    :param output_sample_rate: y-direction output sample rate in samples per ns
     :param x_range: the distance range covered by the input points in meters
     :param output_size: the number of columns in the output
     :param window_size: the number of columns in each slice
@@ -270,7 +276,8 @@ def preprocess_scan(data, input_time_range, output_sample_rate, output_time_rang
     """
 
     return slice_scan(
-        resample_xy(data, input_time_range, output_sample_rate, output_time_range, x_range, output_size), window_size
+        resample_xy(data, input_time_range, output_sample_rate, output_time_range, x_range, output_size),
+        window_size, overlap
     )
 
 
