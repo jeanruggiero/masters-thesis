@@ -1,4 +1,5 @@
 import os
+import logging
 
 import tensorflow as tf
 from tensorflow import keras
@@ -7,6 +8,11 @@ from tensorflow.keras.regularizers import l2
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.metrics import Precision, Recall
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+# Configure logging
+logging.basicConfig(level=logging.INFO, handlers=[
+    logging.FileHandler("predictions.log"),
+    logging.StreamHandler()
+])
 
 import numpy as np
 
