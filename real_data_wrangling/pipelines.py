@@ -18,7 +18,7 @@ def read_scan(id):
     return d
 
 
-def preprocess_real_data(label_filename, metadata_filename, ):
+def preprocess_real_data(label_filename, metadata_filename):
 
     labels = pd.read_csv(label_filename).set_index('id')
     labels = labels.join(pd.read_csv(metadata_filename).set_index('id'))

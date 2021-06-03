@@ -616,3 +616,45 @@ INFO:root:Recall = 0.00
 
 
 Notes: seems like not enough training data for the model to learn anything.
+
+
+
+
+
+conv1:
+
+
+alpha = 0.05
+
+model = keras.models.Sequential([
+    #keras.layers.InputLayer(shape=[144, 480, 1]),
+    keras.layers.BatchNormalization(),
+    keras.layers.Conv2D(filters=10, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
+                        activation='relu', padding='same'),
+    keras.layers.MaxPool2D(pool_size=(3, 3), strides=(1, 1)),
+    keras.layers.Conv2D(filters=20, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
+                        activation='relu', padding='same'),
+    keras.layers.Conv2D(filters=20, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
+                        activation='relu', padding='same'),
+    keras.layers.MaxPool2D(pool_size=(2, 2), strides=(1, 1)),
+    keras.layers.Conv2D(filters=25, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
+                        activation='relu', padding='same'),
+    keras.layers.Conv2D(filters=25, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
+                        activation='relu', padding='same'),
+    keras.layers.MaxPool2D(pool_size=(2, 2), strides=(1, 1)),
+    keras.layers.Flatten(),
+    keras.layers.Dense(128, activation="relu"),
+    keras.layers.Dropout(0.5),
+    keras.layers.Dense(64, activation="relu"),
+    keras.layers.Dropout(0.5),
+    keras.layers.Dense(2, activation='softmax')
+])
+
+
+
+INFO:root:TP = 580
+INFO:root:FP = 90
+INFO:root:FN = 0
+INFO:root:f1-score = 0.93
+INFO:root:Precision = 0.87
+INFO:root:Recall = 1.00
