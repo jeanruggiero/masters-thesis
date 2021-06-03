@@ -28,6 +28,8 @@ def preprocess_real_data(label_filename, metadata_filename):
     y = []
 
     for id, label in labels.iterrows():
+
+        print(f"Loading scan {id}")
         # Load data from s3
         data = read_scan(id)
 
