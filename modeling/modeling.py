@@ -87,7 +87,9 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
         print(np.argmax(y_pred, axis=1))
 
         print("\ny_pred_proba validation set")
-        print(y_pred)
+        for y_pp, y_v in zip(y_pred, y_val):
+            print(y_pp, y_v)
+
 
         print(f"\nTotal samples in validation set: {y_val.shape[0]}")
         print(f"Total positive: {np.sum(y_val)}")
