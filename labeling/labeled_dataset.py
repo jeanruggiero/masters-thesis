@@ -344,7 +344,7 @@ class BScanDataSetGenerator:
                 itertools.repeat(self.n)
             ))
 
-        print(scan_labels)
+        # print(scan_labels)
         # scan_labels = []
         #
         # for scan, label, max_col, min_col, n in zip(scans, labels, itertools.repeat(self.scan_max_col),
