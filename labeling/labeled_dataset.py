@@ -282,7 +282,7 @@ class BScanDataSetGenerator:
             return None
 
         logging.debug(f"[DataSetGenerator.bootstrap] scan.shape = {scan.shape}")
-        logging.debug(f"[DataSetGenerator.bootstrap] label = {label}")
+        logging.info(f"[DataSetGenerator.bootstrap] label = {label}")
 
         # Generate a number of input matrices from the base scan
         max_col = max_col if max_col and max_col <= scan.shape[0] else scan.shape[0]
@@ -303,7 +303,9 @@ class BScanDataSetGenerator:
 
     @staticmethod
     def bootstrap_label(label, starts, lengths):
-        return [label for start in starts]
+        l = [label for start in starts]
+        logging.info(f"[DataSetGenerator.bootstrap_label] label = {label} -> {l}")
+        return l
 
     @staticmethod
     def bootstrap_scan(scan, starts, lengths):
@@ -342,6 +344,7 @@ class BScanDataSetGenerator:
                 itertools.repeat(self.n)
             ))
 
+        print(scan_labels)
         # scan_labels = []
         #
         # for scan, label, max_col, min_col, n in zip(scans, labels, itertools.repeat(self.scan_max_col),
