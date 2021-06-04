@@ -42,15 +42,16 @@ def preprocess_real_data(label_filename, metadata_filename):
         output_time_range = 120
         x_range = data.shape[1] / label['scans_per_meter']
         output_size = math.floor(50 * x_range)
-        window_size = 144
+        window_size = 100
         overlap = 50
 
         bootstrapped_scans = preprocess_scan(data, input_time_range, output_sample_rate, output_time_range, x_range,
                                              output_size, window_size, overlap=overlap)
 
+        print(f"len(bootstrapped_scans = {len(bootstrapped_scans)}")
         bootstrapped_labels = [label['label']] * len(bootstrapped_scans)
 
-        X.extend(bootstrapped_scans)
-        y.extend(bootstrapped_labels)
+        X = X.extend(bootstrapped_scans)
+        y = y.extend(bootstrapped_labels)
 
     return np.array(X), np.array(y)

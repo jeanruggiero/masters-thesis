@@ -18,6 +18,7 @@ import numpy as np
 
 from real_data_wrangling.pipelines import preprocess_real_data
 from modeling.metrics import f1_score
+from modeling.modeling import expand_dim
 
 alpha = 0.05
 
@@ -51,6 +52,7 @@ model.compile()
 model.load_weights('conv1')
 
 X_test, y_test = preprocess_real_data('thesis_real_data_labels.csv', 'real_data_metadata.csv')
+X_test = expand_dim(X_test)
 
 print("Preprocessing complete")
 print(f"type(X) = {type(X_test)}")
