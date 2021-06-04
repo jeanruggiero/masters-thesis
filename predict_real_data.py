@@ -52,7 +52,7 @@ model.compile()
 model.load_weights('conv1')
 
 X_test, y_test = preprocess_real_data('thesis_real_data_labels.csv', 'real_data_metadata.csv')
-X_test = expand_dim(X_test)
+X_test = np.transpose(expand_dim(X_test), axes=(0, 2, 1, 3))
 
 print("Preprocessing complete")
 print(f"type(X) = {type(X_test)}")
