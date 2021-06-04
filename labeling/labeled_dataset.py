@@ -354,6 +354,11 @@ class BScanDataSetGenerator:
         x = list(itertools.chain.from_iterable((scan_label[0] for scan_label in scan_labels if scan_label)))
         y = list(itertools.chain.from_iterable((scan_label[1] for scan_label in scan_labels if scan_label)))
 
+        print(f"len(X) = {len(x)}")
+        print(f"\nTotal samples: {len(y)}")
+        print(f"Total positive: {np.sum(y)}")
+        print(f"Total negative: {len(y) - np.sum(y)}")
+
         if self.scan_max_col != max((scan.shape[1] for scan in x)):
             logging.warning(f"Max shape of x ({max((scan.shape[1] for scan in x))}) not equal to scan_max_col"
                             f"({self.scan_max_col}).")
