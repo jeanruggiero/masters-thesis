@@ -313,7 +313,7 @@ class BScanDataSetGenerator:
 
         logging.debug(f"Generating batch with indices {indices}")
         scan_numbers = [sn for i, sn in enumerate(self.scan_numbers) if i in indices]
-        logging.debug(f"Batch includes {len(scan_numbers)} scans: {scan_numbers}")
+        logging.info(f"Batch includes {len(scan_numbers)} scans: {scan_numbers}")
 
         for i in range(5):
             try:
