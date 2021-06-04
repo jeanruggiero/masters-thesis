@@ -17,7 +17,7 @@ logging.basicConfig(level=logging.INFO, handlers=[
 import numpy as np
 
 from real_data_wrangling.pipelines import preprocess_real_data
-from modeling.metrics import f1_score
+from modeling.metrics import f1_score_post_epoch, precision_post_epoch, recall_post_epoch
 from modeling.modeling import expand_dim
 
 alpha = 0.05
@@ -62,5 +62,6 @@ print(f"y.shape = {y_test.shape}")
 y_pred_proba = model.predict(X_test)
 y_pred = np.argmax(y_pred_proba, axis=1)
 
-score = f1_score(y_test, y_pred)
-print(f"f1-score = {score}")
+print(f"f1-score = {f1_score_post_epoch(y_test, y_pred)}")
+print(f"precision = {precision_post_epoch(y_test, y_pred)}")
+print(f"recall = {recall_post_epoch(y_test, y_pred)}")
