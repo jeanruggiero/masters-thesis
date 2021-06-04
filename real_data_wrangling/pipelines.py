@@ -51,7 +51,7 @@ def preprocess_real_data(label_filename, metadata_filename):
         print(f"len(bootstrapped_scans = {len(bootstrapped_scans)}")
         bootstrapped_labels = [label['label']] * len(bootstrapped_scans)
 
-        X = X.extend(bootstrapped_scans)
-        y = y.extend(bootstrapped_labels)
+        X.extend(bootstrapped_scans)
+        y.extend(bootstrapped_labels)
 
     return np.array(X), np.array(y)
