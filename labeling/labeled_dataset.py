@@ -326,6 +326,10 @@ class BScanDataSetGenerator:
                 continue
 
         labels = [1 if scan_number < 20000 else 0 for scan_number in scan_numbers]
+        print("Unbootstrapped labels")
+        print(labels)
+        print("\n")
+
         logging.info("Finished labeling")
 
         # logging.info(f"scan1.number = {scan_numbers[0]}")
