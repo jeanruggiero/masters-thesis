@@ -67,6 +67,10 @@ print(y_pred)
 
 print(y_pred_proba)
 
-print(f"f1-score = {f1_score_post_epoch(y_test, y_pred_proba)}")
-print(f"precision = {precision_post_epoch(y_test, y_pred_proba)}")
-print(f"recall = {recall_post_epoch(y_test, y_pred_proba)}")
+print(f"\nTotal samples: {y_pred.shape[0]}")
+print(f"Total positive: {np.sum(y_pred)}")
+print(f"Total negative: {y_pred.shape[0] - np.sum(y_pred)}")
+
+print(f"f1-score = {f1_score_post_epoch(y_test, y_pred_proba):.2f}")
+print(f"precision = {precision_post_epoch(y_test, y_pred_proba):.2f}")
+print(f"recall = {recall_post_epoch(y_test, y_pred_proba):.2f}")
