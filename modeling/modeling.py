@@ -89,9 +89,9 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
         print("\ny_pred_proba validation set")
         print(y_pred)
 
-        print(f"\nTotal samples: {y_pred.shape[0]}")
-        print(f"Total positive: {np.sum(y_pred)}")
-        print(f"Total negative: {y_pred.shape[0] - np.sum(y_pred)}")
+        print(f"\nTotal samples in validation set: {y_val.shape[0]}")
+        print(f"Total positive: {np.sum(y_val)}")
+        print(f"Total negative: {y_val.shape[0] - np.sum(y_val)}")
 
         # logging.info(f"Mean Jaccard Index = {mean_jaccard_index_post_epoch(y_val, y_pred):.2f}")
         logging.info(f"\nf1-score = {f1_score_post_epoch(y_val, y_pred):.2f}")
