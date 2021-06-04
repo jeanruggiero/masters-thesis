@@ -246,12 +246,14 @@ def slice_scan(data, window_size, overlap=None):
     :return: a sequence of slices of the input data
     """
 
+    print(f"Shape of unsliced scan {data.shape}")
     overlap = overlap if overlap is not None else data.shape[1] - 1
     step_size = data.shape[1] - overlap
 
     # TODO: incorporate variable size window
     # n_steps = math.floor((data.shape[1] - window_size) / (window_size - overlap)) + 1
     range_end = math.floor((data.shape[1] - window_size) / (window_size - overlap)) * (window_size - overlap) + 1
+    print(f"Range: {list(range(0, range_end, step_size))}")
     return [data[:, n:n + window_size] for n in range(0, range_end, step_size)]
 
 
