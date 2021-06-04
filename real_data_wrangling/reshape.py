@@ -248,7 +248,7 @@ def slice_scan(data, window_size, overlap=None):
 
     print(f"Shape of unsliced scan {data.shape}")
     overlap = overlap if overlap is not None else data.shape[1] - 1
-    step_size = data.shape[1] - overlap
+    step_size = window_size - overlap
 
     # TODO: incorporate variable size window
     # n_steps = math.floor((data.shape[1] - window_size) / (window_size - overlap)) + 1

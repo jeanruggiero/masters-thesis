@@ -62,6 +62,12 @@ print(f"y.shape = {y_test.shape}")
 y_pred_proba = model.predict(X_test)
 y_pred = np.argmax(y_pred_proba, axis=1)
 
-print(f"f1-score = {f1_score_post_epoch(y_test, y_pred)}")
-print(f"precision = {precision_post_epoch(y_test, y_pred)}")
-print(f"recall = {recall_post_epoch(y_test, y_pred)}")
+print(y_pred)
+print(y_pred.shape)
+
+print(y_pred_proba)
+print(y_pred_proba.shape)
+
+print(f"f1-score = {f1_score_post_epoch(y_test, y_pred_proba)}")
+print(f"precision = {precision_post_epoch(y_test, y_pred_proba)}")
+print(f"recall = {recall_post_epoch(y_test, y_pred_proba)}")
