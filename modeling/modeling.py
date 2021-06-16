@@ -52,15 +52,22 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
     logging.info("Loading validation set.")
     X_val, y_val = preprocess(data_generator.generate_batch(0), output_time_range, sample_rate, resample=resample)
 
+    logging.info(f'X_val.shape = {X_val.shape}')
+    logging.info(f'y_val.shape = {y_val.shape}')
+
+    if gulkana_data_generator:
+        X_val_gulkana, y_val_gulkana = gulkana_data_generator.generate_batch(0)
+
+        logging.info(f'X_val_gulkana.shape = {X_val_gulkana.shape}')
+        logging.info(f'y_val_gulkana.shape = {y_val_gulkana.shape}')
+
+        X_val = np.concatenate([X_val, X_val_gulkana])
+        y_val = np.concatenate([y_val, y_val_gulkana])
+
     if sliding_window_size is not None:
         X_val, y_val = apply_window(X_val, y_val, sliding_window_size)
     else:
         X_val = expand_dim(X_val)
-
-    if gulkana_data_generator:
-        X_val_gulkana, y_val_gulkana = gulkana_data_generator.generate_batch(0)
-        X_val = np.concatenate([X_val, X_val_gulkana])
-        y_val = np.concatenate([y_val, y_val_gulkana])
 
     logging.info(f'X_val.shape = {X_val.shape}')
     logging.info(f'y_val.shape = {y_val.shape}')
@@ -71,15 +78,22 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
 
         X_train, y_train = preprocess(data_generator.generate_batch(i), output_time_range, sample_rate, resample=resample)
 
+        logging.info(f'X_train.shape = {X_train.shape}')
+        logging.info(f'y_train.shape = {y_train.shape}')
+
+        if gulkana_data_generator:
+            X_train_gulkana, y_train_gulkana = gulkana_data_generator.generate_batch(i)
+
+            logging.info(f'X_train_gulkana.shape = {X_train_gulkana.shape}')
+            logging.info(f'y_train_gulkana.shape = {y_train_gulkana.shape}')
+
+            X_train = np.concatenate([X_train, X_train_gulkana])
+            y_train = np.concatenate([y_train, y_train_gulkana])
+
         if sliding_window_size is not None:
             X_train, y_train = apply_window(X_train, y_train, sliding_window_size)
         else:
             X_train = expand_dim(X_train)
-
-        if gulkana_data_generator:
-            X_train_gulkana, y_train_gulkana = gulkana_data_generator.generate_batch(i)
-            X_train = np.concatenate([X_train, X_train_gulkana])
-            y_train = np.concatenate([y_train, y_train_gulkana])
 
         logging.info(f"X_train.shape = {X_train.shape}")
         logging.info(f"y_train.shape = {y_train.shape}")
