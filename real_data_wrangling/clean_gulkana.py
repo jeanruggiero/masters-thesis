@@ -52,7 +52,7 @@ def preprocess_gulkana_real_data():
         x_range = header['Final_pos'] - header['Start_pos']
         output_size = math.floor(50 * x_range)
         window_size = 100
-        overlap = 10
+        overlap = 1
 
         bootstrapped_scans = preprocess_scan(data, input_time_range, output_sample_rate, output_time_range, x_range,
                                              output_size, window_size, overlap=overlap, method_y='last',
