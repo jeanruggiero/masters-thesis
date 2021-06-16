@@ -524,3 +524,31 @@ class HybridBScanDataSetGenerator:
     def partition(list_in, n):
         random.shuffle(list_in)
         return [list_in[i::n] for i in range(n)]
+
+
+class GulkanaBScanDataSetGenerator:
+
+    def __init__(self, num_batches, random_seed=None):
+
+        self.num_batches = num_batches
+
+        if random_seed:
+            random.seed(random_seed)
+
+        self.X, self.y = preprocess_gulkana_real_data()
+        self.batched_indices = self.partition(list(range(len(self.y))), num_batches)
+
+    def generate(self, indices=None):
+        logging.debug(f"Generating batch with indices {indices}")
+        return self.X[indices], self.y[indices]
+
+    def generate_batch(self, batch_number):
+        return self.generate(indices=self.batched_indices[batch_number])
+
+    def generate_batches(self):
+        return (self.generate(indices=indices) for indices in self.batched_indices)
+
+    @staticmethod
+    def partition(list_in, n):
+        random.shuffle(list_in)
+        return [list_in[i::n] for i in range(n)]

@@ -44,7 +44,7 @@ def apply_window(X, y, n):
 
 
 def train_model(model, data_generator, output_time_range, sample_rate, callbacks={}, plots=True, resample=False,
-                epochs=30, sliding_window_size=None):
+                epochs=30, sliding_window_size=None, gulkana_data_generator=None):
     # Callbacks argument should be a dict of callback_fn: list of batches or None pairs. If list of batches is None
     # the callback will be applied to all batches
 
@@ -56,6 +56,11 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
         X_val, y_val = apply_window(X_val, y_val, sliding_window_size)
     else:
         X_val = expand_dim(X_val)
+
+    if gulkana_data_generator:
+        X_val_gulkana, y_val_gulkana = gulkana_data_generator.generate_batch(0)
+        X_val = np.concatenate([X_val, X_val_gulkana])
+        y_val = np.concatenate([y_val, y_val_gulkana])
 
     logging.info(f'X_val.shape = {X_val.shape}')
     logging.info(f'y_val.shape = {y_val.shape}')
@@ -70,6 +75,11 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
             X_train, y_train = apply_window(X_train, y_train, sliding_window_size)
         else:
             X_train = expand_dim(X_train)
+
+        if gulkana_data_generator:
+            X_train_gulkana, y_train_gulkana = gulkana_data_generator.generate_batch(i)
+            X_train = np.concatenate([X_train, X_train_gulkana])
+            y_train = np.concatenate([y_train, y_train_gulkana])
 
         logging.info(f"X_train.shape = {X_train.shape}")
         logging.info(f"y_train.shape = {y_train.shape}")

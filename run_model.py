@@ -10,7 +10,7 @@ import logging
 
 import matplotlib.pyplot as plt
 
-from labeling import DataSetGenerator, S3DataLoader, BScanDataSetGenerator, HybridBScanDataSetGenerator
+from labeling import DataSetGenerator, S3DataLoader, BScanDataSetGenerator, HybridBScanDataSetGenerator, GulkanaBScanDataSetGenerator
 from preprocessing import preprocess
 from modeling import train_model
 from modeling.metrics import mean_jaccard_index, f1_score, mean_overlap, object_detection_f1_score, object_size_rmse, \
@@ -191,7 +191,9 @@ def run_model_bscan_hybrid(model, name):
     loader = S3DataLoader('jean-masters-thesis', 'simulations/merged/')
 
     # Generate bootstrapped training set
-    data_generator = HybridBScanDataSetGenerator(loader, 10, n=10, scan_max_col=100, random_seed=42)
+    data_generator = BScanDataSetGenerator(loader, 10, n=10, scan_max_col=100, random_seed=42)
+
+    gulkana_data_generator = GulkanaBScanDataSetGenerator(10, random_seed=42)
 
     # Reshaping parameters
     output_time_range = 120
@@ -218,7 +220,8 @@ def run_model_bscan_hybrid(model, name):
     # Train model
     history, model, X_val, y_val = train_model(model, data_generator, output_time_range, sample_rate,
                                                callbacks=callbacks, epochs=30, plots=False,
-                                               sliding_window_size=None, resample=True)
+                                               sliding_window_size=None, resample=True,
+                                               gulkana_data_generator=gulkana_data_generator)
 
     # Save y_val to s3
     s3_client.upload_file("training.log", 'jean-masters-thesis', f'models/{name}_training.log')
