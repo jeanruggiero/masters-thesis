@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 
 from utils.dt1io import readdt1, readdt1Header
-from reshape import preprocess_scan
+from .reshape import preprocess_scan
 
 
 def load_gulkana(key, bucket):
