@@ -61,7 +61,7 @@ def preprocess_gulkana_real_data():
         print(f"len(bootstrapped_scans) = {len(bootstrapped_scans)}")
         X.extend(bootstrapped_scans)
 
-    return np.array(X), np.array([0] * len(X))
+    return np.transpose(np.array(X), axes=[0, 2, 1]), np.array([0] * len(X))
 
 
 if __name__ == '__main__':
