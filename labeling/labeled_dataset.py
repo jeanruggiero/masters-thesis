@@ -501,6 +501,12 @@ class HybridBScanDataSetGenerator:
             logging.warning(f"Min shape of x ({min((scan.shape[1] for scan in x))}) not equal to scan_min_col"
                             f"({self.scan_min_col}).")
 
+
+        gx = self.gulkana_X[gulkana_indices]
+
+        print(f"gx.shape = {gx.shape}")
+        print(f"x.shape = {x.shape}")
+
         return np.concatenate([x, self.gulkana_X[gulkana_indices]]), np.concatenate([y, self.gulkana_y[
             gulkana_indices]])
 
