@@ -2,7 +2,7 @@ import math
 import numpy as np
 
 
-def resample_y(data, input_time_range, output_sample_rate, output_time_range):
+def resample_y(data, input_time_range, output_sample_rate, output_time_range, method='dft'):
     """
     Resamples the provided data in the y direction to the specified output time range and sample rate.
 
@@ -18,9 +18,16 @@ def resample_y(data, input_time_range, output_sample_rate, output_time_range):
 
     resampled_data = np.zeros((output_sample_rate * output_time_range, data.shape[1]))
 
+    if method == 'dft':
+        resample_function = dft_resample
+    elif method == 'last':
+        resample_function = last_resample
+    else:
+        raise ValueError(f"Illegal resampling method: {method}")
+
     # Iterate over columns of the input data, resampling each one
     for j in range(data.shape[1]):
-        resampled_data[:, j] = dft_resample(data[:, j], input_time_range, output_sample_rate, output_time_range)
+        resampled_data[:, j] = resample_function(data[:, j], input_time_range, output_sample_rate, output_time_range)
 
     return resampled_data
 
@@ -136,6 +143,53 @@ def linear_resample(x, x_range, output_size):
     return np.vectorize(lambda d_val: linear_interpolate(d, x, d_val))(d_output)
 
 
+def last_resample(y, input_time_range, output_sample_rate, output_time_range):
+
+    # Adjust time range as needed
+    y = timeseries_pad(y, input_time_range, output_time_range)
+
+    # Time for each column in the input data
+    t = np.linspace(0, output_time_range, len(y))
+
+    # Time for each column in the output data
+    t_output = np.linspace(0, output_time_range, output_sample_rate * output_time_range)
+
+    i = 0
+    y_out = np.zeros_like(t_output)
+
+    for j, t_out in enumerate(t_output):
+        try:
+            while t[i + 1] <= t_out:
+                i += 1
+            y_out[j] = y[i]
+        except IndexError:
+            y_out[j] = y[-1]
+
+    return y_out
+
+
+def last_resample_x(x, x_range, output_size):
+
+    # Distance coordinates for each column in the input data
+    d = np.linspace(0, x_range, len(x))
+
+    # Distance coordinates for each column in the output data
+    d_output = np.linspace(0, x_range, output_size)
+
+    i = 0
+    x_out = np.zeros_like(d_output)
+
+    for j, d_out in enumerate(d_output):
+        try:
+            while d[i + 1] <= d_out:
+                i += 1
+            x_out[j] = x[i]
+        except IndexError:
+            x_out[j] = x[-1]
+
+    return x_out
+
+
 def find_between_index(array, element):
     for i, a in enumerate(array):
         if a > element:
@@ -186,7 +240,6 @@ def linear_interpolate(x, y, x_val):
         # The x-value is in the input series, so return its corresponding y value
         return y[np.where(x == x_val)[0]]
 
-
     j = find_between_index(x, x_val)
     if j < 0:
         # Right-sided interpolation
@@ -203,7 +256,7 @@ def linear_interpolate(x, y, x_val):
     return np.interp(x_val, x_fit, y_fit)
 
 
-def resample_x(data, x_range, output_size):
+def resample_x(data, x_range, output_size, method='linear'):
     """
     Resamples each row of the provided input data to the specified output size using linear interpolation.
     Assume samples are taken at fixed distance intervals.
@@ -216,14 +269,22 @@ def resample_x(data, x_range, output_size):
 
     resampled_data = np.zeros((data.shape[0], output_size))
 
+    if method == 'last':
+        resample_function = last_resample_x
+    elif method == 'linear':
+        resample_function = linear_resample
+    else:
+        raise ValueError(f"Illegal resampling method: {method}")
+
     # Iterate over rows, resampling each one
     for i in range(data.shape[0]):
-        resampled_data[i, :] = linear_resample(data[i, :], x_range, output_size)
+        resampled_data[i, :] = resample_function(data[i, :], x_range, output_size)
 
     return resampled_data
 
 
-def resample_xy(data, input_time_range, output_sample_rate, output_time_range, x_range, output_size):
+def resample_xy(data, input_time_range, output_sample_rate, output_time_range, x_range, output_size, method_y='dft',
+                method_x='linear'):
     """
     Resample the provided matrix of data.
 
@@ -234,7 +295,10 @@ def resample_xy(data, input_time_range, output_sample_rate, output_time_range, x
     :param output_size: the number of columns in the output
     :return: the input matrix resampled according to the parameters provided
     """
-    return resample_x(resample_y(data, input_time_range, output_sample_rate, output_time_range), x_range, output_size)
+    return resample_x(
+        resample_y(data, input_time_range, output_sample_rate, output_time_range, method=method_y),
+        x_range, output_size, method=method_x
+    )
 
 
 def slice_scan(data, window_size, overlap=None):
@@ -253,12 +317,12 @@ def slice_scan(data, window_size, overlap=None):
     # TODO: incorporate variable size window
     # n_steps = math.floor((data.shape[1] - window_size) / (window_size - overlap)) + 1
     range_end = math.floor((data.shape[1] - window_size) / (window_size - overlap)) * (window_size - overlap) + 1
-    print(f"Range: {list(range(0, range_end, step_size))}")
+    # print(f"Range: {list(range(0, range_end, step_size))}")
     return [data[:, n:n + window_size] for n in range(0, range_end, step_size)]
 
 
 def preprocess_scan(data, input_time_range, output_sample_rate, output_time_range, x_range, output_size, window_size,
-                    overlap=None):
+                    overlap=None, method_y='dft', method_x='linear'):
     """
     Pre-processes the b-scan represented by the provided data to prepare it for use as input to a neural network. The
     provided data is resampled in both the x and y directions according to the parameters provided. Resampling is
@@ -279,7 +343,8 @@ def preprocess_scan(data, input_time_range, output_sample_rate, output_time_rang
 
     print(f"[preprocess_scan] data.shape = {data.shape}")
     return slice_scan(
-        resample_xy(data, input_time_range, output_sample_rate, output_time_range, x_range, output_size),
+        resample_xy(data, input_time_range, output_sample_rate, output_time_range, x_range, output_size,
+                    method_y=method_y, method_x=method_x),
         window_size, overlap
     )
 

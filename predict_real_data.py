@@ -59,6 +59,27 @@ print(f"type(X) = {type(X_test)}")
 print(f"X.shape = {X_test.shape}")
 print(f"y.shape = {y_test.shape}")
 
+
+## Balance dataset by omitting positive or negative samples as needed
+n_positive = np.sum(y_test)
+n_negative = y_test.shape[0] - n_positive
+
+print(f"Dataset contains {n_positive} positive samples and {n_negative} negative samples.")
+
+y_test_positive, X_test_positive = np.where(y_test, y_test, X_test)
+y_test_negative, X_test_negative = np.where(~y_test, y_test, X_test)
+
+if n_positive > n_negative:
+    # More positive than negative samples
+    positive_indices = np.random.choice(len(n_positive), size=n_negative, replace=False)
+    y_test = np.concatenate([y_test_negative, y_test_positive[positive_indices]])
+    X_test = np.concatenate([X_test_negative, X_test_positive[positive_indices, :, :]])
+else:
+    # More negative than positive samples
+    negative_indices = np.random.choice(len(n_negative), size=n_positive, replace=False)
+    y_test = np.concatenate([y_test_positive, y_test_negative[negative_indices]])
+    X_test = np.concatenate([X_test_positive, X_test_negative[negative_indices, :, :]])
+
 y_pred_proba = model.predict(X_test)
 y_pred = np.argmax(y_pred_proba, axis=1)
 

@@ -9,6 +9,7 @@ import multiprocessing
 import itertools
 from .labelers import S3ScanLabeler
 from preprocessing import resample_scan
+from real_data_wrangling.clean_gulkana import preprocess_gulkana_real_data
 import logging
 
 
@@ -383,6 +384,134 @@ class BScanDataSetGenerator:
     def generate_batches(self):
         # print("batched indices = ", batched_indices)
         return (self.generate(indices=indices) for indices in self.batched_indices)
+
+    @staticmethod
+    def partition(list_in, n):
+        random.shuffle(list_in)
+        return [list_in[i::n] for i in range(n)]
+
+
+class HybridBScanDataSetGenerator:
+
+    def __init__(self, data_loader, num_batches, scan_min_col=100, scan_max_col=None, n=1, random_seed=None,
+                 num_threads=8):
+
+        self.scan_numbers = data_loader.scan_numbers()
+        self.num_batches = num_batches
+        self.num_threads = num_threads
+
+        self.data_loader = data_loader
+
+        self.scan_min_col = scan_min_col
+        self.scan_max_col = scan_max_col
+        self.n = n
+
+        if random_seed:
+            random.seed(random_seed)
+
+        self.batched_indices = self.partition(list(range(len(self.scan_numbers))), num_batches)
+
+        self.gulkana_X, self.gulkana_y = preprocess_gulkana_real_data()
+
+        self.batched_indices_gulkana = self.partition(list(range(len(self.gulkana_y))), num_batches)
+
+    @staticmethod
+    def bootstrap(scan, label, max_col, min_col, n):
+
+        if scan is None:
+            logging.debug("[DataSetGenerator.bootstrap] scan = None")
+            return None
+
+        logging.debug(f"[DataSetGenerator.bootstrap] scan.shape = {scan.shape}")
+        logging.debug(f"[DataSetGenerator.bootstrap] label = {label}")
+
+        # Generate a number of input matrices from the base scan
+        max_col = max_col if max_col and max_col <= scan.shape[0] else scan.shape[0]
+        min_col = min(min_col, scan.shape[0])
+
+        logging.debug(f"[DataSetGenerator.bootstrap] max_col: {max_col}")
+        logging.debug(f"[DataSetGenerator.bootstrap] min_col: {min_col}")
+
+        lengths = np.random.randint(min_col, high=max_col + 1, size=n)
+        starts = [random.randint(0, scan.shape[0] - length) for length in lengths]
+
+        logging.debug(f"lengths = {lengths}")
+        logging.debug(f"starts = {starts}")
+
+        # Generate n scans from each b-scan
+        return HybridBScanDataSetGenerator.bootstrap_scan(scan.T, starts, lengths), \
+               HybridBScanDataSetGenerator.bootstrap_label(label, starts, lengths)
+
+    @staticmethod
+    def bootstrap_label(label, starts, lengths):
+        l = [label for start in starts]
+        logging.debug(f"[DataSetGenerator.bootstrap_label] label = {label} -> {l}")
+        return l
+
+    @staticmethod
+    def bootstrap_scan(scan, starts, lengths):
+        return [scan[:, start:start + length] for start, length in zip(starts, lengths)]
+
+    def generate(self, indices=None, gulkana_indices=None):
+
+        logging.debug(f"Generating batch with indices {indices}")
+        scan_numbers = [sn for i, sn in enumerate(self.scan_numbers) if i in indices]
+        logging.info(f"Batch includes {len(scan_numbers)} scans: {scan_numbers}")
+
+        for i in range(5):
+            try:
+                scans = list(self.data_loader.load(scan_numbers=scan_numbers))
+                logging.info("Finished loading scans")
+                break
+            except Exception as e:
+                logging.warning("Error loading scans...retrying...")
+                logging.warning(f"{e}")
+                continue
+
+        labels = [1 if scan_number < 20000 else 0 for scan_number in scan_numbers]
+        print("Unbootstrapped labels")
+        print(labels)
+        print("\n")
+
+        logging.info("Finished labeling")
+
+        # logging.info(f"scan1.number = {scan_numbers[0]}")
+        # logging.info(f"scan1.label = {labels[0]}")
+        # logging.info(f"scan1.shape = {scans[0].shape if scans[0] is not None else None}")
+
+        with multiprocessing.Pool(self.num_threads) as p:
+            scan_labels = p.starmap(self.bootstrap, zip(
+                scans, labels, itertools.repeat(self.scan_max_col), itertools.repeat(self.scan_min_col),
+                itertools.repeat(self.n)
+            ))
+
+        x = list(itertools.chain.from_iterable((scan_label[0] for scan_label in scan_labels if scan_label)))
+        y = list(itertools.chain.from_iterable((scan_label[1] for scan_label in scan_labels if scan_label)))
+
+        print(f"len(X) = {len(x)}")
+        print(f"\nTotal samples: {len(y)}")
+        print(f"Total positive: {np.sum(y)}")
+        print(f"Total negative: {len(y) - np.sum(y)}")
+
+        if self.scan_max_col != max((scan.shape[1] for scan in x)):
+            logging.warning(f"Max shape of x ({max((scan.shape[1] for scan in x))}) not equal to scan_max_col"
+                            f"({self.scan_max_col}).")
+
+        if self.scan_min_col != min((scan.shape[1] for scan in x)):
+            logging.warning(f"Min shape of x ({min((scan.shape[1] for scan in x))}) not equal to scan_min_col"
+                            f"({self.scan_min_col}).")
+
+        return np.concatenate(x, self.gulkana_X[gulkana_indices]), np.concatenate(y, self.gulkana_y[gulkana_indices])
+
+    def generate_batch(self, batch_number):
+        return self.generate(
+            indices=self.batched_indices[batch_number],
+            gulkana_indices = self.batched_indices_gulkana[batch_number]
+        )
+
+    def generate_batches(self):
+        return (self.generate(indices=indices, gulkana_indices = gulkana_indices) for indices, gulkana_indices in
+                zip(self.batched_indices, self.batched_indices_gulkana))
 
     @staticmethod
     def partition(list_in, n):
