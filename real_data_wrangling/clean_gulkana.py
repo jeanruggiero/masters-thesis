@@ -59,7 +59,7 @@ def preprocess_gulkana_real_data(prefix=None, keys=None):
     scan_path = "raw_data/gulkanaGlacier_rawGPR_2017/GPR_data/" + prefix if prefix else ""
 
     if keys:
-        keys = [scan_path + key for key in keys]
+        keys = [scan_path + key + '.DT1' for key in keys]
     else:
         keys = [obj.key for obj in bucket.objects.filter(Prefix=scan_path) if obj.key[-4:] == '.DT1']
     X = []
