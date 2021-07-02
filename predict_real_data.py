@@ -49,7 +49,7 @@ model = keras.models.Sequential([
 model.compile()
 
 # Restore the weights
-model.load_weights('hybridconv1_nonoise')
+model.load_weights('hybridconv1_nonoise_all_gulkana_neg')
 
 X_test, y_test = preprocess_real_data('thesis_real_data_labels.csv', 'real_data_metadata.csv')
 X_test = np.transpose(expand_dim(X_test), axes=(0, 2, 1, 3))

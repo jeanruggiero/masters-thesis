@@ -278,4 +278,4 @@ if __name__ == '__main__':
 
     # print(model.summary())
 
-    run_model_bscan_hybrid(model, 'hybridconv1_nonoise')
+    run_model_bscan_hybrid(model, 'hybridconv1_nonoise_all_gulkana_neg')
