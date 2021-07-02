@@ -949,3 +949,19 @@ Results from noising experiment:
 
 INFO:root:Number of noise scans available: (17662, 100, 480)
 ^ Noise sampled randomly from 17,662 B-scans
+
+
+Hypothesis: look at y_pred, y_true, and y_pred_proba to determine if a threshold other than 50/50 would yield better results
+
+Total samples in validation set: 803
+Total positive: 580
+Total negative: 223
+INFO:root:TP = 580
+INFO:root:FP = 90
+INFO:root:FN = 0
+INFO:root:
+f1-score = 0.93
+INFO:root:Precision = 0.87
+INFO:root:Recall = 1.00
+
+
