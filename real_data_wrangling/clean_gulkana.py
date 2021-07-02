@@ -33,11 +33,30 @@ def load_gulkana(key, bucket):
     return data, header
 
 
-def preprocess_gulkana_real_data():
+def read_gulkana(prefix=None):
+    s3 = boto3.resource('s3')
+    bucket = s3.Bucket(name="jean-masters-thesis")
+    scan_path = "raw_data/gulkanaGlacier_rawGPR_2017/GPR_data/" + prefix if prefix else ""
+    keys = [obj.key for obj in bucket.objects.filter(Prefix=scan_path) if obj.key[-4:] == '.DT1']
+
+    X = [load_gulkana(key, "jean-masters-thesis")[0] for key in keys]
+    return np.transpose(np.array(X), axes=[0, 2, 1]), np.array([0] * len(X))
+
+
+def gulkana_time_windows(prefix=None):
+    s3 = boto3.resource('s3')
+    bucket = s3.Bucket(name="jean-masters-thesis")
+    scan_path = "raw_data/gulkanaGlacier_rawGPR_2017/GPR_data/" + prefix if prefix else ""
+    keys = [obj.key for obj in bucket.objects.filter(Prefix=scan_path) if obj.key[-4:] == '.DT1']
+    return [load_gulkana(key, "jean-masters-thesis")[1]['Total_time_window'] for key in keys]
+
+
+def preprocess_gulkana_real_data(prefix=None):
+
 
     s3 = boto3.resource('s3')
     bucket = s3.Bucket(name="jean-masters-thesis")
-    scan_path = "raw_data/gulkanaGlacier_rawGPR_2017/GPR_data/DATA01/"
+    scan_path = "raw_data/gulkanaGlacier_rawGPR_2017/GPR_data/" + prefix if prefix else ""
     keys = [obj.key for obj in bucket.objects.filter(Prefix=scan_path) if obj.key[-4:] == '.DT1']
     X = []
 

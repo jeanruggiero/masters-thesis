@@ -6,7 +6,7 @@ import numpy as np
 
 from tensorflow.keras.optimizers import Adam
 
-from preprocessing import preprocess
+from preprocessing import preprocess, Noiser
 from modeling.metrics import mean_jaccard_index_post_epoch, f1_score_post_epoch, precision_post_epoch, \
     recall_post_epoch
 
@@ -44,13 +44,16 @@ def apply_window(X, y, n):
 
 
 def train_model(model, data_generator, output_time_range, sample_rate, callbacks={}, plots=True, resample=False,
-                epochs=30, sliding_window_size=None, gulkana_data_generator=None):
+                epochs=30, sliding_window_size=None, gulkana_data_generator=None, noiser=None):
     # Callbacks argument should be a dict of callback_fn: list of batches or None pairs. If list of batches is None
     # the callback will be applied to all batches
 
     # Use the first batch for validation.
     logging.info("Loading validation set.")
     X_val, y_val = preprocess(data_generator.generate_batch(0), output_time_range, sample_rate, resample=resample)
+
+    if noiser:
+        X_val = np.ndarray([noiser.noise(x) for x in X_val])
 
     logging.info(f'X_val.shape = {X_val.shape}')
     logging.info(f'y_val.shape = {y_val.shape}')
@@ -69,6 +72,8 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
     else:
         X_val = expand_dim(X_val)
 
+    X_val = np.apply_along_axis(Noiser.normalize, 0, X_val)
+
     logging.info(f'X_val.shape = {X_val.shape}')
     logging.info(f'y_val.shape = {y_val.shape}')
 
@@ -77,6 +82,9 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
         logging.info(f"Loading batch {i}")
 
         X_train, y_train = preprocess(data_generator.generate_batch(i), output_time_range, sample_rate, resample=resample)
+
+        if noiser:
+            X_train = np.ndarray([noiser.noise(x) for x in X_train])
 
         logging.info(f'X_train.shape = {X_train.shape}')
         logging.info(f'y_train.shape = {y_train.shape}')
@@ -94,6 +102,8 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
             X_train, y_train = apply_window(X_train, y_train, sliding_window_size)
         else:
             X_train = expand_dim(X_train)
+
+        X_train = np.apply_along_axis(Noiser.normalize, 0, X_train)
 
         logging.info(f"X_train.shape = {X_train.shape}")
         logging.info(f"y_train.shape = {y_train.shape}")

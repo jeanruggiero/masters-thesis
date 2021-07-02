@@ -528,14 +528,14 @@ class HybridBScanDataSetGenerator:
 
 class GulkanaBScanDataSetGenerator:
 
-    def __init__(self, num_batches, random_seed=None):
+    def __init__(self, num_batches, random_seed=None, prefix=None):
 
         self.num_batches = num_batches
 
         if random_seed:
             random.seed(random_seed)
 
-        self.X, self.y = preprocess_gulkana_real_data()
+        self.X, self.y = preprocess_gulkana_real_data(prefix=prefix)
         self.batched_indices = self.partition(list(range(len(self.y))), num_batches)
 
     def generate(self, indices=None):
