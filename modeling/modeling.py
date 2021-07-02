@@ -56,7 +56,7 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
     logging.info(f'y_val.shape = {y_val.shape}')
 
     if noiser:
-        X_val = np.apply_along_axis(noiser.noise, 0, X_val)
+        X_val = np.ndarray([noiser.noise(X_val[i, :, :]) for i in range(X_val.shape[0])])
 
     logging.info(f'X_val.shape = {X_val.shape}')
     logging.info(f'y_val.shape = {y_val.shape}')
@@ -75,7 +75,7 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
     else:
         X_val = expand_dim(X_val)
 
-    X_val = np.apply_along_axis(Noiser.normalize, 0, X_val)
+    X_val = np.ndarray([Noiser.normalize(X_val[i, :, :]) for i in range(X_val.shape[0])])
 
     logging.info(f'X_val.shape = {X_val.shape}')
     logging.info(f'y_val.shape = {y_val.shape}')
@@ -87,7 +87,7 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
         X_train, y_train = preprocess(data_generator.generate_batch(i), output_time_range, sample_rate, resample=resample)
 
         if noiser:
-            X_train = np.apply_along_axis(noiser.noise, 0, X_train)
+            X_train = np.ndarray([noiser.noise(X_train[i, :, :]) for i in range(X_train.shape[0])])
 
         logging.info(f'X_train.shape = {X_train.shape}')
         logging.info(f'y_train.shape = {y_train.shape}')
@@ -106,7 +106,7 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
         else:
             X_train = expand_dim(X_train)
 
-        X_train = np.apply_along_axis(Noiser.normalize, 0, X_train)
+        X_train = np.ndarray([Noiser.normalize(X_train[i, :, :]) for i in range(X_train.shape[0])])
 
         logging.info(f"X_train.shape = {X_train.shape}")
         logging.info(f"y_train.shape = {y_train.shape}")
