@@ -193,7 +193,8 @@ def run_model_bscan_hybrid(model, name):
     # Generate bootstrapped training set
     data_generator = BScanDataSetGenerator(loader, 10, n=10, scan_max_col=100, random_seed=42)
 
-    gulkana_data_generator = GulkanaBScanDataSetGenerator(10, random_seed=42, prefix='DATA01/')
+    gulkana_data_generator = GulkanaBScanDataSetGenerator(10, random_seed=42, prefix='DATA01/',
+                                                          keys=['LINE00', 'LINE01'])
 
     noiser = Noiser(5, 99)
 
