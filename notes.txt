@@ -964,4 +964,15 @@ f1-score = 0.93
 INFO:root:Precision = 0.87
 INFO:root:Recall = 1.00
 
+Results on real data:
+
+Total samples: 880
+Total positive: 337
+Total negative: 543
+INFO:root:TP = 118
+INFO:root:FP = 177
+INFO:root:FN = 219
+f1-score = 0.37
+precision = 0.40
+recall = 0.35
 

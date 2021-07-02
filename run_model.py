@@ -224,7 +224,7 @@ def run_model_bscan_hybrid(model, name):
     history, model, X_val, y_val = train_model(model, data_generator, output_time_range, sample_rate,
                                                callbacks=callbacks, epochs=30, plots=False,
                                                sliding_window_size=None, resample=True,
-                                               gulkana_data_generator=gulkana_data_generator, noiser=noiser)
+                                               gulkana_data_generator=gulkana_data_generator)
 
     # Save y_val to s3
     s3_client.upload_file("training.log", 'jean-masters-thesis', f'models/{name}_training.log')
@@ -279,4 +279,4 @@ if __name__ == '__main__':
 
     # print(model.summary())
 
-    run_model_bscan_hybrid(model, 'hybridconv1')
+    run_model_bscan_hybrid(model, 'hybridconv1_nonoise')
