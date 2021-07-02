@@ -989,7 +989,16 @@ f1-score = 0.93
 INFO:root:Precision = 0.87
 INFO:root:Recall = 1.00
 
-
+Test Set:
+Total samples: 880
+Total positive: 337
+Total negative: 543
+INFO:root:TP = 123
+INFO:root:FP = 184
+INFO:root:FN = 214
+f1-score = 0.38
+precision = 0.40
+recall = 0.36
 
 Idea: increase number of scans available for noising.
 
