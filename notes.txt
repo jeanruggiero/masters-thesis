@@ -943,3 +943,9 @@ INFO:root:FN = 70
 f1-score = 0.57
 precision = 0.44
 recall = 0.79
+
+
+Results from noising experiment:
+
+INFO:root:Number of noise scans available: (17662, 100, 480)
+^ Noise sampled randomly from 17,662 B-scans

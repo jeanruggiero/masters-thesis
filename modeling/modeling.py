@@ -52,6 +52,9 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
     logging.info("Loading validation set.")
     X_val, y_val = preprocess(data_generator.generate_batch(0), output_time_range, sample_rate, resample=resample)
 
+    logging.info(f'X_val.shape = {X_val.shape}')
+    logging.info(f'y_val.shape = {y_val.shape}')
+
     if noiser:
         X_val = np.apply_along_axis(Noiser.noise, 0, X_val)
 
