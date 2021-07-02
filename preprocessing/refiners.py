@@ -37,6 +37,16 @@ class Noiser:
         return np.apply_along_axis(self.extract_noise, 0, self.normalize(scan))
 
     def noise(self, simulated_scan):
+        print(f"Simulated scan shape: {simulated_scan.shape}")
+        print(f"self.real_scans[np.random.choice(self.real_scans.shape[0]).shape = "
+              f"{self.real_scans[np.random.choice(self.real_scans.shape[0])].shape}")
+
+        noise = self.extract_noise_bscan(
+            self.real_scans[np.random.choice(self.real_scans.shape[0])]
+        )
+
+        print(f"noise.shape = {noise.shape}")
+
         return self.normalize(simulated_scan) + self.extract_noise_bscan(
             self.real_scans[np.random.choice(self.real_scans.shape[0])]
         )
