@@ -359,17 +359,15 @@ class BScanDataSetGenerator:
         #                                             itertools.repeat(self.scan_min_col), itertools.repeat(self.n)):
         #     scan_labels.append(self.bootstrap(scan, label, max_col, min_col, n))
 
-        x = np.array(list((itertools.chain.from_iterable((scan_label[0] for scan_label in scan_labels if scan_label)))))
-        y = np.array(list(itertools.chain.from_iterable((scan_label[1] for scan_label in scan_labels if scan_label))))
+        x = list((itertools.chain.from_iterable((scan_label[0] for scan_label in scan_labels if scan_label))))
+        y = list(itertools.chain.from_iterable((scan_label[1] for scan_label in scan_labels if scan_label)))
 
-        logging.info(f"y = {y}")
-        logging.info(f"y.shape = {y.shape}")
 
         n_positive = np.sum(y)
-        n_negative = y.shape[0] - np.sum(y)
+        n_negative = len(y) - np.sum(y)
 
-        logging.debug(f"X.shape = {x.shape}")
-        logging.debug(f"\nTotal samples: {y.shape[0]}")
+        logging.debug(f"len(x) = {len(x)}")
+        logging.debug(f"\nTotal samples: {len(y)}")
         logging.debug(f"Total positive: {n_positive}")
         logging.debug(f"Total negative: {n_negative}")
 
@@ -388,7 +386,7 @@ class BScanDataSetGenerator:
                 logging.debug(f"new_positives = {new_positives}")
 
                 # Select new positives and concatenate with existing X
-                x = np.concatenate([x, x[new_positives]])
+                x = x.extend([x[n_p] for n_p in new_positives])
 
 
             elif n_negative > n_positive:
@@ -404,7 +402,8 @@ class BScanDataSetGenerator:
                 logging.debug(f"new_negatives = {new_negatives}")
 
                 # Select new negatives and concatenate with existing X
-                x = np.concatenate([x, x[new_negatives]])
+                x = x.extend([x[n_n] for n_n in new_negatives])
+
 
         logging.info(f"\nTotal samples: {len(y)}")
         logging.info(f"Total positive: {n_positive}")
