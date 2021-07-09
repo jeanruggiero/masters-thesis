@@ -43,6 +43,49 @@ def apply_window(X, y, n):
     return X_w, y_w
 
 
+def load_batch(batch, data_generator, gulkana_data_generator, noiser, output_time_range, sample_rate, resample,
+               sliding_window_size):
+    X, y = preprocess(data_generator.generate_batch(batch), output_time_range, sample_rate, resample=resample)
+
+    logging.debug(f'X.shape = {X.shape}')
+    logging.debug(f'y.shape = {y.shape}')
+
+    if noiser:
+        X_val = np.array([noiser.noise(X[i, :, :]) for i in range(X.shape[0])])
+
+    logging.debug(f'X.shape = {X.shape}')
+    logging.debug(f'y.shape = {y.shape}')
+
+    n_positive = np.sum(y)
+    n_negative = y.shape[0] - n_positive
+
+    if gulkana_data_generator:
+        if gulkana_data_generator.balance and n_positive > n_negative:
+            size = n_positive - n_negative
+        else:
+            size = None
+
+        X_gulkana, y_gulkana = gulkana_data_generator.generate_batch(batch, size=size)
+
+        logging.info(f'X_gulkana.shape = {X_gulkana.shape}')
+        logging.info(f'y_gulkana.shape = {y_gulkana.shape}')
+
+        X = np.concatenate([X, X_gulkana])
+        y = np.concatenate([y, y_gulkana])
+
+    if sliding_window_size is not None:
+        X, y = apply_window(X, y, sliding_window_size)
+    else:
+        X = expand_dim(X)
+
+    X = np.array([Noiser.normalize(X[i, :, :]) for i in range(X.shape[0])])
+
+    logging.info(f'X.shape = {X.shape}')
+    logging.info(f'y.shape = {y.shape}')
+
+    return X, y
+
+
 def train_model(model, data_generator, output_time_range, sample_rate, callbacks={}, plots=True, resample=False,
                 epochs=30, sliding_window_size=None, gulkana_data_generator=None, noiser=None):
     # Callbacks argument should be a dict of callback_fn: list of batches or None pairs. If list of batches is None
@@ -50,35 +93,47 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
 
     # Use the first batch for validation.
     logging.info("Loading validation set.")
-    X_val, y_val = preprocess(data_generator.generate_batch(0), output_time_range, sample_rate, resample=resample)
+    X_val, y_val = load_batch(
+        0, data_generator, gulkana_data_generator, noiser, output_time_range, sample_rate, resample, sliding_window_size
+    )
 
-    logging.info(f'X_val.shape = {X_val.shape}')
-    logging.info(f'y_val.shape = {y_val.shape}')
-
-    if noiser:
-        X_val = np.array([noiser.noise(X_val[i, :, :]) for i in range(X_val.shape[0])])
-
-    logging.info(f'X_val.shape = {X_val.shape}')
-    logging.info(f'y_val.shape = {y_val.shape}')
-
-    if gulkana_data_generator:
-        X_val_gulkana, y_val_gulkana = gulkana_data_generator.generate_batch(0)
-
-        logging.info(f'X_val_gulkana.shape = {X_val_gulkana.shape}')
-        logging.info(f'y_val_gulkana.shape = {y_val_gulkana.shape}')
-
-        X_val = np.concatenate([X_val, X_val_gulkana])
-        y_val = np.concatenate([y_val, y_val_gulkana])
-
-    if sliding_window_size is not None:
-        X_val, y_val = apply_window(X_val, y_val, sliding_window_size)
-    else:
-        X_val = expand_dim(X_val)
-
-    X_val = np.array([Noiser.normalize(X_val[i, :, :]) for i in range(X_val.shape[0])])
-
-    logging.info(f'X_val.shape = {X_val.shape}')
-    logging.info(f'y_val.shape = {y_val.shape}')
+    #     preprocess(data_generator.generate_batch(0), output_time_range, sample_rate, resample=resample)
+    #
+    # logging.info(f'X_val.shape = {X_val.shape}')
+    # logging.info(f'y_val.shape = {y_val.shape}')
+    #
+    # if noiser:
+    #     X_val = np.array([noiser.noise(X_val[i, :, :]) for i in range(X_val.shape[0])])
+    #
+    # logging.info(f'X_val.shape = {X_val.shape}')
+    # logging.info(f'y_val.shape = {y_val.shape}')
+    #
+    # n_positive = np.sum(y_val)
+    # n_negative = y_val.shape[0] - n_positive
+    #
+    # if gulkana_data_generator:
+    #     if gulkana_data_generator.balance and n_positive > n_negative:
+    #         size = n_positive - n_negative
+    #     else:
+    #         size = None
+    #
+    #     X_val_gulkana, y_val_gulkana = gulkana_data_generator.generate_batch(0, size=size)
+    #
+    #     logging.info(f'X_val_gulkana.shape = {X_val_gulkana.shape}')
+    #     logging.info(f'y_val_gulkana.shape = {y_val_gulkana.shape}')
+    #
+    #     X_val = np.concatenate([X_val, X_val_gulkana])
+    #     y_val = np.concatenate([y_val, y_val_gulkana])
+    #
+    # if sliding_window_size is not None:
+    #     X_val, y_val = apply_window(X_val, y_val, sliding_window_size)
+    # else:
+    #     X_val = expand_dim(X_val)
+    #
+    # X_val = np.array([Noiser.normalize(X_val[i, :, :]) for i in range(X_val.shape[0])])
+    #
+    # logging.info(f'X_val.shape = {X_val.shape}')
+    # logging.info(f'y_val.shape = {y_val.shape}')
 
     histories = []
     total_training_set_size = 0
@@ -87,32 +142,37 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
     for i in range(1, data_generator.num_batches):
         logging.info(f"Loading batch {i}")
 
-        X_train, y_train = preprocess(data_generator.generate_batch(i), output_time_range, sample_rate, resample=resample)
+        X_train, y_train = load_batch(
+            i, data_generator, gulkana_data_generator, noiser, output_time_range, sample_rate, resample,
+            sliding_window_size
+        )
 
-        if noiser:
-            X_train = np.array([noiser.noise(X_train[i, :, :]) for i in range(X_train.shape[0])])
-
-        logging.info(f'X_train.shape = {X_train.shape}')
-        logging.info(f'y_train.shape = {y_train.shape}')
-
-        if gulkana_data_generator:
-            X_train_gulkana, y_train_gulkana = gulkana_data_generator.generate_batch(i)
-
-            logging.info(f'X_train_gulkana.shape = {X_train_gulkana.shape}')
-            logging.info(f'y_train_gulkana.shape = {y_train_gulkana.shape}')
-
-            X_train = np.concatenate([X_train, X_train_gulkana])
-            y_train = np.concatenate([y_train, y_train_gulkana])
-
-        if sliding_window_size is not None:
-            X_train, y_train = apply_window(X_train, y_train, sliding_window_size)
-        else:
-            X_train = expand_dim(X_train)
-
-        X_train = np.array([Noiser.normalize(X_train[i, :, :]) for i in range(X_train.shape[0])])
-
-        logging.info(f"X_train.shape = {X_train.shape}")
-        logging.info(f"y_train.shape = {y_train.shape}")
+        # X_train, y_train = preprocess(data_generator.generate_batch(i), output_time_range, sample_rate, resample=resample)
+        #
+        # if noiser:
+        #     X_train = np.array([noiser.noise(X_train[i, :, :]) for i in range(X_train.shape[0])])
+        #
+        # logging.info(f'X_train.shape = {X_train.shape}')
+        # logging.info(f'y_train.shape = {y_train.shape}')
+        #
+        # if gulkana_data_generator:
+        #     X_train_gulkana, y_train_gulkana = gulkana_data_generator.generate_batch(i)
+        #
+        #     logging.info(f'X_train_gulkana.shape = {X_train_gulkana.shape}')
+        #     logging.info(f'y_train_gulkana.shape = {y_train_gulkana.shape}')
+        #
+        #     X_train = np.concatenate([X_train, X_train_gulkana])
+        #     y_train = np.concatenate([y_train, y_train_gulkana])
+        #
+        # if sliding_window_size is not None:
+        #     X_train, y_train = apply_window(X_train, y_train, sliding_window_size)
+        # else:
+        #     X_train = expand_dim(X_train)
+        #
+        # X_train = np.array([Noiser.normalize(X_train[i, :, :]) for i in range(X_train.shape[0])])
+        #
+        # logging.info(f"X_train.shape = {X_train.shape}")
+        # logging.info(f"y_train.shape = {y_train.shape}")
 
         total_training_set_size += X_train.shape[0]
         total_training_positives += np.sum(y_train)

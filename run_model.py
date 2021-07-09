@@ -134,10 +134,12 @@ def run_model_bscan(model, name, n=10, random_cropping=False, real_negative_inje
     loader = S3DataLoader('jean-masters-thesis', 'simulations/merged/')
 
     # Generate bootstrapped training set
-    data_generator = BScanDataSetGenerator(loader, 10, n=n, scan_max_col=100, random_seed=42,
-                                           random_cropping=random_cropping, balance=balance)
+    data_generator = BScanDataSetGenerator(
+        loader, 10, n=n, scan_max_col=100, random_seed=42, random_cropping=random_cropping,
+        balance=balance if not real_negative_injection else False
+    )
 
-    gulkana_data_generator = GulkanaBScanDataSetGenerator(10, random_seed=42, prefix='DATA01/') if \
+    gulkana_data_generator = GulkanaBScanDataSetGenerator(10, random_seed=42, prefix='DATA02/', balance=balance) if \
             real_negative_injection else None
 
     noiser = Noiser(5, 99) if real_noise else None

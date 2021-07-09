@@ -580,7 +580,7 @@ class HybridBScanDataSetGenerator:
 
 class GulkanaBScanDataSetGenerator:
 
-    def __init__(self, num_batches, random_seed=None, prefix=None, keys=None):
+    def __init__(self, num_batches, random_seed=None, prefix=None, keys=None, balance=False):
 
         self.num_batches = num_batches
 
@@ -589,13 +589,15 @@ class GulkanaBScanDataSetGenerator:
 
         self.X, self.y = preprocess_gulkana_real_data(prefix=prefix, keys=keys)
         self.batched_indices = self.partition(list(range(len(self.y))), num_batches)
+        self.balance = balance
 
     def generate(self, indices=None):
         logging.debug(f"Generating batch with indices {indices}")
         return self.X[indices], self.y[indices]
 
-    def generate_batch(self, batch_number):
-        return self.generate(indices=self.batched_indices[batch_number])
+    def generate_batch(self, batch_number, size=None):
+        batch = self.generate(indices=self.batched_indices[batch_number])
+        return batch if not size else batch[np.random.choice(batch, size)]
 
     def generate_batches(self):
         return (self.generate(indices=indices) for indices in self.batched_indices)
