@@ -386,7 +386,8 @@ class BScanDataSetGenerator:
                 logging.debug(f"new_positives = {new_positives}")
 
                 # Select new positives and concatenate with existing X
-                x = x.extend([x[n_p] for n_p in new_positives])
+                x.extend([x[n_p] for n_p in new_positives])
+                y.extend([y[n_p] for n_p in new_positives])
 
 
             elif n_negative > n_positive:
@@ -402,8 +403,11 @@ class BScanDataSetGenerator:
                 logging.debug(f"new_negatives = {new_negatives}")
 
                 # Select new negatives and concatenate with existing X
-                x = x.extend([x[n_n] for n_n in new_negatives])
+                x.extend([x[n_n] for n_n in new_negatives])
+                y.extend([y[n_n] for n_n in new_negatives])
 
+        n_positive = np.sum(y)
+        n_negative = len(y) - np.sum(y)
 
         logging.info(f"\nTotal samples: {len(y)}")
         logging.info(f"Total positive: {n_positive}")
