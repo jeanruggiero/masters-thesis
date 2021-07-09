@@ -396,6 +396,8 @@ class BScanDataSetGenerator:
                 # Randomly sample (with replacement) from negative indices
                 new_negatives = np.random.choice(negatives, n_additional)
 
+                logging.info(f"new_negatives = {new_negatives}")
+
                 # Select new negatives and concatenate with existing X
                 x = np.concatenate([x, x[new_negatives]])
 
