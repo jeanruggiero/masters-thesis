@@ -145,7 +145,7 @@ def run_model_bscan(model, name, n=10, random_cropping=False, real_negative_inje
         balance=balance if not real_negative_injection else False
     )
 
-    gulkana_data_generator = GulkanaBScanDataSetGenerator(10, random_seed=42, prefix='DATA01/LINE00', balance=balance) \
+    gulkana_data_generator = GulkanaBScanDataSetGenerator(10, random_seed=42, prefix='DATA01/LINE01', balance=balance) \
         if \
             real_negative_injection else None
 
