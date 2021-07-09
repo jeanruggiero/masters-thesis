@@ -25,10 +25,16 @@ from tensorflow.keras.metrics import Precision, Recall
 
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, handlers=[
-    logging.FileHandler("training.log"),
-    logging.StreamHandler()
-])
+fh = logging.FileHandler("training.log")
+fh.setLevel(logging.INFO)
+
+fhv = logging.FileHandler("training_verbose.log")
+fhv.setLevel(logging.DEBUG)
+
+sh = logging.StreamHandler()
+sh.setLevel(logging.INFO)
+
+logging.basicConfig(level=logging.INFO, handlers=[fh, fhv, sh])
 # root_logger = logging.getLogger()
 # root_logger.addHandler(logging.FileHandler("training.log", level=logging.INFO))
 # root_logger.addHandler(logging.StreamHandler(level=logging.INFO))

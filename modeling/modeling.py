@@ -122,12 +122,12 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
 
         y_pred = model.predict(X_val)
 
-        logging.info("\ny_pred validation set")
-        logging.info(f"{np.argmax(y_pred, axis=1)}")
+        logging.debug("\ny_pred validation set")
+        logging.debug(f"{np.argmax(y_pred, axis=1)}")
 
-        logging.info("\ny_pred_proba validation set")
+        logging.debug("\ny_pred_proba validation set")
         for y_pp, y_v in zip(y_pred, y_val):
-            logging.info(f"{y_pp}, {y_v}")
+            logging.debug(f"{y_pp}, {y_v}")
 
         logging.info(f"\nTotal samples in training set: {total_training_set_size}")
         logging.info(f"Total positive (training): {total_training_positives}")
