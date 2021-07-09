@@ -205,7 +205,7 @@ def run_model_bscan(model, name, n=10, random_cropping=False, real_negative_inje
 
 if __name__ == '__main__':
 
-    experiment_name = 'experiment4_balanced'
+    experiment_name = 'experiment5_balanced_5_99'
 
     logging.info(f"Starting experiment: {experiment_name}")
     logging.info(f"Num GPUs Available: {len(tf.config.list_physical_devices('GPU'))}")
@@ -238,4 +238,5 @@ if __name__ == '__main__':
 
     # print(model.summary())
 
-    run_model_bscan(model, experiment_name, n=1, random_cropping=False, balance=True, real_negative_injection=True)
+    run_model_bscan(model, experiment_name, n=1, random_cropping=False, balance=True, real_negative_injection=False,
+                    real_noise=True)
