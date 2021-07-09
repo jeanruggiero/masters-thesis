@@ -1005,4 +1005,26 @@ Idea: increase number of scans available for noising.
 
 Idea: repeat with larger set of noise scans
 
+Total samples in validation set: 2955
+Total positive: 580
+Total negative: 2375
+INFO:root:TP = 580
+INFO:root:FP = 90
+INFO:root:FN = 0
+INFO:root:
+f1-score = 0.93
+INFO:root:Precision = 0.87
+INFO:root:Recall = 1.00
+
+Test set:
+Total samples: 880
+Total positive: 337
+Total negative: 543
+INFO:root:TP = 195
+INFO:root:FP = 372
+INFO:root:FN = 142
+f1-score = 0.43
+precision = 0.34
+recall = 0.58
+
 

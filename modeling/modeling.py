@@ -81,6 +81,9 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
     logging.info(f'y_val.shape = {y_val.shape}')
 
     histories = []
+    total_training_set_size = 0
+    total_training_positives = 0
+    total_training_negatives = 0
     for i in range(1, data_generator.num_batches):
         logging.info(f"Loading batch {i}")
 
@@ -111,6 +114,11 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
         logging.info(f"X_train.shape = {X_train.shape}")
         logging.info(f"y_train.shape = {y_train.shape}")
 
+        total_training_set_size += X_train.shape[0]
+        total_training_positives += np.sum(y_train)
+        total_training_negatives += y_train.shape[0] - np.sum(y_train)
+
+
         # Select callbacks to apply to this batch
         batch_callbacks = [key for key, batches in callbacks.items() if not batches or i in batches]
 
@@ -127,6 +135,9 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
         for y_pp, y_v in zip(y_pred, y_val):
             print(y_pp, y_v)
 
+        print(f"\nTotal samples in training set: {total_training_set_size}")
+        print(f"Total positive (training): {total_training_positives}")
+        print(f"Total negative (training): {total_training_negatives}")
 
         print(f"\nTotal samples in validation set: {y_val.shape[0]}")
         print(f"Total positive: {np.sum(y_val)}")
@@ -136,6 +147,7 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
         logging.info(f"\nf1-score = {f1_score_post_epoch(y_val, y_pred):.2f}")
         logging.info(f"Precision = {precision_post_epoch(y_val, y_pred):.2f}")
         logging.info(f"Recall = {recall_post_epoch(y_val, y_pred):.2f}")
+
 
         if plots:
             plot_history(history)

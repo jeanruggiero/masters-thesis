@@ -126,76 +126,21 @@ def run_model(model, name, sliding_window_size=None):
     s3_client.upload_file(f'{name}_history.txt', 'jean-masters-thesis', f'models/{name}_history.txt')
 
 
-def run_model_bscan(model, name):
+def run_model_bscan(model, name, n=10, random_cropping=False, real_negative_injection=False, gaussian_noise=False,
+                    real_noise=False):
 
     s3_client = boto3.client('s3')
     # Load raw data
     loader = S3DataLoader('jean-masters-thesis', 'simulations/merged/')
 
     # Generate bootstrapped training set
-    data_generator = BScanDataSetGenerator(loader, 10, n=10, scan_max_col=100, random_seed=42)
+    data_generator = BScanDataSetGenerator(loader, 10, n=n, scan_max_col=100, random_seed=42,
+                                           random_cropping=random_cropping)
 
-    # Reshaping parameters
-    output_time_range = 120
-    sample_rate = 4  # samples per ns
+    gulkana_data_generator = GulkanaBScanDataSetGenerator(10, random_seed=42, prefix='DATA01/') if \
+            real_negative_injection else None
 
-    # Training callbacks
-    lr_scheduler = tf.keras.callbacks.LearningRateScheduler(scheduler)
-    lr_scheduler_after_first_batch = tf.keras.callbacks.LearningRateScheduler(scheduler_after_first_batch)
-    es = EarlyStopping(monitor="val_loss", min_delta=0, patience=10, verbose=1, restore_best_weights=True)
-
-    callbacks = {
-        es: None,
-        # lr_scheduler: [0],
-        # lr_scheduler_after_first_batch: list(range(1, 11))
-    }
-
-    # Compile model
-    model.compile(
-        loss='sparse_categorical_crossentropy',
-        optimizer=Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False),
-        metrics=['accuracy']
-    )
-
-    # Train model
-    history, model, X_val, y_val = train_model(model, data_generator, output_time_range, sample_rate,
-                                               callbacks=callbacks, epochs=30, plots=False,
-                                               sliding_window_size=None, resample=True)
-
-    # Save y_val to s3
-    s3_client.upload_file("training.log", 'jean-masters-thesis', f'models/{name}_training.log')
-    np.savetxt(f"{name}_y_val.csv", y_val, delimiter=",")
-    s3_client.upload_file(f"{name}_y_val.csv", 'jean-masters-thesis', f'models/{name}_y_val.csv')
-
-    # Save y_pred to s3
-    y_pred_proba = model.predict(X_val)
-    y_pred = np.argmax(y_pred_proba, axis=len(y_pred_proba.shape) - 1)
-    np.savetxt(f"{name}_y_pred.csv", y_pred, delimiter=",")
-    s3_client.upload_file(f"{name}_y_pred.csv", 'jean-masters-thesis', f'models/{name}_y_val.csv')
-
-    # Save model to disk & s3
-    model.save_weights(name)
-    s3_client.upload_file(f"{name}.data-00000-of-00001", 'jean-masters-thesis', f'models/{name}.data-00000-of-00001')
-    s3_client.upload_file(f"{name}.index", 'jean-masters-thesis', f'models/{name}.index')
-
-    # Save history to disk
-    with open(f"{name}_history.txt", 'w') as f:
-        f.write(json.dumps([h.history for h in history]))
-    s3_client.upload_file(f'{name}_history.txt', 'jean-masters-thesis', f'models/{name}_history.txt')
-
-
-def run_model_bscan_hybrid(model, name):
-
-    s3_client = boto3.client('s3')
-    # Load raw data
-    loader = S3DataLoader('jean-masters-thesis', 'simulations/merged/')
-
-    # Generate bootstrapped training set
-    data_generator = BScanDataSetGenerator(loader, 10, n=10, scan_max_col=100, random_seed=42)
-
-    gulkana_data_generator = GulkanaBScanDataSetGenerator(10, random_seed=42, prefix='DATA01/')
-
-    noiser = Noiser(5, 99)
+    noiser = Noiser(5, 99) if real_noise else None
 
     # Reshaping parameters
     output_time_range = 120
@@ -247,6 +192,8 @@ def run_model_bscan_hybrid(model, name):
     s3_client.upload_file(f'{name}_history.txt', 'jean-masters-thesis', f'models/{name}_history.txt')
 
 
+
+
 if __name__ == '__main__':
     logging.info(f"Num GPUs Available: {len(tf.config.list_physical_devices('GPU'))}")
 
@@ -278,4 +225,4 @@ if __name__ == '__main__':
 
     # print(model.summary())
 
-    run_model_bscan_hybrid(model, 'hybridconv1_nonoise_all_gulkana_neg')
+    run_model_bscan(model, 'experiment1', n=1, random_cropping=False)

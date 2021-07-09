@@ -258,7 +258,7 @@ class DataSetGenerator:
 class BScanDataSetGenerator:
 
     def __init__(self, data_loader, num_batches, scan_min_col=100, scan_max_col=None, n=1, random_seed=None,
-                 num_threads=8):
+                 num_threads=8, random_cropping=True):
 
         self.scan_numbers = data_loader.scan_numbers()
         self.num_batches = num_batches
@@ -269,14 +269,14 @@ class BScanDataSetGenerator:
         self.scan_min_col = scan_min_col
         self.scan_max_col = scan_max_col
         self.n = n
+        self.random_cropping = random_cropping
 
         if random_seed:
             random.seed(random_seed)
 
         self.batched_indices = self.partition(list(range(len(self.scan_numbers))), num_batches)
 
-    @staticmethod
-    def bootstrap(scan, label, max_col, min_col, n):
+    def bootstrap(self, scan, label):
 
         if scan is None:
             logging.debug("[DataSetGenerator.bootstrap] scan = None")
@@ -285,22 +285,26 @@ class BScanDataSetGenerator:
         logging.debug(f"[DataSetGenerator.bootstrap] scan.shape = {scan.shape}")
         logging.debug(f"[DataSetGenerator.bootstrap] label = {label}")
 
-        # Generate a number of input matrices from the base scan
-        max_col = max_col if max_col and max_col <= scan.shape[0] else scan.shape[0]
-        min_col = min(min_col, scan.shape[0])
+        max_col = self.max_col if self.max_col and self.max_col <= scan.shape[0] else scan.shape[0]
+        min_col = min(self.min_col, scan.shape[0])
 
         logging.debug(f"[DataSetGenerator.bootstrap] max_col: {max_col}")
         logging.debug(f"[DataSetGenerator.bootstrap] min_col: {min_col}")
 
-        lengths = np.random.randint(min_col, high=max_col + 1, size=n)
-        starts = [random.randint(0, scan.shape[0] - length) for length in lengths]
+        if self.random_cropping:
+            # Generate a number of input matrices from the base scan
+            lengths = np.random.randint(min_col, high=max_col + 1, size=self.n)
+            starts = [random.randint(0, scan.shape[0] - length) for length in lengths]
+        else:
+            starts = [(scan.shape[0] - 100) / 2 - 1]
+            lengths = [max_col]
 
+        logging.debug(f"Random cropping is {'ON' if self.random_cropping else 'OFF'}")
         logging.debug(f"lengths = {lengths}")
         logging.debug(f"starts = {starts}")
 
         # Generate n scans from each b-scan
-        return BScanDataSetGenerator.bootstrap_scan(scan.T, starts, lengths), \
-               BScanDataSetGenerator.bootstrap_label(label, starts, lengths)
+        return self.bootstrap_scan(scan.T, starts, lengths), self.bootstrap_label(label, starts, lengths)
 
     @staticmethod
     def bootstrap_label(label, starts, lengths):
