@@ -374,25 +374,8 @@ class BScanDataSetGenerator:
         if self.balance:
             logging.info('Balancing dataset.')
             if n_positive > n_negative:
-                # More positive than negative scans. Randomly sample from positive scans
+                # More positive than negative scans. Randomly sample from negative scans
                 n_additional = n_positive - n_negative
-
-                # Get indices for positive samples
-                positives = np.flatnonzero(y)
-
-                # Randomly sample (with replacement) from positive indices
-                new_positives = np.random.choice(positives, n_additional)
-
-                logging.debug(f"new_positives = {new_positives}")
-
-                # Select new positives and concatenate with existing X
-                x.extend([x[n_p] for n_p in new_positives])
-                y.extend([y[n_p] for n_p in new_positives])
-
-
-            elif n_negative > n_positive:
-                # More negative than positive scans. Randomly sample from negative scans
-                n_additional = n_negative - n_positive
 
                 # Get indices for negative samples
                 negatives = np.flatnonzero(y == 0)
@@ -405,6 +388,22 @@ class BScanDataSetGenerator:
                 # Select new negatives and concatenate with existing X
                 x.extend([x[n_n] for n_n in new_negatives])
                 y.extend([y[n_n] for n_n in new_negatives])
+
+            elif n_negative > n_positive:
+                # More negative than positive scans. Randomly sample from negative scans
+                n_additional = n_negative - n_positive
+
+                # Get indices for positive samples
+                positives = np.flatnonzero(y)
+
+                # Randomly sample (with replacement) from positive indices
+                new_positives = np.random.choice(positives, n_additional)
+
+                logging.debug(f"new_positives = {new_positives}")
+
+                # Select new positives and concatenate with existing X
+                x.extend([x[n_p] for n_p in new_positives])
+                y.extend([y[n_p] for n_p in new_positives])
 
         n_positive = np.sum(y)
         n_negative = len(y) - np.sum(y)
