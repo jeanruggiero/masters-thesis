@@ -305,7 +305,7 @@ if __name__ == '__main__':
         },
     }
 
-    experiment_name = 'experiment8_balanced_n_10'
+    experiment_name = 'experiment8_balanced_n_1'
 
     logging.info(f"Starting experiment: {experiment_name}")
     logging.info(f"Num GPUs Available: {len(tf.config.list_physical_devices('GPU'))}")
@@ -338,7 +338,7 @@ if __name__ == '__main__':
 
     # print(model.summary())
 
-    run_model_bscan(model, experiment_name, n=10, random_cropping=True, balance=True, real_negative_injection=False,
+    run_model_bscan(model, experiment_name, n=1, random_cropping=True, balance=True, real_negative_injection=False,
                     real_noise=True)
 
 
