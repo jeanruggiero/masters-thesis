@@ -127,7 +127,7 @@ def run_model(model, name, sliding_window_size=None):
 
 
 def run_model_bscan(model, name, n=10, random_cropping=False, real_negative_injection=False, gaussian_noise=False,
-                    real_noise=False):
+                    real_noise=False, balance=False):
 
     s3_client = boto3.client('s3')
     # Load raw data
@@ -135,7 +135,7 @@ def run_model_bscan(model, name, n=10, random_cropping=False, real_negative_inje
 
     # Generate bootstrapped training set
     data_generator = BScanDataSetGenerator(loader, 10, n=n, scan_max_col=100, random_seed=42,
-                                           random_cropping=random_cropping)
+                                           random_cropping=random_cropping, balance=balance)
 
     gulkana_data_generator = GulkanaBScanDataSetGenerator(10, random_seed=42, prefix='DATA01/') if \
             real_negative_injection else None
@@ -225,4 +225,4 @@ if __name__ == '__main__':
 
     # print(model.summary())
 
-    run_model_bscan(model, 'experiment1', n=1, random_cropping=False)
+    run_model_bscan(model, 'experiment1_balanced', n=1, random_cropping=False, balance=True)
