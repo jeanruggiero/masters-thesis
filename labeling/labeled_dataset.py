@@ -383,6 +383,7 @@ class BScanDataSetGenerator:
                 new_positives = np.random.choice(positives, n_additional)
 
                 logging.info(f"new_positives = {new_positives}")
+                logging.info(f"{x[new_positives]}")
 
                 # Select new positives and concatenate with existing X
                 x = np.concatenate([x, x[new_positives]])
