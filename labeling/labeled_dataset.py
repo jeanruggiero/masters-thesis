@@ -600,12 +600,11 @@ class GulkanaBScanDataSetGenerator:
 
         indices = self.batched_indices[batch_number]
 
-        logging.info(f"{indices}")
-        logging.info(f"{np.random.choice(indices, size, replace=False)}")
-        logging.info(f"{np.random.choice(indices, size, replace=False)[0]}")
+        # logging.info(f"{indices}")
+        # logging.info(f"{np.random.choice(indices, size, replace=False)}")
 
         if size:
-            indices = [indices[i] for i in np.random.choice(indices, size, replace=False)]
+            indices = np.random.choice(indices, size, replace=False)
 
         return self.generate(indices=indices)
 
