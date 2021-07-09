@@ -133,6 +133,12 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
         logging.info(f"Total positive (training): {total_training_positives}")
         logging.info(f"Total negative (training): {total_training_negatives}")
 
+        y_pred_train = model.predict(X_train)
+        logging.info(f"\nResults on last training batch:")
+        logging.info(f"Training f1-score = {f1_score_post_epoch(y_train, y_pred_train):.2f}")
+        logging.info(f"Training Precision = {precision_post_epoch(y_train, y_pred_train):.2f}")
+        logging.info(f"Training Recall = {recall_post_epoch(y_train, y_pred_train):.2f}")
+
         logging.info(f"\nTotal samples in validation set: {y_val.shape[0]}")
         logging.info(f"Total positive: {np.sum(y_val)}")
         logging.info(f"Total negative: {y_val.shape[0] - np.sum(y_val)}")
