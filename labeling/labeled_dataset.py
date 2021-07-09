@@ -359,8 +359,8 @@ class BScanDataSetGenerator:
         #                                             itertools.repeat(self.scan_min_col), itertools.repeat(self.n)):
         #     scan_labels.append(self.bootstrap(scan, label, max_col, min_col, n))
 
-        x = np.array((itertools.chain.from_iterable((scan_label[0] for scan_label in scan_labels if scan_label))))
-        y = np.array(itertools.chain.from_iterable((scan_label[1] for scan_label in scan_labels if scan_label)))
+        x = np.array(list((itertools.chain.from_iterable((scan_label[0] for scan_label in scan_labels if scan_label)))))
+        y = np.array(list(itertools.chain.from_iterable((scan_label[1] for scan_label in scan_labels if scan_label))))
 
         logging.info(f"y = {y}")
         logging.info(f"y.shape = {y.shape}")
