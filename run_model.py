@@ -200,11 +200,112 @@ def run_model_bscan(model, name, n=10, random_cropping=False, real_negative_inje
     s3_client.upload_file(f'{name}_history.txt', 'jean-masters-thesis', f'models/{name}_history.txt')
 
 
+def run_experiment(model, experiment_name, **kwargs):
+    logging.info(f"Starting experiment: {experiment_name}")
+    run_model_bscan(model, experiment_name, **kwargs)
 
 
 if __name__ == '__main__':
 
-    experiment_name = 'experiment7_balanced_n_10'
+    experiments = {
+        'experiment1_balanced_50epochs_variablelr': {
+            'n': 1,
+            'random_cropping': False,
+            'real_negative_injection': False,
+            'gaussian_noise': False,
+            'real_noise': False
+        },
+
+        'experiment2_balanced_50epochs_variablelr_n_1': {
+            'n': 1,
+            'random_cropping': True,
+            'real_negative_injection': False,
+            'gaussian_noise': False,
+            'real_noise': False
+        },
+
+        'experiment2_balanced_50epochs_variablelr_n_10': {
+            'n': 10,
+            'random_cropping': True,
+            'real_negative_injection': False,
+            'gaussian_noise': False,
+            'real_noise': False
+        },
+
+        'experiment4_balanced_50epochs_variablelr': {
+            'n': 1,
+            'random_cropping': False,
+            'real_negative_injection': True,
+            'gaussian_noise': False,
+            'real_noise': False
+        },
+
+        'experiment5_balanced_50epochs_variablelr': {
+            'n': 1,
+            'random_cropping': False,
+            'real_negative_injection': False,
+            'gaussian_noise': False,
+            'real_noise': True
+        },
+
+        'experiment7_balanced_50epochs_variablelr_n1': {
+            'n': 1,
+            'random_cropping': True,
+            'real_negative_injection': True,
+            'gaussian_noise': False,
+            'real_noise': False
+        },
+
+        'experiment7_balanced_50epochs_variablelr_n10': {
+            'n': 10,
+            'random_cropping': True,
+            'real_negative_injection': True,
+            'gaussian_noise': False,
+            'real_noise': False
+        },
+
+        'experiment8_balanced_50epochs_variablelr_n1': {
+            'n': 1,
+            'random_cropping': True,
+            'real_negative_injection': False,
+            'gaussian_noise': False,
+            'real_noise': True
+        },
+
+        'experiment8_balanced_50epochs_variablelr_n10': {
+            'n': 10,
+            'random_cropping': True,
+            'real_negative_injection': False,
+            'gaussian_noise': False,
+            'real_noise': True
+        },
+
+        'experiment9_balanced_50epochs_variablelr': {
+            'n': 1,
+            'random_cropping': False,
+            'real_negative_injection': True,
+            'gaussian_noise': False,
+            'real_noise': True
+        },
+
+        'experiment10_balanced_50epochs_variablelr_n1': {
+            'n': 1,
+            'random_cropping': True,
+            'real_negative_injection': True,
+            'gaussian_noise': False,
+            'real_noise': True
+        },
+
+        'experiment10_balanced_50epochs_variablelr_n10': {
+            'n': 10,
+            'random_cropping': True,
+            'real_negative_injection': True,
+            'gaussian_noise': False,
+            'real_noise': True
+        },
+    }
+
+    experiment_name = 'experiment7_balanced_n_1'
 
     logging.info(f"Starting experiment: {experiment_name}")
     logging.info(f"Num GPUs Available: {len(tf.config.list_physical_devices('GPU'))}")
@@ -237,5 +338,9 @@ if __name__ == '__main__':
 
     # print(model.summary())
 
-    run_model_bscan(model, experiment_name, n=10, random_cropping=True, balance=True, real_negative_injection=True,
+    run_model_bscan(model, experiment_name, n=1, random_cropping=True, balance=True, real_negative_injection=True,
                     real_noise=False)
+
+
+    # for experiment_name, kwargs in experiments.items():
+    #     run_model_bscan(model, experiment_name, balance=True, **kwargs)
