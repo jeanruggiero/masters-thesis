@@ -601,7 +601,7 @@ class GulkanaBScanDataSetGenerator:
         indices = self.batched_indices[batch_number]
 
         if size:
-            indices = indices[np.random.choice(indices, size, replace=False)]
+            indices = [indices[i] for i in np.random.choice(indices, size, replace=False)]
 
         return self.generate(indices=indices)
 
