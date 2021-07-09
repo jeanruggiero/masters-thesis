@@ -12,7 +12,7 @@ class Noiser:
         self.fs = 30.0
 
         # load noise scans & resample/slice to get list of (480, 100) size scans
-        self.real_scans, _ = preprocess_gulkana_real_data(prefix='DATA02/', keys=['LINE00'])
+        self.real_scans, _ = preprocess_gulkana_real_data(prefix='DATA02/', keys=None)
 
         # log warning if not enough noise scans
         logging.info(f"Number of noise scans available: {self.real_scans.shape}")
