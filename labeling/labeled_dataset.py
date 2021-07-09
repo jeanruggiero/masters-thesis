@@ -359,14 +359,14 @@ class BScanDataSetGenerator:
         #                                             itertools.repeat(self.scan_min_col), itertools.repeat(self.n)):
         #     scan_labels.append(self.bootstrap(scan, label, max_col, min_col, n))
 
-        x = list(itertools.chain.from_iterable((scan_label[0] for scan_label in scan_labels if scan_label)))
-        y = list(itertools.chain.from_iterable((scan_label[1] for scan_label in scan_labels if scan_label)))
+        x = np.array((itertools.chain.from_iterable((scan_label[0] for scan_label in scan_labels if scan_label))))
+        y = np.array(itertools.chain.from_iterable((scan_label[1] for scan_label in scan_labels if scan_label)))
 
         n_positive = np.sum(y)
-        n_negative = len(y) - np.sum(y)
+        n_negative = y.shape[0] - np.sum(y)
 
-        logging.debug(f"len(X) = {len(x)}")
-        logging.debug(f"\nTotal samples: {len(y)}")
+        logging.debug(f"X.shape = {x.shape}")
+        logging.debug(f"\nTotal samples: {y.shape[0]}")
         logging.debug(f"Total positive: {n_positive}")
         logging.debug(f"Total negative: {n_negative}")
 
@@ -382,10 +382,7 @@ class BScanDataSetGenerator:
                 # Randomly sample (with replacement) from positive indices
                 new_positives = np.random.choice(positives, n_additional)
 
-                logging.info(f"new_positives = {new_positives}")
-                logging.info(f"type(new_positives) = {type(new_positives)}")
-                logging.info(f"new_positives[0] = {new_positives[0]}")
-                logging.info(f"{x[new_positives]}")
+                logging.debug(f"new_positives = {new_positives}")
 
                 # Select new positives and concatenate with existing X
                 x = np.concatenate([x, x[new_positives]])
@@ -401,7 +398,7 @@ class BScanDataSetGenerator:
                 # Randomly sample (with replacement) from negative indices
                 new_negatives = np.random.choice(negatives, n_additional)
 
-                logging.info(f"new_negatives = {new_negatives}")
+                logging.debug(f"new_negatives = {new_negatives}")
 
                 # Select new negatives and concatenate with existing X
                 x = np.concatenate([x, x[new_negatives]])
