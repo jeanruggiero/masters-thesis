@@ -258,7 +258,7 @@ class DataSetGenerator:
 class BScanDataSetGenerator:
 
     def __init__(self, data_loader, num_batches, scan_min_col=100, scan_max_col=None, n=1, random_seed=None,
-                 num_threads=8, random_cropping=True):
+                 num_threads=8, random_cropping=True, balance=False):
 
         self.scan_numbers = data_loader.scan_numbers()
         self.num_batches = num_batches
@@ -270,6 +270,7 @@ class BScanDataSetGenerator:
         self.scan_max_col = scan_max_col
         self.n = n
         self.random_cropping = random_cropping
+        self.balance = balance
 
         if random_seed:
             random.seed(random_seed)
@@ -337,10 +338,8 @@ class BScanDataSetGenerator:
                 continue
 
         labels = [1 if scan_number < 20000 else 0 for scan_number in scan_numbers]
-        print("Unbootstrapped labels")
-        print(labels)
-        print("\n")
-
+        logging.debug("Unbootstrapped labels")
+        logging.debug(labels)
         logging.info("Finished labeling")
 
         # logging.info(f"scan1.number = {scan_numbers[0]}")
@@ -363,10 +362,46 @@ class BScanDataSetGenerator:
         x = list(itertools.chain.from_iterable((scan_label[0] for scan_label in scan_labels if scan_label)))
         y = list(itertools.chain.from_iterable((scan_label[1] for scan_label in scan_labels if scan_label)))
 
-        print(f"len(X) = {len(x)}")
-        print(f"\nTotal samples: {len(y)}")
-        print(f"Total positive: {np.sum(y)}")
-        print(f"Total negative: {len(y) - np.sum(y)}")
+        n_positive = np.sum(y)
+        n_negative = len(y) - np.sum(y)
+
+        logging.debug(f"len(X) = {len(x)}")
+        logging.debug(f"\nTotal samples: {len(y)}")
+        logging.debug(f"Total positive: {n_positive}")
+        logging.debug(f"Total negative: {n_negative}")
+
+        if self.balance:
+            logging.info('Balancing dataset.')
+            if n_positive > n_negative:
+                # More positive than negative scans. Randomly sample from positive scans
+                n_additional = n_positive - n_negative
+
+                # Get indices for positive samples
+                positives = np.flatnonzero(y)
+
+                # Randomly sample (with replacement) from positive indices
+                new_positives = np.random.choice(positives, n_additional)
+
+                # Select new positives and concatenate with existing X
+                x = np.concatenate([x, x[new_positives]])
+
+
+            elif n_negative > n_positive:
+                # More negative than positive scans. Randomly sample from negative scans
+                n_additional = n_negative - n_positive
+
+                # Get indices for negative samples
+                negatives = np.flatnonzero(y == 0)
+
+                # Randomly sample (with replacement) from negative indices
+                new_negatives = np.random.choice(negatives, n_additional)
+
+                # Select new negatives and concatenate with existing X
+                x = np.concatenate([x, x[new_negatives]])
+
+        logging.info(f"\nTotal samples: {len(y)}")
+        logging.info(f"Total positive: {n_positive}")
+        logging.info(f"Total negative: {n_negative}")
 
         if self.scan_max_col != max((scan.shape[1] for scan in x)):
             logging.warning(f"Max shape of x ({max((scan.shape[1] for scan in x))}) not equal to scan_max_col"
