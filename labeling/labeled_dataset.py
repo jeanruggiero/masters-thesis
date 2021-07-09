@@ -596,8 +596,9 @@ class GulkanaBScanDataSetGenerator:
         return self.X[indices], self.y[indices]
 
     def generate_batch(self, batch_number, size=None):
+        logging.info(f"Generating Gulkana negative batch of size {size}.")
         batch = self.generate(indices=self.batched_indices[batch_number])
-        return batch if not size else batch[np.random.choice(batch, size, replace=False)]
+        return batch if not size else batch[np.random.choice(batch[1], size, replace=False)]
 
     def generate_batches(self):
         return (self.generate(indices=indices) for indices in self.batched_indices)
