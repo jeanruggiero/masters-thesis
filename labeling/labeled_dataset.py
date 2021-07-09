@@ -378,7 +378,7 @@ class BScanDataSetGenerator:
                 n_additional = n_positive - n_negative
 
                 # Get indices for negative samples
-                negatives = np.flatnonzero(y == 0)
+                negatives = np.flatnonzero(np.array(y) == 0)
 
                 # Randomly sample (with replacement) from negative indices
                 new_negatives = np.random.choice(negatives, n_additional)
@@ -390,7 +390,7 @@ class BScanDataSetGenerator:
                 y.extend([y[n_n] for n_n in new_negatives])
 
             elif n_negative > n_positive:
-                # More negative than positive scans. Randomly sample from negative scans
+                # More negative than positive scans. Randomly sample from positive scans
                 n_additional = n_negative - n_positive
 
                 # Get indices for positive samples
