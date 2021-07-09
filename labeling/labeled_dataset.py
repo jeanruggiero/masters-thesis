@@ -362,6 +362,9 @@ class BScanDataSetGenerator:
         x = np.array((itertools.chain.from_iterable((scan_label[0] for scan_label in scan_labels if scan_label))))
         y = np.array(itertools.chain.from_iterable((scan_label[1] for scan_label in scan_labels if scan_label)))
 
+        logging.info(f"y = {y}")
+        logging.info(f"y.shape = {y.shape}")
+
         n_positive = np.sum(y)
         n_negative = y.shape[0] - np.sum(y)
 
