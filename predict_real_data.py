@@ -30,16 +30,40 @@ sh.setLevel(logging.INFO)
 logging.basicConfig(level=logging.INFO, handlers=[fh, fhv, sh])
 
 
-def predict_real(model, experiment_name, X_test, y_test):
+def predict_real(experiment_name, X_test, y_test):
 
     logging.info('.........................................................................................')
     logging.info("Generating predictions for experiment: " + experiment_name)
 
+    alpha = 0.05
+    model = keras.models.Sequential([
+        # keras.layers.InputLayer(shape=[144, 480, 1]),
+        keras.layers.BatchNormalization(),
+        keras.layers.Conv2D(filters=10, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
+                            activation='relu', padding='same'),
+        keras.layers.MaxPool2D(pool_size=(3, 3), strides=(1, 1)),
+        keras.layers.Conv2D(filters=20, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
+                            activation='relu', padding='same'),
+        keras.layers.Conv2D(filters=20, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
+                            activation='relu', padding='same'),
+        keras.layers.MaxPool2D(pool_size=(2, 2), strides=(1, 1)),
+        keras.layers.Conv2D(filters=25, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
+                            activation='relu', padding='same'),
+        keras.layers.Conv2D(filters=25, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
+                            activation='relu', padding='same'),
+        keras.layers.MaxPool2D(pool_size=(2, 2), strides=(1, 1)),
+        keras.layers.Flatten(),
+        keras.layers.Dense(128, activation="relu"),
+        keras.layers.Dropout(0.5),
+        keras.layers.Dense(64, activation="relu"),
+        keras.layers.Dropout(0.5),
+        keras.layers.Dense(2, activation='softmax')
+    ])
 
-    bucket_name = "jean-masters-thesis"
+    model.compile()
 
     s3 = boto3.resource('s3')
-    bucket = s3.Bucket(name=bucket_name)
+    bucket = s3.Bucket(name="jean-masters-thesis")
 
     # Get all objects pertaining to specified model
     objs = bucket.objects.filter(Prefix='models/' + experiment_name + '.')
@@ -127,37 +151,10 @@ if __name__ == '__main__':
 
     X_test, y_test = load_real_data()
 
-    alpha = 0.05
-    model = keras.models.Sequential([
-        #keras.layers.InputLayer(shape=[144, 480, 1]),
-        keras.layers.BatchNormalization(),
-        keras.layers.Conv2D(filters=10, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
-                            activation='relu', padding='same'),
-        keras.layers.MaxPool2D(pool_size=(3, 3), strides=(1, 1)),
-        keras.layers.Conv2D(filters=20, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
-                            activation='relu', padding='same'),
-        keras.layers.Conv2D(filters=20, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
-                            activation='relu', padding='same'),
-        keras.layers.MaxPool2D(pool_size=(2, 2), strides=(1, 1)),
-        keras.layers.Conv2D(filters=25, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
-                            activation='relu', padding='same'),
-        keras.layers.Conv2D(filters=25, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
-                            activation='relu', padding='same'),
-        keras.layers.MaxPool2D(pool_size=(2, 2), strides=(1, 1)),
-        keras.layers.Flatten(),
-        keras.layers.Dense(128, activation="relu"),
-        keras.layers.Dropout(0.5),
-        keras.layers.Dense(64, activation="relu"),
-        keras.layers.Dropout(0.5),
-        keras.layers.Dense(2, activation='softmax')
-    ])
-
-    model.compile()
-
     experiment_names = [
         'experiment1_balanced', 'experiment2_balanced_n_10', 'experiment4_balanced', 'experiment5_balanced_5_99',
         'experiment7_balanced_n_10', 'experiment8_balanced_n_10', 'experiment9_balanced', 'experiment10_balanced_n_10'
     ]
 
     for experiment_name in experiment_names:
-        predict_real(model, experiment_name, X_test, y_test)
+        predict_real(experiment_name, X_test, y_test)
