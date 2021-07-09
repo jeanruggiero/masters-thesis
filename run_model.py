@@ -84,7 +84,7 @@ def run_model(model, name, sliding_window_size=None):
     callbacks = {
         es: None,
         # lr_scheduler: [0],
-        # lr_scheduler_after_first_batch: list(range(1, 11))
+        lr_scheduler_after_first_batch: list(range(1, 11))
     }
 
     # Compile model
@@ -96,7 +96,7 @@ def run_model(model, name, sliding_window_size=None):
 
     # Train model
     history, model, X_val, y_val = train_model(model, data_generator, output_time_range, sample_rate,
-                                               callbacks=callbacks, epochs=30, plots=False,
+                                               callbacks=callbacks, epochs=50, plots=False,
                                                sliding_window_size=sliding_window_size, resample=True)
 
     # Save y_val to s3
@@ -227,4 +227,4 @@ if __name__ == '__main__':
 
     # print(model.summary())
 
-    run_model_bscan(model, 'experiment2_balanced_n_10', n=10, random_cropping=True, balance=True)
+    run_model_bscan(model, 'experiment2_balanced_n_1', n=1, random_cropping=True, balance=True)

@@ -87,7 +87,7 @@ def load_batch(batch, data_generator, gulkana_data_generator, noiser, output_tim
 
 
 def train_model(model, data_generator, output_time_range, sample_rate, callbacks={}, plots=True, resample=False,
-                epochs=30, sliding_window_size=None, gulkana_data_generator=None, noiser=None):
+                epochs=50, sliding_window_size=None, gulkana_data_generator=None, noiser=None):
     # Callbacks argument should be a dict of callback_fn: list of batches or None pairs. If list of batches is None
     # the callback will be applied to all batches
 
