@@ -133,7 +133,7 @@ def run_model(model, name, sliding_window_size=None):
 
 
 def run_model_bscan(model, name, n=10, random_cropping=False, real_negative_injection=False, gaussian_noise=False,
-                    real_noise=False, balance=False):
+                    real_noise=False, balance=False, gulkana_data_generator=None):
 
     s3_client = boto3.client('s3')
     # Load raw data
@@ -145,8 +145,11 @@ def run_model_bscan(model, name, n=10, random_cropping=False, real_negative_inje
         balance=balance if not real_negative_injection else False
     )
 
-    gulkana_data_generator = GulkanaBScanDataSetGenerator(10, random_seed=42, prefix='DATA01', balance=balance) \
-        if real_negative_injection else None
+    if real_negative_injection:
+        gulkana_data_generator = gulkana_data_generator if gulkana_data_generator else GulkanaBScanDataSetGenerator(
+            10, random_seed=42, prefix='DATA01', balance=balance)
+    else:
+        gulkana_data_generator = None
 
     noiser = Noiser(5, 99) if real_noise else None
 
@@ -200,9 +203,9 @@ def run_model_bscan(model, name, n=10, random_cropping=False, real_negative_inje
     s3_client.upload_file(f'{name}_history.txt', 'jean-masters-thesis', f'models/{name}_history.txt')
 
 
-def run_experiment(model, experiment_name, **kwargs):
+def run_experiment(model, experiment_name, gulkana_data_generator, **kwargs):
     logging.info(f"Starting experiment: {experiment_name}")
-    run_model_bscan(model, experiment_name, **kwargs)
+    run_model_bscan(model, experiment_name, gulkana_data_generator=gulkana_data_generator, **kwargs)
 
 
 if __name__ == '__main__':
@@ -305,7 +308,7 @@ if __name__ == '__main__':
         },
     }
 
-    experiment_name = 'experiment8_balanced_n_1'
+    experiment_name = 'experiment9_balanced'
 
     logging.info(f"Starting experiment: {experiment_name}")
     logging.info(f"Num GPUs Available: {len(tf.config.list_physical_devices('GPU'))}")
@@ -338,9 +341,9 @@ if __name__ == '__main__':
 
     # print(model.summary())
 
-    run_model_bscan(model, experiment_name, n=1, random_cropping=True, balance=True, real_negative_injection=False,
+    run_model_bscan(model, experiment_name, n=1, random_cropping=False, balance=True, real_negative_injection=True,
                     real_noise=True)
 
-
+    # gulkana_data_generator = GulkanaBScanDataSetGenerator(10, random_seed=42, prefix='DATA01', balance=True)
     # for experiment_name, kwargs in experiments.items():
-    #     run_model_bscan(model, experiment_name, balance=True, **kwargs)
+    #     run_model_bscan(model, experiment_name, gulkana_data_generator, balance=True, **kwargs)
