@@ -278,6 +278,7 @@ class BScanDataSetGenerator:
 
     @staticmethod
     def bootstrap(scan, label, max_col, min_col, n, random_cropping):
+        # This must be a static method in order for multithreading to work properly
 
         if scan is None:
             logging.debug("[DataSetGenerator.bootstrap] scan = None")
@@ -291,16 +292,17 @@ class BScanDataSetGenerator:
 
         logging.debug(f"[DataSetGenerator.bootstrap] max_col: {max_col}")
         logging.debug(f"[DataSetGenerator.bootstrap] min_col: {min_col}")
+        logging.debug(f"Random cropping is {'ON' if random_cropping else 'OFF'}")
 
         if random_cropping:
             # Generate a number of input matrices from the base scan
             lengths = np.random.randint(min_col, high=max_col + 1, size=n)
             starts = [random.randint(0, scan.shape[0] - length) for length in lengths]
+
         else:
             starts = [(scan.shape[0] - 100) / 2 - 1]
             lengths = [max_col]
 
-        logging.debug(f"Random cropping is {'ON' if random_cropping else 'OFF'}")
         logging.debug(f"lengths = {lengths}")
         logging.debug(f"starts = {starts}")
 

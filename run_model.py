@@ -25,7 +25,7 @@ from tensorflow.keras.metrics import Precision, Recall
 
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, handlers=[
+logging.basicConfig(level=logging.DEBUG, handlers=[
     logging.FileHandler("training.log"),
     logging.StreamHandler()
 ])
