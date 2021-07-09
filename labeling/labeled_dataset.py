@@ -300,7 +300,7 @@ class BScanDataSetGenerator:
             starts = [random.randint(0, scan.shape[0] - length) for length in lengths]
 
         else:
-            starts = [(scan.shape[0] - 100) / 2 - 1]
+            starts = [int((scan.shape[0] - max_col) / 2)]
             lengths = [max_col]
 
         logging.debug(f"lengths = {lengths}")
