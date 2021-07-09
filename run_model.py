@@ -227,4 +227,4 @@ if __name__ == '__main__':
 
     # print(model.summary())
 
-    run_model_bscan(model, 'experiment1_balanced', n=1, random_cropping=False, balance=True)
+    run_model_bscan(model, 'experiment2_balanced_n_10', n=10, random_cropping=True, balance=True)

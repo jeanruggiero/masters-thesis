@@ -97,44 +97,6 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
         0, data_generator, gulkana_data_generator, noiser, output_time_range, sample_rate, resample, sliding_window_size
     )
 
-    #     preprocess(data_generator.generate_batch(0), output_time_range, sample_rate, resample=resample)
-    #
-    # logging.info(f'X_val.shape = {X_val.shape}')
-    # logging.info(f'y_val.shape = {y_val.shape}')
-    #
-    # if noiser:
-    #     X_val = np.array([noiser.noise(X_val[i, :, :]) for i in range(X_val.shape[0])])
-    #
-    # logging.info(f'X_val.shape = {X_val.shape}')
-    # logging.info(f'y_val.shape = {y_val.shape}')
-    #
-    # n_positive = np.sum(y_val)
-    # n_negative = y_val.shape[0] - n_positive
-    #
-    # if gulkana_data_generator:
-    #     if gulkana_data_generator.balance and n_positive > n_negative:
-    #         size = n_positive - n_negative
-    #     else:
-    #         size = None
-    #
-    #     X_val_gulkana, y_val_gulkana = gulkana_data_generator.generate_batch(0, size=size)
-    #
-    #     logging.info(f'X_val_gulkana.shape = {X_val_gulkana.shape}')
-    #     logging.info(f'y_val_gulkana.shape = {y_val_gulkana.shape}')
-    #
-    #     X_val = np.concatenate([X_val, X_val_gulkana])
-    #     y_val = np.concatenate([y_val, y_val_gulkana])
-    #
-    # if sliding_window_size is not None:
-    #     X_val, y_val = apply_window(X_val, y_val, sliding_window_size)
-    # else:
-    #     X_val = expand_dim(X_val)
-    #
-    # X_val = np.array([Noiser.normalize(X_val[i, :, :]) for i in range(X_val.shape[0])])
-    #
-    # logging.info(f'X_val.shape = {X_val.shape}')
-    # logging.info(f'y_val.shape = {y_val.shape}')
-
     histories = []
     total_training_set_size = 0
     total_training_positives = 0
@@ -147,37 +109,9 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
             sliding_window_size
         )
 
-        # X_train, y_train = preprocess(data_generator.generate_batch(i), output_time_range, sample_rate, resample=resample)
-        #
-        # if noiser:
-        #     X_train = np.array([noiser.noise(X_train[i, :, :]) for i in range(X_train.shape[0])])
-        #
-        # logging.info(f'X_train.shape = {X_train.shape}')
-        # logging.info(f'y_train.shape = {y_train.shape}')
-        #
-        # if gulkana_data_generator:
-        #     X_train_gulkana, y_train_gulkana = gulkana_data_generator.generate_batch(i)
-        #
-        #     logging.info(f'X_train_gulkana.shape = {X_train_gulkana.shape}')
-        #     logging.info(f'y_train_gulkana.shape = {y_train_gulkana.shape}')
-        #
-        #     X_train = np.concatenate([X_train, X_train_gulkana])
-        #     y_train = np.concatenate([y_train, y_train_gulkana])
-        #
-        # if sliding_window_size is not None:
-        #     X_train, y_train = apply_window(X_train, y_train, sliding_window_size)
-        # else:
-        #     X_train = expand_dim(X_train)
-        #
-        # X_train = np.array([Noiser.normalize(X_train[i, :, :]) for i in range(X_train.shape[0])])
-        #
-        # logging.info(f"X_train.shape = {X_train.shape}")
-        # logging.info(f"y_train.shape = {y_train.shape}")
-
         total_training_set_size += X_train.shape[0]
         total_training_positives += np.sum(y_train)
         total_training_negatives += y_train.shape[0] - np.sum(y_train)
-
 
         # Select callbacks to apply to this batch
         batch_callbacks = [key for key, batches in callbacks.items() if not batches or i in batches]
@@ -188,20 +122,20 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
 
         y_pred = model.predict(X_val)
 
-        print("\ny_pred validation set")
-        print(np.argmax(y_pred, axis=1))
+        logging.info("\ny_pred validation set")
+        logging.info(f"{np.argmax(y_pred, axis=1)}")
 
-        print("\ny_pred_proba validation set")
+        logging.info("\ny_pred_proba validation set")
         for y_pp, y_v in zip(y_pred, y_val):
-            print(y_pp, y_v)
+            logging.info(f"{y_pp}, {y_v}")
 
-        print(f"\nTotal samples in training set: {total_training_set_size}")
-        print(f"Total positive (training): {total_training_positives}")
-        print(f"Total negative (training): {total_training_negatives}")
+        logging.info(f"\nTotal samples in training set: {total_training_set_size}")
+        logging.info(f"Total positive (training): {total_training_positives}")
+        logging.info(f"Total negative (training): {total_training_negatives}")
 
-        print(f"\nTotal samples in validation set: {y_val.shape[0]}")
-        print(f"Total positive: {np.sum(y_val)}")
-        print(f"Total negative: {y_val.shape[0] - np.sum(y_val)}")
+        logging.info(f"\nTotal samples in validation set: {y_val.shape[0]}")
+        logging.info(f"Total positive: {np.sum(y_val)}")
+        logging.info(f"Total negative: {y_val.shape[0] - np.sum(y_val)}")
 
         # logging.info(f"Mean Jaccard Index = {mean_jaccard_index_post_epoch(y_val, y_pred):.2f}")
         logging.info(f"\nf1-score = {f1_score_post_epoch(y_val, y_pred):.2f}")
