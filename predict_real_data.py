@@ -69,10 +69,13 @@ def predict_real(experiment_name, X_test, y_test):
     objs = bucket.objects.filter(Prefix='models/' + experiment_name + '.')
 
     for obj in objs:
-        bucket.download_file(obj.key, 'models/' + obj.key)
+        logging.info(f"Downloading {obj.key}")
+        bucket.download_file(obj.key, obj.key)
 
     # Restore the weights
     model.load_weights(experiment_name)
+
+    return
 
     y_pred_proba = model.predict(X_test)
     y_pred = np.argmax(y_pred_proba, axis=1)
@@ -149,7 +152,10 @@ def load_real_data():
 
 if __name__ == '__main__':
 
-    X_test, y_test = load_real_data()
+    # X_test, y_test = load_real_data()
+
+    X_test = None
+    y_test = None
 
     experiment_names = [
         'experiment1_balanced', 'experiment2_balanced_n_10', 'experiment4_balanced', 'experiment5_balanced_5_99',
