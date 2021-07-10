@@ -75,8 +75,6 @@ def predict_real(experiment_name, X_test, y_test):
     # Restore the weights
     model.load_weights('models/' + experiment_name)
 
-    return
-
     y_pred_proba = model.predict(X_test)
     y_pred = np.argmax(y_pred_proba, axis=1)
 
@@ -152,10 +150,7 @@ def load_real_data():
 
 if __name__ == '__main__':
 
-    # X_test, y_test = load_real_data()
-
-    X_test = None
-    y_test = None
+    X_test, y_test = load_real_data()
 
     experiment_names = [
         'experiment1_balanced', 'experiment2_balanced_n_10', 'experiment4_balanced', 'experiment5_balanced_5_99',
