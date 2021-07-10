@@ -193,5 +193,5 @@ if __name__ == '__main__':
 
     # Upload training logs to s3
     s3_client = boto3.client('s3')
-    s3_client.upload_file("predictions.log", 'jean-masters-thesis', f'models/predictions.log')
-    s3_client.upload_file("predictions_verbose.log", 'jean-masters-thesis', f'models/predictions_verbose.log')
+    s3_client.upload_file("prediction.log", 'jean-masters-thesis', f'models/predictions.log')
+    s3_client.upload_file("prediction_verbose.log", 'jean-masters-thesis', f'models/predictions_verbose.log')
