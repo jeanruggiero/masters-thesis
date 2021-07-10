@@ -6,6 +6,7 @@ import uuid
 import h5py
 import boto3
 import math
+import logging
 
 from numbers import Number
 
@@ -65,7 +66,7 @@ def preprocess_gulkana_real_data(prefix=None, keys=None):
     X = []
 
     for key in keys:
-        print(f"Processing {key}")
+        logging.info(f"Processing {key}")
 
         data, header = load_gulkana(key, "jean-masters-thesis")
 
@@ -81,7 +82,7 @@ def preprocess_gulkana_real_data(prefix=None, keys=None):
                                              output_size, window_size, overlap=overlap, method_y='last',
                                              method_x='last')
 
-        print(f"len(bootstrapped_scans) = {len(bootstrapped_scans)}")
+        logging.debug(f"len(bootstrapped_scans) = {len(bootstrapped_scans)}")
         X.extend(bootstrapped_scans)
 
     return np.transpose(np.array(X), axes=[0, 2, 1]), np.array([0] * len(X))

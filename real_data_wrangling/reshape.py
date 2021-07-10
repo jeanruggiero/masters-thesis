@@ -1,5 +1,6 @@
 import math
 import numpy as np
+import logging
 
 
 def resample_y(data, input_time_range, output_sample_rate, output_time_range, method='dft'):
@@ -310,7 +311,7 @@ def slice_scan(data, window_size, overlap=None):
     :return: a sequence of slices of the input data
     """
 
-    print(f"Shape of unsliced scan {data.shape}")
+    logging.debug(f"Shape of unsliced scan {data.shape}")
     overlap = overlap if overlap is not None else data.shape[1] - 1
     step_size = window_size - overlap
 
@@ -341,7 +342,7 @@ def preprocess_scan(data, input_time_range, output_sample_rate, output_time_rang
     :return: a sequence of slices of the resampled input data
     """
 
-    print(f"[preprocess_scan] data.shape = {data.shape}")
+    logging.debug(f"[preprocess_scan] data.shape = {data.shape}")
     return slice_scan(
         resample_xy(data, input_time_range, output_sample_rate, output_time_range, x_range, output_size,
                     method_y=method_y, method_x=method_x),
