@@ -78,9 +78,9 @@ def predict_real(experiment_name, X_test, y_test):
     y_pred_proba = model.predict(X_test)
     y_pred = np.argmax(y_pred_proba, axis=1)
 
-    logging.debug("y_test, y_pred, y_pred_proba")
-    for yt, yp, ypp in zip(y_test, y_pred, y_pred_proba):
-        logging.debug(f"{yt:5.3f}  {yp:5.3f}  {ypp:5.3f}")
+    # logging.debug("y_test, y_pred, y_pred_proba")
+    # for yt, yp, ypp in zip(y_test, y_pred, y_pred_proba):
+    #     logging.debug(f"{yt:5.3f}  {yp:5.3f}  {ypp:5.3f}")
 
     logging.info(f"f1-score = {f1_score_post_epoch(y_test, y_pred_proba):.2f}")
     logging.info(f"precision = {precision_post_epoch(y_test, y_pred_proba):.2f}")
