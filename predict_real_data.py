@@ -73,7 +73,7 @@ def predict_real(experiment_name, X_test, y_test):
         bucket.download_file(obj.key, obj.key)
 
     # Restore the weights
-    model.load_weights(experiment_name)
+    model.load_weights('models/' + experiment_name)
 
     return
 
