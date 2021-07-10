@@ -1,5 +1,6 @@
 import os
 import logging
+import glob
 
 import tensorflow as tf
 from tensorflow import keras
@@ -87,10 +88,25 @@ def predict_real(experiment_name, X_test, y_test):
     logging.info(f"recall = {recall_post_epoch(y_test, y_pred_proba):.2f}")
 
 
-def load_real_data():
+def load_real_data(balance='bootstrap', cached=True):
+    # balance can either be bootstrap, remove, or None
 
-    X_test, y_test = preprocess_real_data('thesis_real_data_labels.csv', 'real_data_metadata.csv')
-    X_test = np.transpose(expand_dim(X_test), axes=(0, 2, 1, 3))
+    if cached:
+        # Read cached data
+        logging.info("Reading cached y_test, X_test")
+        y_test = np.loadtxt('realdata/y_test')
+        X_test = np.array([np.loadtxt(fname) for fname in glob.glob('realdata/x_*')])
+
+    else:
+        # Load & cache data
+        logging.info("Loading y_test, X_test from s3")
+        X_test, y_test = preprocess_real_data('thesis_real_data_labels.csv', 'real_data_metadata.csv')
+        X_test = np.transpose(expand_dim(X_test), axes=(0, 2, 1, 3))
+
+        np.savetxt('realdata/y_test', y_test)
+
+        for i, x in enumerate(X_test):
+            np.savetxt('realdata/x_i', x)
 
     logging.info("Preprocessing complete")
     logging.info(f"X.shape = {X_test.shape}")
@@ -106,37 +122,51 @@ def load_real_data():
 
     logging.info('Balancing dataset.')
 
-    if n_positive > n_negative:
-        # More positive than negative scans. Randomly sample from negative scans
-        n_additional = n_positive - n_negative
-
-        # Get indices for negative samples
+    if balance:
+        # Get indices for negative & positive samples
         negatives = np.flatnonzero(y_test == 0)
-
-        # Randomly sample (with replacement) from negative indices
-        new_negatives = np.random.choice(negatives, n_additional)
-
-        logging.debug(f"new_negatives = {new_negatives}")
-
-        # Select new negatives and concatenate with existing X
-        X_test = np.concatenate([X_test, X_test[new_negatives]])
-        y_test = np.concatenate([y_test, y_test[new_negatives]])
-
-    elif n_negative > n_positive:
-        # More negative than positive scans. Randomly sample from positive scans
-        n_additional = n_negative - n_positive
-
-        # Get indices for positive samples
         positives = np.flatnonzero(y_test)
 
-        # Randomly sample (with replacement) from positive indices
-        new_positives = np.random.choice(positives, n_additional)
+        if n_positive > n_negative:
+            # More positive than negative scans.
+            diff = n_positive - n_negative
 
-        logging.debug(f"new_positives = {new_positives}")
 
-        # Select new positives and concatenate with existing X
-        X_test = np.concatenate([X_test, X_test[new_positives]])
-        y_test = np.concatenate([y_test, y_test[new_positives]])
+            if balance == 'bootstrap':
+                # Randomly sample (with replacement) from negative indices and add scans to the dataset
+                new_negatives = np.random.choice(negatives, diff)
+                logging.debug(f"new_negatives = {new_negatives}")
+
+                # Select new negatives and concatenate with existing X
+                X_test = np.concatenate([X_test, X_test[new_negatives]])
+                y_test = np.concatenate([y_test, y_test[new_negatives]])
+
+            elif balance == 'remove':
+                # Randomly remove positives
+                old_positives = np.random.choice(positives, diff)
+
+                X_test = np.delete(X_test, old_positives)
+                y_test = np.delete(y_test, old_positives)
+
+        elif n_negative > n_positive:
+            # More negative than positive scans.
+            diff = n_negative - n_positive
+
+            if balance == 'bootstrap':
+                # Randomly sample (with replacement) from positive indices
+                new_positives = np.random.choice(positives, diff)
+                logging.debug(f"new_positives = {new_positives}")
+
+                # Select new positives and concatenate with existing X
+                X_test = np.concatenate([X_test, X_test[new_positives]])
+                y_test = np.concatenate([y_test, y_test[new_positives]])
+
+            elif balance == 'remove':
+                # Randomly remove negatives
+                old_negatives = np.random.choice(negatives, diff)
+
+                X_test = np.delete(X_test, old_negatives)
+                y_test = np.delete(y_test, old_negatives)
 
     n_samples = y_test.shape[0]
     n_positive = np.sum(y_test)
@@ -150,11 +180,11 @@ def load_real_data():
 
 if __name__ == '__main__':
 
-    X_test, y_test = load_real_data()
+    X_test, y_test = load_real_data(cached=False, balance='remove')
 
     experiment_names = [
-        # 'experiment1_balanced', 'experiment2_balanced_n_10', 'experiment4_balanced', 'experiment5_balanced_5_99',
-        # 'experiment7_balanced_n_10', 'experiment8_balanced_n_10',
+        'experiment1_balanced', 'experiment2_balanced_n_10', 'experiment4_balanced', 'experiment5_balanced_5_99',
+        'experiment7_balanced_n_10', 'experiment8_balanced_n_10',
         'experiment9_balanced', 'experiment10_balanced_n_10'
     ]
 
