@@ -18,10 +18,10 @@ from modeling.modeling import expand_dim
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 # Configure logging
-fh = logging.FileHandler("training.log")
+fh = logging.FileHandler("prediction.log")
 fh.setLevel(logging.INFO)
 
-fhv = logging.FileHandler("training_verbose.log")
+fhv = logging.FileHandler("prediction_verbose.log")
 fhv.setLevel(logging.DEBUG)
 
 sh = logging.StreamHandler()
