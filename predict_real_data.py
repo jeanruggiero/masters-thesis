@@ -159,3 +159,8 @@ if __name__ == '__main__':
 
     for experiment_name in experiment_names:
         predict_real(experiment_name, X_test, y_test)
+
+    # Upload training logs to s3
+    s3_client = boto3.client('s3')
+    s3_client.upload_file("predictions.log", 'jean-masters-thesis', f'models/predictions.log')
+    s3_client.upload_file("predictions_verbose.log", 'jean-masters-thesis', f'models/predictions_verbose.log')
