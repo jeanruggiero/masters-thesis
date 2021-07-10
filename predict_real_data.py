@@ -153,8 +153,9 @@ if __name__ == '__main__':
     X_test, y_test = load_real_data()
 
     experiment_names = [
-        'experiment1_balanced', 'experiment2_balanced_n_10', 'experiment4_balanced', 'experiment5_balanced_5_99',
-        'experiment7_balanced_n_10', 'experiment8_balanced_n_10', 'experiment9_balanced', 'experiment10_balanced_n_10'
+        # 'experiment1_balanced', 'experiment2_balanced_n_10', 'experiment4_balanced', 'experiment5_balanced_5_99',
+        # 'experiment7_balanced_n_10', 'experiment8_balanced_n_10',
+        'experiment9_balanced', 'experiment10_balanced_n_10'
     ]
 
     for experiment_name in experiment_names:
