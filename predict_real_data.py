@@ -100,12 +100,15 @@ def load_real_data(balance='bootstrap', cached=True):
     else:
         # Load & cache data
         logging.info("Loading y_test, X_test from s3")
-        X_test, y_test = preprocess_real_data('thesis_real_data_labels.csv', 'real_data_metadata.csv')
+        X_test, y_test = preprocess_real_data('thesis_real_data_labels.csv', 'real_data_metadata.csv',
+                                              ids=['f767b597-ba79-4d3c-b5cf-6599acfede84'])
         X_test = np.transpose(expand_dim(X_test), axes=(0, 2, 1, 3))
 
         np.savetxt('realdata/y_test', y_test)
 
         for i, x in enumerate(X_test):
+            print(x.shape)
+            print(x)
             np.savetxt('realdata/x_i', x)
 
     logging.info("Preprocessing complete")

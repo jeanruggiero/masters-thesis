@@ -23,7 +23,7 @@ def read_scan(id):
     return d
 
 
-def preprocess_real_data(label_filename, metadata_filename):
+def preprocess_real_data(label_filename, metadata_filename, ids=None):
 
     labels = pd.read_csv(label_filename).set_index('id')
     labels = labels.join(pd.read_csv(metadata_filename).set_index('id'))
@@ -32,6 +32,9 @@ def preprocess_real_data(label_filename, metadata_filename):
     y = []
 
     for id, label in labels.iterrows():
+
+        if ids is not None and id not in ids:
+            continue
 
         print(f"Loading scan {id}")
         # Load data from s3
