@@ -111,7 +111,7 @@ def load_real_data(balance='bootstrap', cached=True):
         for i, x in enumerate(X_test):
             print(x[:,:,0].shape)
             print(x[:,:,0])
-            np.savetxt('realdata/x_i', x[:,:,0])
+            np.savetxt(f'realdata/x_{i}', x[:,:,0])
 
     logging.info("Preprocessing complete")
     logging.info(f"X.shape = {X_test.shape}")
@@ -140,7 +140,9 @@ def load_real_data(balance='bootstrap', cached=True):
             if balance == 'bootstrap':
                 # Randomly sample (with replacement) from negative indices and add scans to the dataset
                 new_negatives = np.random.choice(negatives, diff)
-                logging.debug(f"new_negatives = {new_negatives}")
+                logging.info(f"new_negatives = {new_negatives}")
+
+                logging.debug(f"X_test[new_negatives].shape = {X_test[new_negatives].shape}")
 
                 # Select new negatives and concatenate with existing X
                 X_test = np.concatenate([X_test, X_test[new_negatives]])
@@ -150,7 +152,9 @@ def load_real_data(balance='bootstrap', cached=True):
                 # Randomly remove positives
                 old_positives = np.random.choice(positives, diff)
 
-                X_test = np.delete(X_test, old_positives)
+                logging.info(f"old_positives = {old_positives}")
+
+                X_test = np.delete(X_test, old_positives, axis=0)
                 y_test = np.delete(y_test, old_positives)
 
         elif n_negative > n_positive:
