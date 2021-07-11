@@ -107,9 +107,9 @@ def load_real_data(balance='bootstrap', cached=True):
         np.savetxt('realdata/y_test', y_test)
 
         for i, x in enumerate(X_test):
-            print(x.shape)
-            print(x)
-            np.savetxt('realdata/x_i', x)
+            print(x[:,:,0].shape)
+            print(x[:,:,0])
+            np.savetxt('realdata/x_i', x[:,:,0])
 
     logging.info("Preprocessing complete")
     logging.info(f"X.shape = {X_test.shape}")
