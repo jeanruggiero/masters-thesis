@@ -104,6 +104,8 @@ def load_real_data(balance='bootstrap', cached=True):
                                               ids=['f767b597-ba79-4d3c-b5cf-6599acfede84'])
         X_test = np.transpose(expand_dim(X_test), axes=(0, 2, 1, 3))
 
+        print(f"X_test.shape = {X_test.shape}")
+
         np.savetxt('realdata/y_test', y_test)
 
         for i, x in enumerate(X_test):
