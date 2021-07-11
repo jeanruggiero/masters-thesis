@@ -128,6 +128,12 @@ def load_real_data(balance='bootstrap', cached=True):
         negatives = np.flatnonzero(y_test == 0)
         positives = np.flatnonzero(y_test)
 
+        print("positives")
+        print(positives)
+
+        print("negatives")
+        print(negatives)
+
         if n_positive > n_negative:
             # More positive than negative scans.
             diff = n_positive - n_negative
@@ -168,10 +174,9 @@ def load_real_data(balance='bootstrap', cached=True):
 
             elif balance == 'remove':
                 # Randomly remove negatives
-                print(negatives)
                 old_negatives = np.random.choice(negatives, diff, replace=False)
 
-                X_test = np.delete(X_test, old_negatives)
+                X_test = np.delete(X_test, old_negatives, axis=0)
                 y_test = np.delete(y_test, old_negatives)
 
     n_samples = y_test.shape[0]
