@@ -19,10 +19,10 @@ from modeling.modeling import expand_dim
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 # Configure logging
-fh = logging.FileHandler("prediction.log")
+fh = logging.FileHandler("prediction_remove.log")
 fh.setLevel(logging.INFO)
 
-fhv = logging.FileHandler("prediction_verbose.log")
+fhv = logging.FileHandler("prediction_remove_verbose.log")
 fhv.setLevel(logging.DEBUG)
 
 sh = logging.StreamHandler()
@@ -193,5 +193,6 @@ if __name__ == '__main__':
 
     # Upload training logs to s3
     s3_client = boto3.client('s3')
-    s3_client.upload_file("prediction.log", 'jean-masters-thesis', f'models/predictions.log')
-    s3_client.upload_file("prediction_verbose.log", 'jean-masters-thesis', f'models/predictions_verbose.log')
+    s3_client.upload_file("prediction_remove.log", 'jean-masters-thesis', f'models/prediction_remove.log')
+    s3_client.upload_file("prediction_remove_verbose.log", 'jean-masters-thesis',
+                          f'models/prediction_remove_verbose.log')
