@@ -95,7 +95,7 @@ def load_real_data(balance='bootstrap', cached=True):
     if cached:
         # Read cached data
         logging.info("Reading cached y_test, X_test")
-        y_test = np.loadtxt('realdata/y_test')
+        y_test = np.loadtxt('realdata/y_test', dtype=np.int32)
         X_test = expand_dim(np.array([np.loadtxt(fname) for fname in glob.glob('realdata/x_*')]))
 
     else:
