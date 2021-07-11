@@ -96,7 +96,7 @@ def load_real_data(balance='bootstrap', cached=True):
         # Read cached data
         logging.info("Reading cached y_test, X_test")
         y_test = np.loadtxt('realdata/y_test')
-        X_test = np.array([np.loadtxt(fname) for fname in glob.glob('realdata/x_*')])
+        X_test = expand_dim(np.array([np.loadtxt(fname) for fname in glob.glob('realdata/x_*')]))
 
     else:
         # Load & cache data
@@ -180,12 +180,13 @@ def load_real_data(balance='bootstrap', cached=True):
     logging.info(f"\nTotal samples: {n_samples}")
     logging.info(f"Total positive: {n_positive}")
     logging.info(f"Total negative: {n_negative}")
+    logging.info(f"X_test.shape = {X_test.shape}")
 
     return X_test, y_test
 
 if __name__ == '__main__':
 
-    X_test, y_test = load_real_data(cached=False, balance='remove')
+    X_test, y_test = load_real_data(cached=True, balance='remove')
 
     experiment_names = [
         'experiment1_balanced', 'experiment2_balanced_n_10', 'experiment4_balanced', 'experiment5_balanced_5_99',
