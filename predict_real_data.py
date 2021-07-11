@@ -17,6 +17,7 @@ from modeling.metrics import f1_score_post_epoch, precision_post_epoch, recall_p
 from modeling.modeling import expand_dim
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
 # Configure logging
 fh = logging.FileHandler("prediction_remove.log")
@@ -100,22 +101,17 @@ def load_real_data(balance='bootstrap', cached=True):
     else:
         # Load & cache data
         logging.info("Loading y_test, X_test from s3")
-        X_test, y_test = preprocess_real_data('thesis_real_data_labels.csv', 'real_data_metadata.csv',
-                                              ids=['f767b597-ba79-4d3c-b5cf-6599acfede84'])
+        X_test, y_test = preprocess_real_data('thesis_real_data_labels.csv', 'real_data_metadata.csv')
         X_test = np.transpose(expand_dim(X_test), axes=(0, 2, 1, 3))
-
-        print(f"X_test.shape = {X_test.shape}")
 
         np.savetxt('realdata/y_test', y_test)
 
         for i, x in enumerate(X_test):
-            print(x[:,:,0].shape)
-            print(x[:,:,0])
             np.savetxt(f'realdata/x_{i}', x[:,:,0])
 
     logging.info("Preprocessing complete")
-    logging.info(f"X.shape = {X_test.shape}")
-    logging.info(f"y.shape = {y_test.shape}")
+    logging.debug(f"X.shape = {X_test.shape}")
+    logging.debug(f"y.shape = {y_test.shape}")
 
     n_samples = y_test.shape[0]
     n_positive = np.sum(y_test)
@@ -140,7 +136,7 @@ def load_real_data(balance='bootstrap', cached=True):
             if balance == 'bootstrap':
                 # Randomly sample (with replacement) from negative indices and add scans to the dataset
                 new_negatives = np.random.choice(negatives, diff)
-                logging.info(f"new_negatives = {new_negatives}")
+                logging.debug(f"new_negatives = {new_negatives}")
 
                 logging.debug(f"X_test[new_negatives].shape = {X_test[new_negatives].shape}")
 
@@ -150,9 +146,9 @@ def load_real_data(balance='bootstrap', cached=True):
 
             elif balance == 'remove':
                 # Randomly remove positives
-                old_positives = np.random.choice(positives, diff)
+                old_positives = np.random.choice(positives, diff, replace=False)
 
-                logging.info(f"old_positives = {old_positives}")
+                logging.debug(f"old_positives = {old_positives}")
 
                 X_test = np.delete(X_test, old_positives, axis=0)
                 y_test = np.delete(y_test, old_positives)
@@ -172,7 +168,7 @@ def load_real_data(balance='bootstrap', cached=True):
 
             elif balance == 'remove':
                 # Randomly remove negatives
-                old_negatives = np.random.choice(negatives, diff)
+                old_negatives = np.random.choice(negatives, diff, replace=False)
 
                 X_test = np.delete(X_test, old_negatives)
                 y_test = np.delete(y_test, old_negatives)
