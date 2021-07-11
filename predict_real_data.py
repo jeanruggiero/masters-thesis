@@ -110,8 +110,8 @@ def load_real_data(balance='bootstrap', cached=True):
             np.savetxt(f'realdata/x_{i}', x[:,:,0])
 
     logging.info("Preprocessing complete")
-    logging.debug(f"X.shape = {X_test.shape}")
-    logging.debug(f"y.shape = {y_test.shape}")
+    logging.info(f"X.shape = {X_test.shape}")
+    logging.info(f"y.shape = {y_test.shape}")
 
     n_samples = y_test.shape[0]
     n_positive = np.sum(y_test)
@@ -168,6 +168,7 @@ def load_real_data(balance='bootstrap', cached=True):
 
             elif balance == 'remove':
                 # Randomly remove negatives
+                print(negatives)
                 old_negatives = np.random.choice(negatives, diff, replace=False)
 
                 X_test = np.delete(X_test, old_negatives)
