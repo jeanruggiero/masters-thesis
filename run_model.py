@@ -350,7 +350,7 @@ if __name__ == '__main__':
     #                 real_noise=True)
 
     try:
-        gulkana_data_generator = GulkanaBScanDataSetGenerator(10, random_seed=42, prefix='DATA01', balance=True)
+        gulkana_data_generator = None # GulkanaBScanDataSetGenerator(10, random_seed=42, prefix='DATA01', balance=True)
         X_test, y_test = load_real_data(cached=True, balance='remove')
 
         for experiment_name, kwargs in experiments.items():
