@@ -262,15 +262,15 @@ if __name__ == '__main__':
         #     'gaussian_noise': False,
         #     'real_noise': False
         # },
-
-        'experiment7_balanced_alpha08': {
-            'n': 10,
-            'random_cropping': True,
-            'real_negative_injection': True,
-            'gaussian_noise': False,
-            'real_noise': False
-        },
-
+        #
+        # 'experiment7_balanced_alpha08': {
+        #     'n': 10,
+        #     'random_cropping': True,
+        #     'real_negative_injection': True,
+        #     'gaussian_noise': False,
+        #     'real_noise': False
+        # },
+        #
         # 'experiment8_balanced_50epochs_variablelr_n1': {
         #     'n': 1,
         #     'random_cropping': True,
