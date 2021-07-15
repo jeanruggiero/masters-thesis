@@ -135,7 +135,8 @@ def run_model(model, name, sliding_window_size=None):
 
 
 def run_model_bscan(model, name, n=10, random_cropping=False, real_negative_injection=False, gaussian_noise=False,
-                    real_noise=False, balance=False, gulkana_data_generator=None, X_test=None, y_test=None, batches=10):
+                    real_noise=False, balance=False, gulkana_data_generator=None, X_test=None, y_test=None,
+                    batches=10, epochs=30):
 
     s3_client = boto3.client('s3')
     # Load raw data
@@ -179,7 +180,7 @@ def run_model_bscan(model, name, n=10, random_cropping=False, real_negative_inje
 
     # Train model
     history, model, X_val, y_val = train_model(model, data_generator, output_time_range, sample_rate,
-                                               callbacks=callbacks, epochs=30, plots=False,
+                                               callbacks=callbacks, epochs=epochs, plots=False,
                                                sliding_window_size=None, resample=True,
                                                gulkana_data_generator=gulkana_data_generator, noiser=noiser,
                                                X_test=X_test, y_test=y_test)
@@ -214,13 +215,13 @@ def run_experiment(model, experiment_name, gulkana_data_generator, **kwargs):
 if __name__ == '__main__':
 
     experiments = {
-        # 'experiment1_balanced_2': {
-        #     'n': 1,
-        #     'random_cropping': False,
-        #     'real_negative_injection': False,
-        #     'gaussian_noise': False,
-        #     'real_noise': False
-        # },
+        'experiment1_balanced_alpha08': {
+            'n': 1,
+            'random_cropping': False,
+            'real_negative_injection': False,
+            'gaussian_noise': False,
+            'real_noise': False
+        },
 
         # 'experiment2_balanced_50epochs_variablelr_n_1': {
         #     'n': 1,
@@ -230,15 +231,15 @@ if __name__ == '__main__':
         #     'real_noise': False
         # },
 
-        'experiment2_balanced_50epochs_variablelr_n_10': {
-            'n': 10,
-            'random_cropping': True,
-            'real_negative_injection': False,
-            'gaussian_noise': False,
-            'real_noise': False
-        },
+        # 'experiment2_balanced_alpha08': {
+        #     'n': 10,
+        #     'random_cropping': True,
+        #     'real_negative_injection': False,
+        #     'gaussian_noise': False,
+        #     'real_noise': False
+        # },
 
-        'experiment4_balanced_50epochs_variablelr': {
+        'experiment4_balanced_alpha08': {
             'n': 1,
             'random_cropping': False,
             'real_negative_injection': True,
@@ -246,7 +247,7 @@ if __name__ == '__main__':
             'real_noise': False
         },
 
-        'experiment5_balanced_50epochs_variablelr': {
+        'experiment5_balanced_alpha08': {
             'n': 1,
             'random_cropping': False,
             'real_negative_injection': False,
@@ -262,7 +263,7 @@ if __name__ == '__main__':
         #     'real_noise': False
         # },
 
-        'experiment7_balanced_50epochs_variablelr_n10': {
+        'experiment7_balanced_alpha08': {
             'n': 10,
             'random_cropping': True,
             'real_negative_injection': True,
@@ -278,7 +279,7 @@ if __name__ == '__main__':
         #     'real_noise': True
         # },
 
-        'experiment8_balanced_50epochs_variablelr_n10': {
+        'experiment8_balanced_alpha08': {
             'n': 10,
             'random_cropping': True,
             'real_negative_injection': False,
@@ -286,7 +287,7 @@ if __name__ == '__main__':
             'real_noise': True
         },
 
-        'experiment9_balanced_50epochs_variablelr': {
+        'experiment9_balanced_alpha08': {
             'n': 1,
             'random_cropping': False,
             'real_negative_injection': True,
@@ -302,7 +303,7 @@ if __name__ == '__main__':
         #     'real_noise': True
         # },
 
-        'experiment10_balanced_50epochs_variablelr_n10': {
+        'experiment10_balanced_alpha08': {
             'n': 10,
             'random_cropping': True,
             'real_negative_injection': True,
@@ -350,16 +351,14 @@ if __name__ == '__main__':
     #                 real_noise=True)
 
     try:
-        gulkana_data_generator = None # GulkanaBScanDataSetGenerator(10, random_seed=42, prefix='DATA01', balance=True)
+        gulkana_data_generator = GulkanaBScanDataSetGenerator(10, random_seed=42, prefix='DATA01', balance=True)
         X_test, y_test = load_real_data(cached=True, balance='remove')
 
         for experiment_name, kwargs in experiments.items():
             logging.info(f"Starting experiment: {experiment_name}")
             run_model_bscan(model, experiment_name, gulkana_data_generator=gulkana_data_generator, balance=True,
-                            X_test=X_test, y_test=y_test, **kwargs)
-            break
+                            X_test=X_test, y_test=y_test, epochs=30, **kwargs)
     except Exception as e:
         logging.error(e)
     finally:
-        pass
-        # os.system('aws ec2 stop-instances --instance-ids i-0f3ff84a4385fd023')
+        os.system('aws ec2 stop-instances --instance-ids i-0f3ff84a4385fd023')
