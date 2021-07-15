@@ -214,13 +214,13 @@ def run_experiment(model, experiment_name, gulkana_data_generator, **kwargs):
 if __name__ == '__main__':
 
     experiments = {
-        'experiment1_balanced_2': {
-            'n': 1,
-            'random_cropping': False,
-            'real_negative_injection': False,
-            'gaussian_noise': False,
-            'real_noise': False
-        },
+        # 'experiment1_balanced_2': {
+        #     'n': 1,
+        #     'random_cropping': False,
+        #     'real_negative_injection': False,
+        #     'gaussian_noise': False,
+        #     'real_noise': False
+        # },
 
         # 'experiment2_balanced_50epochs_variablelr_n_1': {
         #     'n': 1,
@@ -313,7 +313,7 @@ if __name__ == '__main__':
 
 
     logging.info(f"Num GPUs Available: {len(tf.config.list_physical_devices('GPU'))}")
-    alpha = 0.05
+    alpha = 0.08
 
     model = keras.models.Sequential([
         #keras.layers.InputLayer(shape=[144, 480, 1]),
@@ -357,7 +357,9 @@ if __name__ == '__main__':
             logging.info(f"Starting experiment: {experiment_name}")
             run_model_bscan(model, experiment_name, gulkana_data_generator=gulkana_data_generator, balance=True,
                             X_test=X_test, y_test=y_test, **kwargs)
+            break
     except Exception as e:
         logging.error(e)
     finally:
-        os.system('aws ec2 stop-instances --instance-ids i-0f3ff84a4385fd023')
+        pass
+        # os.system('aws ec2 stop-instances --instance-ids i-0f3ff84a4385fd023')
