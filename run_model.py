@@ -215,14 +215,14 @@ def run_experiment(model, experiment_name, gulkana_data_generator, **kwargs):
 if __name__ == '__main__':
 
     experiments = {
-        'experiment1_balanced_alpha08': {
-            'n': 1,
-            'random_cropping': False,
-            'real_negative_injection': False,
-            'gaussian_noise': False,
-            'real_noise': False
-        },
-
+        # 'experiment1_balanced_alpha08': {
+        #     'n': 1,
+        #     'random_cropping': False,
+        #     'real_negative_injection': False,
+        #     'gaussian_noise': False,
+        #     'real_noise': False
+        # },
+        #
         # 'experiment2_balanced_50epochs_variablelr_n_1': {
         #     'n': 1,
         #     'random_cropping': True,
@@ -238,23 +238,23 @@ if __name__ == '__main__':
         #     'gaussian_noise': False,
         #     'real_noise': False
         # },
-
-        'experiment4_balanced_alpha08': {
-            'n': 1,
-            'random_cropping': False,
-            'real_negative_injection': True,
-            'gaussian_noise': False,
-            'real_noise': False
-        },
-
-        'experiment5_balanced_alpha08': {
-            'n': 1,
-            'random_cropping': False,
-            'real_negative_injection': False,
-            'gaussian_noise': False,
-            'real_noise': True
-        },
-
+        #
+        # 'experiment4_balanced_alpha08': {
+        #     'n': 1,
+        #     'random_cropping': False,
+        #     'real_negative_injection': True,
+        #     'gaussian_noise': False,
+        #     'real_noise': False
+        # },
+        #
+        # 'experiment5_balanced_alpha08': {
+        #     'n': 1,
+        #     'random_cropping': False,
+        #     'real_negative_injection': False,
+        #     'gaussian_noise': False,
+        #     'real_noise': True
+        # },
+        #
         # 'experiment7_balanced_50epochs_variablelr_n1': {
         #     'n': 1,
         #     'random_cropping': True,
