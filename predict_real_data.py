@@ -32,50 +32,51 @@ sh.setLevel(logging.INFO)
 logging.basicConfig(level=logging.INFO, handlers=[fh, fhv, sh])
 
 
-def predict_real(experiment_name, X_test, y_test):
+def predict_real(experiment_name, X_test, y_test, model=None):
 
     logging.info('.........................................................................................')
     logging.info("Generating predictions for experiment: " + experiment_name)
 
-    alpha = 0.05
-    model = keras.models.Sequential([
-        # keras.layers.InputLayer(shape=[144, 480, 1]),
-        keras.layers.BatchNormalization(),
-        keras.layers.Conv2D(filters=10, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
-                            activation='relu', padding='same'),
-        keras.layers.MaxPool2D(pool_size=(3, 3), strides=(1, 1)),
-        keras.layers.Conv2D(filters=20, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
-                            activation='relu', padding='same'),
-        keras.layers.Conv2D(filters=20, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
-                            activation='relu', padding='same'),
-        keras.layers.MaxPool2D(pool_size=(2, 2), strides=(1, 1)),
-        keras.layers.Conv2D(filters=25, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
-                            activation='relu', padding='same'),
-        keras.layers.Conv2D(filters=25, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
-                            activation='relu', padding='same'),
-        keras.layers.MaxPool2D(pool_size=(2, 2), strides=(1, 1)),
-        keras.layers.Flatten(),
-        keras.layers.Dense(128, activation="relu"),
-        keras.layers.Dropout(0.5),
-        keras.layers.Dense(64, activation="relu"),
-        keras.layers.Dropout(0.5),
-        keras.layers.Dense(2, activation='softmax')
-    ])
+    if model is None:
+        alpha = 0.05
+        model = keras.models.Sequential([
+            # keras.layers.InputLayer(shape=[144, 480, 1]),
+            keras.layers.BatchNormalization(),
+            keras.layers.Conv2D(filters=10, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
+                                activation='relu', padding='same'),
+            keras.layers.MaxPool2D(pool_size=(3, 3), strides=(1, 1)),
+            keras.layers.Conv2D(filters=20, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
+                                activation='relu', padding='same'),
+            keras.layers.Conv2D(filters=20, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
+                                activation='relu', padding='same'),
+            keras.layers.MaxPool2D(pool_size=(2, 2), strides=(1, 1)),
+            keras.layers.Conv2D(filters=25, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
+                                activation='relu', padding='same'),
+            keras.layers.Conv2D(filters=25, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
+                                activation='relu', padding='same'),
+            keras.layers.MaxPool2D(pool_size=(2, 2), strides=(1, 1)),
+            keras.layers.Flatten(),
+            keras.layers.Dense(128, activation="relu"),
+            keras.layers.Dropout(0.5),
+            keras.layers.Dense(64, activation="relu"),
+            keras.layers.Dropout(0.5),
+            keras.layers.Dense(2, activation='softmax')
+        ])
 
-    model.compile()
+        model.compile()
 
-    s3 = boto3.resource('s3')
-    bucket = s3.Bucket(name="jean-masters-thesis")
+        s3 = boto3.resource('s3')
+        bucket = s3.Bucket(name="jean-masters-thesis")
 
-    # Get all objects pertaining to specified model
-    objs = bucket.objects.filter(Prefix='models/' + experiment_name + '.')
+        # Get all objects pertaining to specified model
+        objs = bucket.objects.filter(Prefix='models/' + experiment_name + '.')
 
-    for obj in objs:
-        logging.info(f"Downloading {obj.key}")
-        bucket.download_file(obj.key, obj.key)
+        for obj in objs:
+            logging.info(f"Downloading {obj.key}")
+            bucket.download_file(obj.key, obj.key)
 
-    # Restore the weights
-    model.load_weights('models/' + experiment_name)
+        # Restore the weights
+        model.load_weights('models/' + experiment_name)
 
     y_pred_proba = model.predict(X_test)
     y_pred = np.argmax(y_pred_proba, axis=1)

@@ -23,6 +23,8 @@ from tensorflow.keras.regularizers import l2
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.metrics import Precision, Recall
 
+from predict_real_data import load_real_data
+
 
 # Configure logging
 fh = logging.FileHandler("training.log")
@@ -133,7 +135,7 @@ def run_model(model, name, sliding_window_size=None):
 
 
 def run_model_bscan(model, name, n=10, random_cropping=False, real_negative_injection=False, gaussian_noise=False,
-                    real_noise=False, balance=False, gulkana_data_generator=None):
+                    real_noise=False, balance=False, gulkana_data_generator=None, X_test=None, y_test=None):
 
     s3_client = boto3.client('s3')
     # Load raw data
@@ -179,7 +181,8 @@ def run_model_bscan(model, name, n=10, random_cropping=False, real_negative_inje
     history, model, X_val, y_val = train_model(model, data_generator, output_time_range, sample_rate,
                                                callbacks=callbacks, epochs=30, plots=False,
                                                sliding_window_size=None, resample=True,
-                                               gulkana_data_generator=gulkana_data_generator, noiser=noiser)
+                                               gulkana_data_generator=gulkana_data_generator, noiser=noiser,
+                                               X_test=X_test, y_test=y_test)
 
     # Save y_val to s3
     s3_client.upload_file("training.log", 'jean-masters-thesis', f'models/{name}_training.log')
@@ -211,7 +214,7 @@ def run_experiment(model, experiment_name, gulkana_data_generator, **kwargs):
 if __name__ == '__main__':
 
     experiments = {
-        'experiment1_balanced_50epochs_variablelr': {
+        'experiment1_balanced_2': {
             'n': 1,
             'random_cropping': False,
             'real_negative_injection': False,
@@ -219,13 +222,13 @@ if __name__ == '__main__':
             'real_noise': False
         },
 
-        'experiment2_balanced_50epochs_variablelr_n_1': {
-            'n': 1,
-            'random_cropping': True,
-            'real_negative_injection': False,
-            'gaussian_noise': False,
-            'real_noise': False
-        },
+        # 'experiment2_balanced_50epochs_variablelr_n_1': {
+        #     'n': 1,
+        #     'random_cropping': True,
+        #     'real_negative_injection': False,
+        #     'gaussian_noise': False,
+        #     'real_noise': False
+        # },
 
         'experiment2_balanced_50epochs_variablelr_n_10': {
             'n': 10,
@@ -251,13 +254,13 @@ if __name__ == '__main__':
             'real_noise': True
         },
 
-        'experiment7_balanced_50epochs_variablelr_n1': {
-            'n': 1,
-            'random_cropping': True,
-            'real_negative_injection': True,
-            'gaussian_noise': False,
-            'real_noise': False
-        },
+        # 'experiment7_balanced_50epochs_variablelr_n1': {
+        #     'n': 1,
+        #     'random_cropping': True,
+        #     'real_negative_injection': True,
+        #     'gaussian_noise': False,
+        #     'real_noise': False
+        # },
 
         'experiment7_balanced_50epochs_variablelr_n10': {
             'n': 10,
@@ -267,13 +270,13 @@ if __name__ == '__main__':
             'real_noise': False
         },
 
-        'experiment8_balanced_50epochs_variablelr_n1': {
-            'n': 1,
-            'random_cropping': True,
-            'real_negative_injection': False,
-            'gaussian_noise': False,
-            'real_noise': True
-        },
+        # 'experiment8_balanced_50epochs_variablelr_n1': {
+        #     'n': 1,
+        #     'random_cropping': True,
+        #     'real_negative_injection': False,
+        #     'gaussian_noise': False,
+        #     'real_noise': True
+        # },
 
         'experiment8_balanced_50epochs_variablelr_n10': {
             'n': 10,
@@ -291,13 +294,13 @@ if __name__ == '__main__':
             'real_noise': True
         },
 
-        'experiment10_balanced_50epochs_variablelr_n1': {
-            'n': 1,
-            'random_cropping': True,
-            'real_negative_injection': True,
-            'gaussian_noise': False,
-            'real_noise': True
-        },
+        # 'experiment10_balanced_50epochs_variablelr_n1': {
+        #     'n': 1,
+        #     'random_cropping': True,
+        #     'real_negative_injection': True,
+        #     'gaussian_noise': False,
+        #     'real_noise': True
+        # },
 
         'experiment10_balanced_50epochs_variablelr_n10': {
             'n': 10,
@@ -308,11 +311,8 @@ if __name__ == '__main__':
         },
     }
 
-    experiment_name = 'experiment10_balanced_n_10'
 
-    logging.info(f"Starting experiment: {experiment_name}")
     logging.info(f"Num GPUs Available: {len(tf.config.list_physical_devices('GPU'))}")
-
     alpha = 0.05
 
     model = keras.models.Sequential([
@@ -321,29 +321,43 @@ if __name__ == '__main__':
         keras.layers.Conv2D(filters=10, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
                             activation='relu', padding='same'),
         keras.layers.MaxPool2D(pool_size=(3, 3), strides=(1, 1)),
+        keras.layers.BatchNormalization(),
         keras.layers.Conv2D(filters=20, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
                             activation='relu', padding='same'),
         keras.layers.Conv2D(filters=20, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
                             activation='relu', padding='same'),
         keras.layers.MaxPool2D(pool_size=(2, 2), strides=(1, 1)),
+        keras.layers.BatchNormalization(),
         keras.layers.Conv2D(filters=25, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
                             activation='relu', padding='same'),
         keras.layers.Conv2D(filters=25, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
                             activation='relu', padding='same'),
         keras.layers.MaxPool2D(pool_size=(2, 2), strides=(1, 1)),
+        keras.layers.BatchNormalization(),
         keras.layers.Flatten(),
         keras.layers.Dense(128, activation="relu"),
+        keras.layers.BatchNormalization(),
         keras.layers.Dropout(0.5),
         keras.layers.Dense(64, activation="relu"),
+        keras.layers.BatchNormalization(),
         keras.layers.Dropout(0.5),
         keras.layers.Dense(2, activation='softmax')
     ])
 
     # print(model.summary())
 
-    run_model_bscan(model, experiment_name, n=10, random_cropping=True, balance=True, real_negative_injection=True,
-                    real_noise=True)
+    # run_model_bscan(model, experiment_name, n=10, random_cropping=True, balance=True, real_negative_injection=True,
+    #                 real_noise=True)
 
-    # gulkana_data_generator = GulkanaBScanDataSetGenerator(10, random_seed=42, prefix='DATA01', balance=True)
-    # for experiment_name, kwargs in experiments.items():
-    #     run_model_bscan(model, experiment_name, gulkana_data_generator, balance=True, **kwargs)
+    try:
+        gulkana_data_generator = GulkanaBScanDataSetGenerator(10, random_seed=42, prefix='DATA01', balance=True)
+        X_test, y_test = load_real_data(cached=True, balance='remove')
+
+        for experiment_name, kwargs in experiments.items():
+            logging.info(f"Starting experiment: {experiment_name}")
+            run_model_bscan(model, experiment_name, gulkana_data_generator=gulkana_data_generator, balance=True,
+                            X_test=X_test, y_test=y_test, **kwargs)
+            break
+    except Exception as e:
+        logging.error(e)
+        os.system('aws ec2 stop-instances --instance-ids i-0f3ff84a4385fd023')

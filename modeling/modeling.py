@@ -87,7 +87,8 @@ def load_batch(batch, data_generator, gulkana_data_generator, noiser, output_tim
 
 
 def train_model(model, data_generator, output_time_range, sample_rate, callbacks={}, plots=True, resample=False,
-                epochs=50, sliding_window_size=None, gulkana_data_generator=None, noiser=None):
+                epochs=50, sliding_window_size=None, gulkana_data_generator=None, noiser=None, X_test=None,
+                y_test=None):
     # Callbacks argument should be a dict of callback_fn: list of batches or None pairs. If list of batches is None
     # the callback will be applied to all batches
 
@@ -151,5 +152,13 @@ def train_model(model, data_generator, output_time_range, sample_rate, callbacks
 
         if plots:
             plot_history(history)
+
+    logging.info("Results on test set:")
+    y_pred_proba = model.predict(X_test)
+    y_pred = np.argmax(y_pred_proba, axis=1)
+
+    logging.info(f"f1-score = {f1_score_post_epoch(y_test, y_pred_proba):.2f}")
+    logging.info(f"precision = {precision_post_epoch(y_test, y_pred_proba):.2f}")
+    logging.info(f"recall = {recall_post_epoch(y_test, y_pred_proba):.2f}")
 
     return histories, model, X_val, y_val
