@@ -129,12 +129,6 @@ def load_real_data(balance='bootstrap', cached=True):
         negatives = np.flatnonzero(y_test == 0)
         positives = np.flatnonzero(y_test)
 
-        print("positives")
-        print(positives)
-
-        print("negatives")
-        print(negatives)
-
         if n_positive > n_negative:
             # More positive than negative scans.
             diff = n_positive - n_negative

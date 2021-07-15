@@ -135,7 +135,7 @@ def run_model(model, name, sliding_window_size=None):
 
 
 def run_model_bscan(model, name, n=10, random_cropping=False, real_negative_injection=False, gaussian_noise=False,
-                    real_noise=False, balance=False, gulkana_data_generator=None, X_test=None, y_test=None):
+                    real_noise=False, balance=False, gulkana_data_generator=None, X_test=None, y_test=None, batches=10):
 
     s3_client = boto3.client('s3')
     # Load raw data
@@ -143,7 +143,7 @@ def run_model_bscan(model, name, n=10, random_cropping=False, real_negative_inje
 
     # Generate bootstrapped training set
     data_generator = BScanDataSetGenerator(
-        loader, 10, n=n, scan_max_col=100, random_seed=42, random_cropping=random_cropping,
+        loader, batches, n=n, scan_max_col=100, random_seed=42, random_cropping=random_cropping,
         balance=balance if not real_negative_injection else False
     )
 
@@ -219,7 +219,8 @@ if __name__ == '__main__':
             'random_cropping': False,
             'real_negative_injection': False,
             'gaussian_noise': False,
-            'real_noise': False
+            'real_noise': False,
+            'batches': 10
         },
 
         # 'experiment2_balanced_50epochs_variablelr_n_1': {
@@ -318,19 +319,19 @@ if __name__ == '__main__':
     model = keras.models.Sequential([
         #keras.layers.InputLayer(shape=[144, 480, 1]),
         keras.layers.BatchNormalization(),
-        keras.layers.Conv2D(filters=10, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
+        keras.layers.Conv2D(filters=10, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(alpha),
                             activation='relu', padding='same'),
         keras.layers.MaxPool2D(pool_size=(3, 3), strides=(1, 1)),
         keras.layers.BatchNormalization(),
-        keras.layers.Conv2D(filters=20, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
+        keras.layers.Conv2D(filters=20, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(alpha),
                             activation='relu', padding='same'),
-        keras.layers.Conv2D(filters=20, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
+        keras.layers.Conv2D(filters=20, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(alpha),
                             activation='relu', padding='same'),
         keras.layers.MaxPool2D(pool_size=(2, 2), strides=(1, 1)),
         keras.layers.BatchNormalization(),
-        keras.layers.Conv2D(filters=25, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
+        keras.layers.Conv2D(filters=25, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(alpha),
                             activation='relu', padding='same'),
-        keras.layers.Conv2D(filters=25, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(0.2),
+        keras.layers.Conv2D(filters=25, kernel_size=(3, 3), strides=(1, 1), kernel_regularizer=l2(alpha),
                             activation='relu', padding='same'),
         keras.layers.MaxPool2D(pool_size=(2, 2), strides=(1, 1)),
         keras.layers.BatchNormalization(),
@@ -350,7 +351,8 @@ if __name__ == '__main__':
     #                 real_noise=True)
 
     try:
-        gulkana_data_generator = GulkanaBScanDataSetGenerator(10, random_seed=42, prefix='DATA01', balance=True)
+        gulkana_data_generator = None
+        # gulkana_data_generator = GulkanaBScanDataSetGenerator(10, random_seed=42, prefix='DATA01', balance=True)
         X_test, y_test = load_real_data(cached=True, balance='remove')
 
         for experiment_name, kwargs in experiments.items():
@@ -360,4 +362,5 @@ if __name__ == '__main__':
             break
     except Exception as e:
         logging.error(e)
+    finally:
         os.system('aws ec2 stop-instances --instance-ids i-0f3ff84a4385fd023')
