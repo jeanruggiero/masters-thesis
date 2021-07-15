@@ -219,8 +219,7 @@ if __name__ == '__main__':
             'random_cropping': False,
             'real_negative_injection': False,
             'gaussian_noise': False,
-            'real_noise': False,
-            'batches': 10
+            'real_noise': False
         },
 
         # 'experiment2_balanced_50epochs_variablelr_n_1': {
@@ -351,15 +350,13 @@ if __name__ == '__main__':
     #                 real_noise=True)
 
     try:
-        gulkana_data_generator = None
-        # gulkana_data_generator = GulkanaBScanDataSetGenerator(10, random_seed=42, prefix='DATA01', balance=True)
+        gulkana_data_generator = GulkanaBScanDataSetGenerator(10, random_seed=42, prefix='DATA01', balance=True)
         X_test, y_test = load_real_data(cached=True, balance='remove')
 
         for experiment_name, kwargs in experiments.items():
             logging.info(f"Starting experiment: {experiment_name}")
             run_model_bscan(model, experiment_name, gulkana_data_generator=gulkana_data_generator, balance=True,
                             X_test=X_test, y_test=y_test, **kwargs)
-            break
     except Exception as e:
         logging.error(e)
     finally:
