@@ -278,14 +278,14 @@ if __name__ == '__main__':
         #     'gaussian_noise': False,
         #     'real_noise': True
         # },
-
-        'experiment8_balanced_alpha08': {
-            'n': 10,
-            'random_cropping': True,
-            'real_negative_injection': False,
-            'gaussian_noise': False,
-            'real_noise': True
-        },
+        #
+        # 'experiment8_balanced_alpha08': {
+        #     'n': 10,
+        #     'random_cropping': True,
+        #     'real_negative_injection': False,
+        #     'gaussian_noise': False,
+        #     'real_noise': True
+        # },
 
         'experiment9_balanced_alpha08': {
             'n': 1,
